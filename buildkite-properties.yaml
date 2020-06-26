@@ -1,0 +1,16 @@
+node:
+  global:
+    kubernetes:
+      namespace: core-teams-dev
+      environmentRepo: core-teams-environments
+      releaseName: cf-drivers
+      chartInRepo: false
+  cf-drivers:
+    imageName: pnet-core-teams/cf-drivers
+    executableSource: dist
+    kubernetes:
+      imageTagPath: deployment.app.image.tag
+  liquibase:
+    imageName: pnet-core-teams/cf-drivers-liquibase
+    kubernetes:
+      imageTagPath: deployment.init.liquibase.image.tag

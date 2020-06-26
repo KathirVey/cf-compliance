@@ -1,0 +1,76 @@
+Arguments: 
+  /Users/bbraun/.nvm/versions/node/v12.13.1/bin/node /usr/local/Cellar/yarn/1.22.4/libexec/bin/yarn.js
+
+PATH: 
+  /Users/bbraun/.nvm/versions/node/v12.13.1/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/bbraun/bin:/opt:/usr/local/opt/fzf/bin
+
+Yarn version: 
+  1.22.4
+
+Node version: 
+  12.13.1
+
+Platform: 
+  darwin x64
+
+Trace: 
+  SyntaxError: /Users/bbraun/Documents/repos/cf-drivers/package.json: Unexpected token / in JSON at position 227
+      at JSON.parse (<anonymous>)
+      at /usr/local/Cellar/yarn/1.22.4/libexec/lib/cli.js:1625:59
+      at Generator.next (<anonymous>)
+      at step (/usr/local/Cellar/yarn/1.22.4/libexec/lib/cli.js:310:30)
+      at /usr/local/Cellar/yarn/1.22.4/libexec/lib/cli.js:321:13
+
+npm manifest: 
+  {
+    "name": "cf-drivers",
+    "version": "1.0.0",
+    "main": "src/index.js",
+    "repository": "git@github.com:PeopleNet/cf-drivers.git",
+    "license": "UNLICENSED",
+    "engines": {
+      "node": ">=12.0.0"
+    },
+    "dependencies": {
+      // "@elastic/elasticsearch": "6.8.1",
+      "@peoplenet/cf-services": "5.1.2",
+      "@peoplenet/node-service-common": "16.0.16",
+      "moment": "2.26.0",
+      "node-cleanup": "2.1.2",
+      "pg": "7.12.1",
+      "sequelize": "5.21.2"
+    },
+    "scripts": {
+      "build": "yarn build:clean && yarn build:static && yarn build:js && yarn tarball",
+      "build:clean": "nsc-scripts clean",
+      "build:js": "BABEL_ENV=production nsc-scripts babel src -d dist",
+      "build:static": "nsc-scripts copy",
+      "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
+      "ci-build": "yarn verify && yarn build",
+      "ci-install": "yarn install --frozen-lockfile --ignore-optional",
+      "ci-pullreq": "yarn verify && yarn build:js",
+      "coverage": "yarn run test --coverage",
+      "dev": "NODE_ENV=dev nsc-scripts runenv src/index.js",
+      "lint": "nsc-scripts lint",
+      "lint:commit": "nsc-scripts commitlint -f=HEAD~1",
+      "local": "NODE_ENV=local CFUSERS_DB_PORT=8737 nsc-scripts runenv src/index.js",
+      "qa": "NODE_ENV=qa nsc-scripts runenv src/index.js",
+      "start": "node dist/index.js --async-stack-traces",
+      "tarball": "nsc-scripts tarball",
+      "test": "nsc-scripts test",
+      "test:ci": "nsc-scripts test -w 1",
+      "verify": "yarn lint:commit && yarn lint && yarn test:ci",
+      "version": "nsc-scripts version"
+    },
+    "husky": {
+      "hooks": {
+        "commit-msg": "nsc-scripts commitlint -e=$GIT_PARAMS"
+      }
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

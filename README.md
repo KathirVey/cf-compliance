@@ -1,5 +1,5 @@
-# cf-drivers
-Handles driver integration with EFS for TFM
+# cf-compliance
+Handles TFM integration with EFS
 
 Command Line Usage
 ---

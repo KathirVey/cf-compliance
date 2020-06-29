@@ -10,7 +10,3 @@ node:
     executableSource: dist
     kubernetes:
       imageTagPath: deployment.app.image.tag
-  liquibase:
-    imageName: pnet-core-teams/cf-compliance-liquibase
-    kubernetes:
-      imageTagPath: deployment.init.liquibase.image.tag

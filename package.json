@@ -30,6 +30,7 @@
     "lint:commit": "nsc-scripts commitlint -f=HEAD~1",
     "local": "NODE_ENV=local CFUSERS_DB_PORT=8737 nsc-scripts runenv src/index.js",
     "qa": "NODE_ENV=qa nsc-scripts runenv src/index.js",
+    "staging": "NODE_ENV=staging nsc-scripts runenv src/index.js",
     "start": "node dist/index.js --async-stack-traces",
     "tarball": "nsc-scripts tarball",
     "test": "nsc-scripts test",

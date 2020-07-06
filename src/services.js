@@ -1,5 +1,4 @@
-import makeService from '@peoplenet/cf-services'
+import iseCompliance from './services/iseCompliance'
 
-export default makeService([
-    'iseCompliance'
-])
+export {iseCompliance}
+

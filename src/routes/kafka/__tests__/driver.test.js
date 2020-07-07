@@ -32,10 +32,12 @@ describe('drivers events', () => {
         client.exists.mockResolvedValue({body: false})
 
         const request = {
-            method: 'CREATE',
             payload: {
-                id: 'driverCreateId',
-                ...payloadData
+                method: 'CREATE',
+                payload: {
+                    id: 'driverCreateId',
+                    ...payloadData
+                }
             }
         }
 
@@ -73,10 +75,12 @@ describe('drivers events', () => {
         client.exists.mockResolvedValue({body: true})
 
         const request = {
-            method: 'UPDATE',
             payload: {
-                id: 'driverUpdateId',
-                ...payloadData
+                method: 'UPDATE',
+                payload: {
+                    id: 'driverUpdateId',
+                    ...payloadData
+                }
             }
         }
 
@@ -116,10 +120,13 @@ describe('drivers events', () => {
         client.exists.mockResolvedValue({body: true})
 
         const request = {
-            method: 'DELETE',
+
             payload: {
-                id: 'driverDeleteId',
-                ...payloadData
+                method: 'DELETE',
+                payload: {
+                    id: 'driverDeleteId',
+                    ...payloadData
+                }
             }
         }
 

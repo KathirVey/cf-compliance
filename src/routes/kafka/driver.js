@@ -6,7 +6,8 @@ module.exports = {
     method: 'POST',
     path: '/kafka/driver',
     handler: async ({payload}, hapi) => {
-        const {method, payload: entity} = payload
+        const {value} = payload
+        const {method, payload: entity} = value
         if (method === 'CREATE' || method === 'UPDATE') {
             await searchApi.upsert('driver', entity)
         } else if (method === 'DELETE') {

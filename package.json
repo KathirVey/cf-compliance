@@ -8,6 +8,7 @@
     "node": ">=12.0.0"
   },
   "dependencies": {
+    "@elastic/elasticsearch": "7.4.0",
     "@peoplenet/cf-services": "5.1.2",
     "@peoplenet/node-service-common": "16.0.16",
     "moment": "2.26.0",

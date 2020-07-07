@@ -1,18 +1,18 @@
 const Joi = require('@hapi/joi')
-const _ = require('lodash')
 const searchApi = require('../../elasticsearch/searchApi')
+const {logger} = require('@peoplenet/node-service-common')
 
 module.exports = {
     method: 'POST',
     path: '/kafka/driver',
-    handler: async (request, hapi) => {
-        const method = _.lowerCase(request.method)
-        const {payload: entity} = request
-        if (method === 'create' || method === 'update') {
+    handler: async ({payload}, hapi) => {
+        const {method, payload: entity} = payload
+        if (method === 'CREATE' || method === 'UPDATE') {
             await searchApi.upsert('driver', entity)
-        } else if (method === 'delete') {
+        } else if (method === 'DELETE') {
             await searchApi.delete('driver', entity)
         }
+        logger.info(`Processed Driver ${method} event`, {id: entity.id}) //TODO: Remove this logger info
         return hapi.response().code(204)
     },
     options: {

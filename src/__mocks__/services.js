@@ -7,5 +7,7 @@ const mockService = () => ({
 })
 
 module.exports = {
-    iseCompliance: mockService()
+    iseCompliance: mockService(),
+    driverService: mockService()
 }
+

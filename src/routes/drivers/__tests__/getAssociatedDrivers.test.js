@@ -1,15 +1,17 @@
-import {iseCompliance} from '../../../services'
+import {iseCompliance, driverService} from '../../../services'
 import route from '../getAssociatedDrivers'
 
 jest.mock('../../../services')
 
-const setup = id => {
-    const request = {
+let request, hapi
+
+beforeEach(() => {
+    request = {
         headers: {
             'x-application-customer': '00-0000-00'
         },
         params: {
-            id
+            id: 1
         },
         auth: {
             artifacts: {
@@ -19,31 +21,48 @@ const setup = id => {
             }
         }
     }
-    const hapi = {
+
+    hapi = {
         response: jest.fn(() => hapi),
         code: jest.fn(() => hapi)
     }
-
-    iseCompliance.get.mockClear()
-    return {request, hapi}
-}
+})
 
 it('should get drivers associated with a vehicle', async () => {
-    const {request} = setup(1)
     const {headers} = request
 
-    const expected = [{name: 'Speed Racer'}, {name: 'Racer X'}]
+    const expected = [
+        {
+            customerDriver: {
+                id: 1
+            },
+            profile: {
+                displayName: 'Speed Racer'
+            }
+        },
+        {
+            customerDriver: {
+                id: 2
+            },
+            profile: {
+                displayName: 'Racer X'
+            }
+        }
+    ]
+    iseCompliance.get.mockResolvedValueOnce([{driverId: 'speed_racer'}, {driverId: 'racer_x'}])
+    driverService.get.mockResolvedValueOnce(expected[0])
+    driverService.get.mockResolvedValueOnce(expected[1])
 
-    iseCompliance.get.mockResolvedValue(expected)
     const drivers = await route.handler(request)
 
     expect(drivers).toEqual(expected)
     expect(iseCompliance.get).toHaveBeenCalledWith(`/api/vehicles/byVehicleId/1/drivers`, {headers})
+    expect(driverService.get).toHaveBeenCalledTimes(2)
+    expect(driverService.get).toHaveBeenCalledWith('/driver-service/drivers/login/speed_racer', {headers})
+    expect(driverService.get).toHaveBeenCalledWith('/driver-service/drivers/login/racer_x', {headers})
 })
 
 it('should return an empty array if ISE returns a 404', async () => {
-    const {request} = setup(1)
-
     iseCompliance.get.mockRejectedValue({
         description: {
             status: 404
@@ -53,4 +72,3 @@ it('should return an empty array if ISE returns a 404', async () => {
 
     expect(drivers).toEqual([])
 })
-

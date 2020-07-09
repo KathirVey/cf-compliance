@@ -27,16 +27,16 @@ const iseCompliance = (() => {
                 const {headers} = args.pop()
                 if (!cache.headers) {
                     const pfmOrgId = await getPfmIdForCustomer(headers['x-application-customer'])
-                    cache.headers = {    
+                    cache.headers = {
                         'content-type': 'application/json',
                         authorization: `Basic ${process.env.ISE_COMPLIANCE_AUTH}`,
                         'x-authenticate-orgid': 'root',
                         'x-filter-orgid': pfmOrgId
                     }
                 }
-                
+
                 return rawIseCompliance[prop].apply(rawIseCompliance, [...args, {headers: cache.headers}])
-            }  
+            }
         }
     })
 })()

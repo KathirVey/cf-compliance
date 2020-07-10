@@ -5,13 +5,9 @@ This service depends on these services/processes/databases in various capacities
 
 - This service is **NOT** exposed to the public internet.
 - Kafka
-    - Consumes data from kafka but does not publish. If there are kafka issues there will be data inconsistencies. 
-    Currently this service will shutdown if it cannot connect to kafka on startup. Once kafka connection returns to a 
+    - Consumes data from kafka but does not publish. If there are kafka issues there will be data inconsistencies.
+    Currently this service will shutdown if it cannot connect to kafka on startup. Once kafka connection returns to a
     healthy state missed events should be consumed.
-- Postgres
-    - This services uses a postgres database. If the connection to the DB fails during startup, the service will restart itself.
-    
-While not directly dependent (i.e they don't affect service health), this service is the gateway to all other services in the network that provide for CFC.
 
 ## Rollback Strategy
 What to do if a deployment goes wrong.
@@ -23,8 +19,8 @@ What to do if a deployment goes wrong.
 ## Blast Radius
 What could be affected by a deployment / failure?
 
-#### CRITICAL - CXSupport Portal will be unable to perform any action
-In the event this service fails, the user will be _unable to perform any actions_ other than logging into the site. All data requests and commands will fail. This will not affect system consistency, and once the service returns to health the system will perform normally.
+#### Unable to view associated drivers for vehicles, no driver updates in search
+In the event this service fails, the user will be unable to view associated drivers for a vehicle. Search updates for driver events will also be missed.
 
 ## Deployment Failure Troubleshooting
 Known possible issues on deployment and how to resolve them.

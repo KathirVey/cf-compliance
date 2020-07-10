@@ -1,7 +1,7 @@
 {
   "name": "cf-compliance",
   "version": "1.0.0",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "repository": "git@github.com:PeopleNet/cf-compliance.git",
   "license": "UNLICENSED",
   "engines": {
@@ -10,7 +10,7 @@
   "dependencies": {
     "@elastic/elasticsearch": "7.4.0",
     "@peoplenet/cf-services": "5.1.2",
-    "@peoplenet/node-service-common": "16.0.16",
+    "@peoplenet/node-service-common": "16.1.1",
     "moment": "2.26.0",
     "node-cleanup": "2.1.2",
     "pg": "7.12.1",
@@ -29,7 +29,7 @@
     "dev": "NODE_ENV=dev nsc-scripts runenv src/index.js",
     "lint": "nsc-scripts lint",
     "lint:commit": "nsc-scripts commitlint -f=HEAD~1",
-    "local": "NODE_ENV=local CFUSERS_DB_PORT=8737 nsc-scripts runenv src/index.js",
+    "local": "NODE_ENV=local nsc-scripts runenv src/index.js",
     "qa": "NODE_ENV=qa nsc-scripts runenv src/index.js",
     "staging": "NODE_ENV=staging nsc-scripts runenv src/index.js",
     "start": "node dist/index.js --async-stack-traces",

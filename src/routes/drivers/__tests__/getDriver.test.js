@@ -1,4 +1,4 @@
-import {driverService, cfCompliance} from '../../../services'
+import {driverService} from '../../../services'
 import route from '../getDriver'
 
 jest.mock('../../../services')

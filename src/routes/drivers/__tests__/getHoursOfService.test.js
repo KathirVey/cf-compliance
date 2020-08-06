@@ -31,7 +31,8 @@ it('should get hours of service info for a driver', async () => {
             ruleSet: {
                 workshiftDrivingMaximumTime: 70,
                 workshiftOnDutyMaximumTime: 80,
-                cycleOnDutyMaximumTime: 90
+                cycleOnDutyMaximumTime: 90,
+                workshiftRestBreakMaximumOnDutyTime: 100
             }
         }]
     })
@@ -53,7 +54,8 @@ it('should get hours of service info for a driver', async () => {
             workshiftDrivingTime: 60,
             workshiftDutyTime: 50,
             workshiftOnDutyMaximumTime: 80,
-            workshiftRestBreakTime: 30
+            workshiftRestBreakTime: 30,
+            workshiftRestBreakMaximumOnDutyTime: 100
         }],
         certification: [{c: 3}]
     })

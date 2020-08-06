@@ -56,6 +56,7 @@ const availabilityFields = [
     'availability.workshiftRestBreakTime',
     'ruleSet.workshiftDrivingMaximumTime',
     'ruleSet.workshiftOnDutyMaximumTime',
-    'ruleSet.cycleOnDutyMaximumTime'
+    'ruleSet.cycleOnDutyMaximumTime',
+    'ruleSet.workshiftRestBreakMaximumOnDutyTime'
 ]
 

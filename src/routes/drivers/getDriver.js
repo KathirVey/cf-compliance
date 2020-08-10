@@ -1,6 +1,19 @@
 import Joi from '@hapi/joi'
 import {authHeaders} from '@peoplenet/node-service-common'
-import {driverService} from '../../services'
+import {driverService, enterpriseData, iseCompliance} from '../../services'
+
+const getVehicleForDriver = async (loginId, headers) => {
+    try {
+        const driverVehicle = await iseCompliance.get(`/api/Drivers/byDriverId/${loginId}/vehicle`, {headers})
+        const iseVehicle = await iseCompliance.get(`/api/Vehicles/byVehicleId/${driverVehicle.vehicleId}`, {headers})
+        const {data} = await enterpriseData.get(`/api/v1/Vehicles/${iseVehicle.assetID}`, {headers})
+        return data
+    } catch (error) {
+        if (error.description?.status === 404) {
+            return null
+        }
+    }
+}
 
 export default {
     method: 'GET',
@@ -9,14 +22,20 @@ export default {
         const {driverId} = params
 
         const driver = await driverService.get(`/driver-service/drivers/${driverId}`, {headers})
-        const {result: hoursOfService} = await server.inject({
-            headers,
-            method: 'GET',
-            url: `/drivers/login/${driver.profile.loginId}/hoursOfService`
-        })
+        const {loginId} = driver.profile
+
+        const [{result: hoursOfService}, vehicle] = await Promise.all([
+            server.inject({
+                headers,
+                method: 'GET',
+                url: `/drivers/login/${loginId}/hoursOfService`
+            }),
+            getVehicleForDriver(loginId, headers)
+        ])
 
         return {
             ...driver,
+            vehicle,
             hoursOfService
         }
     },
@@ -33,4 +52,3 @@ export default {
         }
     }
 }
-

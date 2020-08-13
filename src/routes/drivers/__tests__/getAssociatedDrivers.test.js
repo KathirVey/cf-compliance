@@ -13,12 +13,18 @@ beforeEach(() => {
         params: {
             id: 1
         },
+        query: {
+            hoursOfService: false
+        },
         auth: {
             artifacts: {
                 user: {
                     applicationCustomerUsers: [0]
                 }
             }
+        },
+        server: {
+            inject: jest.fn()
         }
     }
 
@@ -37,7 +43,8 @@ it('should get drivers associated with a vehicle', async () => {
                 id: 1
             },
             profile: {
-                displayName: 'Speed Racer'
+                displayName: 'Speed Racer',
+                loginId: 'speed_racer'
             }
         },
         {
@@ -45,7 +52,8 @@ it('should get drivers associated with a vehicle', async () => {
                 id: 2
             },
             profile: {
-                displayName: 'Racer X'
+                displayName: 'Racer X',
+                loginId: 'racer_x'
             }
         }
     ]
@@ -71,4 +79,58 @@ it('should return an empty array if ISE returns a 404', async () => {
     const drivers = await route.handler(request)
 
     expect(drivers).toEqual([])
+})
+
+it('should return hours of service data for associated drivers if specified', async () => {
+    request.query.hoursOfService = true
+
+    const {headers, server} = request
+
+    const expected = [
+        {
+            customerDriver: {
+                id: 1
+            },
+            profile: {
+                displayName: 'Speed Racer',
+                loginId: 'speed_racer'
+            }
+        },
+        {
+            customerDriver: {
+                id: 2
+            },
+            profile: {
+                displayName: 'Racer X',
+                loginId: 'racer_x'
+            }
+        }
+    ]
+    iseCompliance.get.mockResolvedValueOnce([{driverId: 'speed_racer'}, {driverId: 'racer_x'}])
+    driverService.get.mockResolvedValueOnce(expected[0])
+    driverService.get.mockResolvedValueOnce(expected[1])
+    server.inject.mockResolvedValueOnce({availability: {ruleType: 'US'}})
+    server.inject.mockResolvedValueOnce({availability: {ruleType: 'CA'}})
+
+    const drivers = await route.handler(request)
+
+    expect(iseCompliance.get).toHaveBeenCalledWith('/api/vehicles/byVehicleId/1/drivers', {headers})
+    expect(driverService.get).toHaveBeenCalledTimes(2)
+    expect(driverService.get).toHaveBeenCalledWith('/driver-service/drivers/login/speed_racer', {headers})
+    expect(driverService.get).toHaveBeenCalledWith('/driver-service/drivers/login/racer_x', {headers})
+
+    expect(server.inject).toHaveBeenCalledTimes(2)
+    expect(server.inject).toHaveBeenCalledWith({headers, method: 'GET', url: '/drivers/login/speed_racer/hoursOfService'})
+    expect(server.inject).toHaveBeenCalledWith({headers, method: 'GET', url: '/drivers/login/racer_x/hoursOfService'})
+
+    expect(drivers).toEqual([
+        {
+            ...expected[0],
+            hoursOfService: {availability: {ruleType: 'US'}}
+        },
+        {
+            ...expected[1],
+            hoursOfService: {availability: {ruleType: 'CA'}}
+        }
+    ])
 })

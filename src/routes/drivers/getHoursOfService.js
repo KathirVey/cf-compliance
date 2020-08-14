@@ -19,7 +19,12 @@ export default {
         const [availability, certification] = await Promise.all([
             iseCompliance.get(`/api/DriverLogs/availability/byDriverId/${loginId}`, {headers}),
             iseCompliance.get(`/api/v2/DriverLogs/certificationStatus?${querystring.stringify(options)}`, {headers})
-        ])
+        ]).catch(error => {
+            if (error.description?.status === 404) {
+                return []
+            }
+            throw error
+        })
 
         return {
             availability: (availability?.availableByRule || []).map(rule =>

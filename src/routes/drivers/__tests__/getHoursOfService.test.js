@@ -84,3 +84,20 @@ it('should give an empty array for availability and ceritifcation if no data is 
     expect(result).toEqual({availability: [], certification: []})
 })
 
+it('should handle 404s from ISE', async () => {
+    request.query.startDateTime = 1234
+    iseCompliance.get.mockRejectedValueOnce({description: {status: 404}})
+    iseCompliance.get.mockResolvedValueOnce([{c: 3}]) // certification
+
+    const {headers} = request
+    const result = await route.handler(request)
+
+    expect(iseCompliance.get).toHaveBeenCalledTimes(2)
+    expect(iseCompliance.get).toHaveBeenCalledWith('/api/DriverLogs/availability/byDriverId/konapun', {headers})
+    expect(iseCompliance.get).toHaveBeenCalledWith('/api/v2/DriverLogs/certificationStatus?startDateTime=1234&driverId=konapun', {headers})
+
+    expect(result).toEqual({
+        availability: [],
+        certification: []
+    })
+})

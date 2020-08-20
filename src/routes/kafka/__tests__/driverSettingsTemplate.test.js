@@ -1,17 +1,17 @@
 import client from '../../../elasticsearch/client'
-import route from '../driverGroup'
+import route from '../driverSettingsTemplate'
 
 jest.mock('../../../elasticsearch/client')
 
-describe('driver group events', () => {
+describe('driver settings template events', () => {
     let hapi
     let payloadData
 
     beforeEach(() => {
         hapi = {response: jest.fn().mockReturnThis(), code: jest.fn()}
         payloadData = {
-            name: 'Group Name - 1',
-            description: 'My group',
+            name: 'Template Name - 1',
+            description: 'My Template',
             customer: {
                 companyId: 75,
                 description: 'My Company'
@@ -19,7 +19,7 @@ describe('driver group events', () => {
         }
     })
 
-    it('should handle driver Group create events', async () => {
+    it('should handle driver settings template create events', async () => {
         client.exists.mockResolvedValue({body: false})
 
         const request = {
@@ -27,7 +27,7 @@ describe('driver group events', () => {
                 value: {
                     method: 'CREATE',
                     payload: {
-                        id: 'driverGroupCreateId',
+                        id: 'driverSettingsTemplateId',
                         ...payloadData
                     }
                 }
@@ -40,23 +40,23 @@ describe('driver group events', () => {
         expect(hapi.code).toHaveBeenCalledWith(204)
         expect(client.create).toHaveBeenCalledWith({
             body: {
-                id: 'driverGroupCreateId',
-                name: 'Group Name - 1',
-                description: 'My group',
+                id: 'driverSettingsTemplateId',
+                name: 'Template Name - 1',
+                description: 'My Template',
                 customer: {
                     companyId: 75,
                     description: 'My Company'
                 }
             },
-            id: 'driverGroupCreateId',
-            index: 'driver_group',
+            id: 'driverSettingsTemplateId',
+            index: 'driver_settings_template',
             type: '_doc'
         })
         expect(client.update).not.toHaveBeenCalled()
         expect(client.delete).not.toHaveBeenCalled()
     })
 
-    it('should handle driver Group update events', async () => {
+    it('should handle driver settings template update events', async () => {
         client.exists.mockResolvedValue({body: true})
 
         const request = {
@@ -64,7 +64,7 @@ describe('driver group events', () => {
                 value: {
                     method: 'UPDATE',
                     payload: {
-                        id: 'driverGroupUpdateId',
+                        id: 'driverSettingsTemplateId',
                         ...payloadData
                     }
                 }
@@ -78,24 +78,24 @@ describe('driver group events', () => {
         expect(client.update).toHaveBeenCalledWith({
             body: {
                 doc: {
-                    id: 'driverGroupUpdateId',
-                    name: 'Group Name - 1',
-                    description: 'My group',
+                    id: 'driverSettingsTemplateId',
+                    name: 'Template Name - 1',
+                    description: 'My Template',
                     customer: {
                         companyId: 75,
                         description: 'My Company'
                     }
                 }
             },
-            id: 'driverGroupUpdateId',
-            index: 'driver_group',
+            id: 'driverSettingsTemplateId',
+            index: 'driver_settings_template',
             type: '_doc'
         })
         expect(client.create).not.toHaveBeenCalled()
         expect(client.delete).not.toHaveBeenCalled()
     })
 
-    it('should handle driver Group delete events', async () => {
+    it('should handle driver settings template delete events', async () => {
         client.exists.mockResolvedValue({body: true})
 
         const request = {
@@ -103,7 +103,7 @@ describe('driver group events', () => {
                 value: {
                     method: 'DELETE',
                     payload: {
-                        id: 'driverGroupDeleteId',
+                        id: 'driverSettingsTemplateId',
                         ...payloadData
                     }
                 }
@@ -115,8 +115,8 @@ describe('driver group events', () => {
         expect(hapi.response).toHaveBeenCalledWith()
         expect(hapi.code).toHaveBeenCalledWith(204)
         expect(client.delete).toHaveBeenCalledWith({
-            id: 'driverGroupDeleteId',
-            index: 'driver_group',
+            id: 'driverSettingsTemplateId',
+            index: 'driver_settings_template',
             type: '_doc'
         })
         expect(client.create).not.toHaveBeenCalled()

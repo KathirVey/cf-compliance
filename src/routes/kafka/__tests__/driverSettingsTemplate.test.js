@@ -15,7 +15,10 @@ describe('driver settings template events', () => {
             customer: {
                 companyId: 75,
                 description: 'My Company'
-            }
+            },
+            associations: [
+                {groupType: 'DRIVER', members: []}
+            ]
         }
     })
 
@@ -46,7 +49,10 @@ describe('driver settings template events', () => {
                 customer: {
                     companyId: 75,
                     description: 'My Company'
-                }
+                },
+                associations: [
+                    {groupType: 'DRIVER', members: []}
+                ]
             },
             id: 'driverSettingsTemplateId',
             index: 'driver_settings_template',
@@ -84,7 +90,10 @@ describe('driver settings template events', () => {
                     customer: {
                         companyId: 75,
                         description: 'My Company'
-                    }
+                    },
+                    associations: [
+                        {groupType: 'DRIVER', members: []}
+                    ]
                 }
             },
             id: 'driverSettingsTemplateId',
@@ -121,5 +130,110 @@ describe('driver settings template events', () => {
         })
         expect(client.create).not.toHaveBeenCalled()
         expect(client.update).not.toHaveBeenCalled()
+    })
+
+    it('should not update driver search when there are no members for ASSIGN event', async () => {
+        const request = {
+            payload: {
+                value: {
+                    method: 'ASSIGN',
+                    payload: {
+                        id: 'id',
+                        ...payloadData
+                    }
+                }
+            }
+        }
+
+        await route.handler(request, hapi)
+        expect(client.bulk).not.toHaveBeenCalled()
+    })
+
+    it('should update driver search based on ASSIGN events', async () => {
+        const request = {
+            payload: {
+                value: {
+                    method: 'ASSIGN',
+                    payload: {
+                        id: 'id',
+                        ...payloadData,
+                        associations: [
+                            {
+                                groupType: 'DRIVER',
+                                members: [{entityId: 'id1'}, {entityId: 'id2'}]
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+
+        await route.handler(request, hapi)
+
+        expect(hapi.response).toHaveBeenCalledWith()
+        expect(hapi.code).toHaveBeenCalledWith(204)
+
+        expect(client.bulk).toHaveBeenCalledWith({
+            index: 'driver',
+            type: '_doc',
+            body: [
+                {update: {_id: 'id1'}},
+                {
+                    doc: {
+                        uniqueMemberGroup: {
+                            id: 'id',
+                            name: 'Template Name - 1',
+                            description: 'My Template'
+                        }
+                    }
+                },
+                {update: {_id: 'id2'}},
+                {
+                    doc: {
+                        uniqueMemberGroup: {
+                            id: 'id',
+                            name: 'Template Name - 1',
+                            description: 'My Template'
+                        }
+                    }
+                }
+            ]
+        })
+    })
+
+    it('should update driver search based on UNASSIGN events', async () => {
+        const request = {
+            payload: {
+                value: {
+                    method: 'UNASSIGN',
+                    payload: {
+                        id: 'id',
+                        ...payloadData,
+                        associations: [
+                            {
+                                groupType: 'DRIVER',
+                                members: [{entityId: 'id1'}, {entityId: 'id2'}]
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+
+        await route.handler(request, hapi)
+
+        expect(hapi.response).toHaveBeenCalledWith()
+        expect(hapi.code).toHaveBeenCalledWith(204)
+
+        expect(client.bulk).toHaveBeenCalledWith({
+            index: 'driver',
+            type: '_doc',
+            body: [
+                {update: {_id: 'id1'}},
+                {doc: {uniqueMemberGroup: null}},
+                {update: {_id: 'id2'}},
+                {doc: {uniqueMemberGroup: null}}
+            ]
+        })
     })
 })

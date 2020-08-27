@@ -1,6 +1,9 @@
 const client = require('../../../elasticsearch/client')
+const search = require('../../../elasticsearch/search')
 
-jest.mock('../../../elasticsearch/client')
+jest
+    .mock('../../../elasticsearch/client')
+    .mock('../../../elasticsearch/search')
 
 describe('drivers events', () => {
     let hapi
@@ -28,8 +31,9 @@ describe('drivers events', () => {
         }
     })
 
-    it('should handle driver create events', async () => {
+    it('should handle driver create events with hydrated uniqueMemberGroup', async () => {
         client.exists.mockResolvedValue({body: false})
+        search.mockResolvedValueOnce([])
 
         const request = {
             payload: {
@@ -44,6 +48,14 @@ describe('drivers events', () => {
         }
 
         await route.handler(request, hapi)
+
+        expect(search).toHaveBeenCalledWith({
+            select: ['id', 'name', 'description'],
+            from: 'driverSettingsTemplates',
+            where: {
+                'associations.members.entityId.keyword': 'driverCreateId'
+            }
+        })
 
         expect(hapi.response).toHaveBeenCalledWith()
         expect(hapi.code).toHaveBeenCalledWith(204)
@@ -63,7 +75,8 @@ describe('drivers events', () => {
                 customer: {
                     companyId: 75,
                     description: 'My Company'
-                }
+                },
+                uniqueMemberGroup: {}
             },
             id: 'driverCreateId',
             index: 'driver',
@@ -73,8 +86,16 @@ describe('drivers events', () => {
         expect(client.delete).not.toHaveBeenCalled()
     })
 
-    it('should handle driver update events', async () => {
+    it('should handle driver update events with hydrated uniqueMemberGroup', async () => {
         client.exists.mockResolvedValue({body: true})
+        search.mockResolvedValueOnce(
+            [{
+                id: 'memberId',
+                name: 'memberName',
+                description: 'description'
+
+            }]
+        )
 
         const request = {
             payload: {
@@ -89,6 +110,14 @@ describe('drivers events', () => {
         }
 
         await route.handler(request, hapi)
+
+        expect(search).toHaveBeenCalledWith({
+            select: ['id', 'name', 'description'],
+            from: 'driverSettingsTemplates',
+            where: {
+                'associations.members.entityId.keyword': 'driverUpdateId'
+            }
+        })
 
         expect(hapi.response).toHaveBeenCalledWith()
         expect(hapi.code).toHaveBeenCalledWith(204)
@@ -109,6 +138,11 @@ describe('drivers events', () => {
                     customer: {
                         companyId: 75,
                         description: 'My Company'
+                    },
+                    uniqueMemberGroup: {
+                        description: 'description',
+                        id: 'memberId',
+                        name: 'memberName'
                     }
                 }
             },

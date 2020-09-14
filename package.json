@@ -2,7 +2,10 @@
   "name": "cf-compliance",
   "version": "1.0.0",
   "main": "dist/index.js",
-  "repository": "git@github.com:PeopleNet/cf-compliance.git",
+  "repository": {
+  	"type": "git",
+  	"url": "https://bitbucket.trimble.tools/projects/TTM-CF-PLATFORM/repos/cf-compliance"
+  },
   "license": "UNLICENSED",
   "engines": {
     "node": ">=12.0.0"
@@ -10,7 +13,7 @@
   "dependencies": {
     "@elastic/elasticsearch": "7.4.0",
     "@peoplenet/cf-services": "5.1.2",
-    "@peoplenet/node-service-common": "16.1.1",
+    "@peoplenet/node-service-common": "17.0.3",
     "moment": "2.26.0",
     "node-cleanup": "2.1.2",
     "pg": "7.12.1",

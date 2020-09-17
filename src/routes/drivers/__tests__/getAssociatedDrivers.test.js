@@ -40,20 +40,20 @@ it('should get drivers associated with a vehicle', async () => {
     const expected = [
         {
             customerDriver: {
-                id: 1
-            },
-            profile: {
-                displayName: 'Speed Racer',
-                loginId: 'speed_racer'
+                id: 1,
+                profile: {
+                    displayName: 'Speed Racer',
+                    loginId: 'speed_racer'
+                }
             }
         },
         {
             customerDriver: {
-                id: 2
-            },
-            profile: {
-                displayName: 'Racer X',
-                loginId: 'racer_x'
+                id: 2,
+                profile: {
+                    displayName: 'Racer X',
+                    loginId: 'racer_x'
+                }
             }
         }
     ]
@@ -89,28 +89,28 @@ it('should return hours of service data for associated drivers if specified', as
     const expected = [
         {
             customerDriver: {
-                id: 1
-            },
-            profile: {
-                displayName: 'Speed Racer',
-                loginId: 'speed_racer'
+                id: 1,
+                profile: {
+                    displayName: 'Speed Racer',
+                    loginId: 'speed_racer'
+                }
             }
         },
         {
             customerDriver: {
-                id: 2
-            },
-            profile: {
-                displayName: 'Racer X',
-                loginId: 'racer_x'
+                id: 2,
+                profile: {
+                    displayName: 'Racer X',
+                    loginId: 'racer_x'
+                }
             }
         }
     ]
     iseCompliance.get.mockResolvedValueOnce([{driverId: 'speed_racer'}, {driverId: 'racer_x'}])
     driverService.get.mockResolvedValueOnce(expected[0])
     driverService.get.mockResolvedValueOnce(expected[1])
-    server.inject.mockResolvedValueOnce({availability: {ruleType: 'US'}})
-    server.inject.mockResolvedValueOnce({availability: {ruleType: 'CA'}})
+    server.inject.mockResolvedValueOnce({result: {availability: {ruleType: 'US'}}})
+    server.inject.mockResolvedValueOnce({result: {availability: {ruleType: 'CA'}}})
 
     const drivers = await route.handler(request)
 

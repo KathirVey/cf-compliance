@@ -17,10 +17,10 @@ export default {
 
             if (!getHoursOfService) return tfmDrivers
             return Promise.all(tfmDrivers.map(async driver => {
-                const hoursOfService = await server.inject({
+                const {result: hoursOfService} = await server.inject({
                     headers,
                     method: 'GET',
-                    url: `/drivers/login/${driver.profile.loginId}/hoursOfService`
+                    url: `/drivers/login/${driver.customerDriver.profile.loginId}/hoursOfService`
                 })
 
                 return {

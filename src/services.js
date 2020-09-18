@@ -1,7 +1,7 @@
 import makeService from '@peoplenet/cf-services'
 import iseCompliance from './services/iseCompliance'
 
-const {driverService} = makeService([
+const {driverService, enterpriseData} = makeService([
     'driverService',
     'enterpriseData'
 ], {
@@ -10,5 +10,5 @@ const {driverService} = makeService([
     }
 })
 
-export {iseCompliance, driverService}
+export {iseCompliance, enterpriseData, driverService}
 

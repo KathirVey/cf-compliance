@@ -1,14 +1,27 @@
 import Joi from '@hapi/joi'
-import {authHeaders} from '@peoplenet/node-service-common'
+import {authHeaders, logger} from '@peoplenet/node-service-common'
 import {driverService, enterpriseData, iseCompliance} from '../../services'
+import search from '../../elasticsearch/search'
 
 const getVehicleForDriver = async (loginId, headers) => {
     try {
         const driverVehicle = await iseCompliance.get(`/api/Drivers/byDriverId/${loginId}/vehicle`, {headers})
-        const iseVehicle = await iseCompliance.get(`/api/Vehicles/byVehicleId/${driverVehicle.vehicleId}`, {headers})
-        const {data} = await enterpriseData.get(`/api/v1/Vehicles/${iseVehicle.assetID}`, {headers})
-        return data
+        const devices = await search({
+            select: ['vehicle'],
+            from: 'devices',
+            where: {
+                'serialNumber.keyword': driverVehicle.vehicleId
+            }
+        })
+        if (devices.length === 0) {
+            logger.error(`Unable to find device with DSN ${driverVehicle.vehicleId} in search`)
+            return null
+        }
+        const device = devices[0]
+        const {data: vehicle} = await enterpriseData.get(`vehicles/${device.vehicle.id}`, {headers})
+        return vehicle
     } catch (error) {
+        logger.error(error)
         if (error.description?.status === 404) {
             return null
         }

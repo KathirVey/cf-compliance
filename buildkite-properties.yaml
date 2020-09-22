@@ -2,7 +2,8 @@ node:
   global:
     kubernetes:
       namespace: core-teams-dev
-      environmentRepo: core-teams-environments
+      environmentRepo: ttm-cf-platform/core-teams-environments
+      envGitRepo: bitbucket
       releaseName: cf-compliance
       chartInRepo: false
   cf-compliance:

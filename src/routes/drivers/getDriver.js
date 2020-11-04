@@ -28,6 +28,17 @@ const getVehicleForDriver = async (loginId, headers) => {
     }
 }
 
+const getUniqueMemberGroup = async driverId => {
+    const [uniqueMemberGroup = null] = await search({
+        select: ['id', 'name', 'description'],
+        from: 'driverSettingsTemplates',
+        where: {
+            'associations.members.entityId.keyword': driverId
+        }
+    })
+    return uniqueMemberGroup
+}
+
 export default {
     method: 'GET',
     path: '/drivers/{driverId}',
@@ -37,17 +48,19 @@ export default {
         const driver = await driverService.get(`/driver-service/drivers/${driverId}`, {headers})
         const {loginId} = driver.profile
 
-        const [{result: hoursOfService}, vehicle] = await Promise.all([
+        const [{result: hoursOfService}, vehicle, uniqueMemberGroup] = await Promise.all([
             server.inject({
                 headers,
                 method: 'GET',
                 url: `/drivers/login/${loginId}/hoursOfService`
             }),
-            getVehicleForDriver(loginId, headers)
+            getVehicleForDriver(loginId, headers),
+            getUniqueMemberGroup(driverId)
         ])
 
         return {
             ...driver,
+            uniqueMemberGroup,
             vehicle,
             hoursOfService
         }

@@ -2,7 +2,7 @@ import Joi from '@hapi/joi'
 import moment from 'moment'
 import querystring from 'querystring'
 import {pick, isObject} from 'lodash'
-import {authHeaders} from '@peoplenet/node-service-common'
+import {authHeaders, logger} from '@peoplenet/node-service-common'
 import {iseCompliance} from '../../services'
 
 export default {
@@ -21,11 +21,13 @@ export default {
             iseCompliance.get(`/api/v2/DriverLogs/certificationStatus?${querystring.stringify(options)}`, {headers})
         ]).catch(error => {
             if (error.description?.status === 404) {
+                logger.debug('Got 404 from ISE; returning []')
                 return []
             }
             throw error
         })
 
+        logger.debug(availability, 'Got ISE availability')
         return {
             availability: (availability?.availableByRule || []).map(rule =>
                 Object.entries(pick(rule, availabilityFields))

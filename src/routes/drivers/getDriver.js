@@ -1,6 +1,7 @@
 import Joi from '@hapi/joi'
 import {authHeaders, logger} from '@peoplenet/node-service-common'
-import {driverService, enterpriseData, iseCompliance} from '../../services'
+import {driverService, enterpriseData} from '../../services'
+import iseCompliance from '../../services/iseCompliance'
 import search from '../../elasticsearch/search'
 
 const getVehicleForDriver = async (loginId, headers) => {

@@ -1,6 +1,7 @@
 import Joi from '@hapi/joi'
 import {authHeaders, logger} from '@peoplenet/node-service-common'
-import {iseCompliance, driverService} from '../../services'
+import {driverService} from '../../services'
+import iseCompliance from '../../services/iseCompliance'
 
 export default {
     method: 'GET',

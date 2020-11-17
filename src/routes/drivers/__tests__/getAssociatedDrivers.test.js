@@ -1,7 +1,9 @@
-import {iseCompliance, driverService} from '../../../services'
+import {driverService} from '../../../services'
+import iseCompliance from '../../../services/iseCompliance'
 import route from '../getAssociatedDrivers'
 
 jest.mock('../../../services')
+    .mock('../../../services/iseCompliance')
 
 let request, hapi
 

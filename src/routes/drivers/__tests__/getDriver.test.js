@@ -1,10 +1,12 @@
-import {driverService, enterpriseData, iseCompliance} from '../../../services'
+import {driverService, enterpriseData} from '../../../services'
+import iseCompliance from '../../../services/iseCompliance'
 import search from '../../../elasticsearch/search'
 import route from '../getDriver'
 
-jest.mock('../../../services')
 jest.mock('@elastic/elasticsearch')
-jest.mock('../../../elasticsearch/search')
+    .mock('../../../services')
+    .mock('../../../services/iseCompliance')
+    .mock('../../../elasticsearch/search')
 
 it('should get a driver with hours of service data', async () => {
     const request = {

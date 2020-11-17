@@ -1,7 +1,8 @@
-import {iseCompliance} from '../../../services'
+import iseCompliance from '../../../services/iseCompliance'
 import route from '../getHoursOfService'
 
 jest.mock('../../../services')
+    .mock('../../../services/iseCompliance')
 
 let request
 

@@ -1,14 +1,15 @@
 import makeService from '@peoplenet/cf-services'
-import iseCompliance from './services/iseCompliance'
 
-const {driverService, enterpriseData} = makeService([
+const {driverService, enterpriseData, rawIseCompliance, connectedfleetcache} = makeService([
     'driverService',
-    'enterpriseData'
+    'enterpriseData',
+    'iseCompliance',
+    'connectedfleetcache'
 ], {
     customServiceConfig: {
         enterpriseData: {suffix: '/v1'}
     }
 })
 
-export {iseCompliance, enterpriseData, driverService}
+export {enterpriseData, driverService, rawIseCompliance, connectedfleetcache}
 

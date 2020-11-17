@@ -1,10 +1,5 @@
-import makeService from '@peoplenet/cf-services'
 import {logger} from '@peoplenet/node-service-common'
-
-const {iseCompliance: rawIseCompliance, connectedfleetcache} = makeService([
-    'iseCompliance',
-    'connectedfleetcache'
-])
+import {rawIseCompliance, connectedfleetcache} from '../services'
 
 const getPfmIdForCustomer = async applicationCustomerId => {
     try {
@@ -25,9 +20,10 @@ const iseCompliance = (() => {
 
             return async (...args) => {
                 const {headers} = args.pop()
-                if (!cache.headers) {
-                    const pfmOrgId = await getPfmIdForCustomer(headers['x-application-customer'])
-                    cache.headers = {
+                const applicationCustomer = headers['x-application-customer']
+                if (!cache[applicationCustomer]) {
+                    const pfmOrgId = await getPfmIdForCustomer(applicationCustomer)
+                    cache[applicationCustomer] = {
                         'content-type': 'application/json',
                         authorization: `Basic ${process.env.ISE_COMPLIANCE_AUTH}`,
                         'x-authenticate-orgid': 'root',
@@ -35,7 +31,7 @@ const iseCompliance = (() => {
                     }
                 }
 
-                return rawIseCompliance[prop].apply(rawIseCompliance, [...args, {headers: cache.headers}])
+                return rawIseCompliance[prop].apply(rawIseCompliance, [...args, {headers: cache[applicationCustomer]}])
             }
         }
     })

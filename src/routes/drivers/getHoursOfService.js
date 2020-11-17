@@ -3,7 +3,7 @@ import moment from 'moment'
 import querystring from 'querystring'
 import {pick, isObject} from 'lodash'
 import {authHeaders, logger} from '@peoplenet/node-service-common'
-import {iseCompliance} from '../../services'
+import iseCompliance from '../../services/iseCompliance'
 
 export default {
     method: 'GET',

@@ -1,6 +1,6 @@
 import makeService from '@peoplenet/cf-services'
 
-const {driverService, enterpriseData, rawIseCompliance, connectedfleetcache} = makeService([
+const {driverService, enterpriseData, iseCompliance: rawIseCompliance, connectedfleetcache} = makeService([
     'driverService',
     'enterpriseData',
     'iseCompliance',

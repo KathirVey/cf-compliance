@@ -11,7 +11,7 @@ describe('drivers events', () => {
     let payloadData
 
     beforeEach(() => {
-        hapi = {response: jest.fn().mockReturnThis(), code: jest.fn()}
+        hapi = {response: jest.fn().mockReturnThis()}
         route = require('../driver')
         payloadData = {
             status: 'ACTIVE',
@@ -58,7 +58,6 @@ describe('drivers events', () => {
         })
 
         expect(hapi.response).toHaveBeenCalledWith()
-        expect(hapi.code).toHaveBeenCalledWith(204)
         expect(client.create).toHaveBeenCalledWith({
             body: {
                 id: 'driverCreateId',
@@ -120,7 +119,6 @@ describe('drivers events', () => {
         })
 
         expect(hapi.response).toHaveBeenCalledWith()
-        expect(hapi.code).toHaveBeenCalledWith(204)
         expect(client.update).toHaveBeenCalledWith({
             body: {
                 doc: {
@@ -172,7 +170,6 @@ describe('drivers events', () => {
         await route.handler(request, hapi)
 
         expect(hapi.response).toHaveBeenCalledWith()
-        expect(hapi.code).toHaveBeenCalledWith(204)
         expect(client.delete).toHaveBeenCalledWith({
             id: 'driverDeleteId',
             index: 'driver',

@@ -1,4 +1,4 @@
-import Joi from '@hapi/joi'
+import Joi from 'joi'
 import {authHeaders, logger} from '@peoplenet/node-service-common'
 import {driverService} from '../../services'
 import iseCompliance from '../../services/iseCompliance'

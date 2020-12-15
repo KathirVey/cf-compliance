@@ -1,4 +1,4 @@
-import Joi from '@hapi/joi'
+import Joi from 'joi'
 import searchApi from '../../elasticsearch/searchApi'
 import {logger} from '@peoplenet/node-service-common'
 import {isEmpty, find, transform} from 'lodash'
@@ -22,8 +22,8 @@ export default {
         } else if (method === 'UNASSIGN' && !isEmpty(members)) {
             await bulkUpdateDriverSearch(members, null)
         }
-        logger.info(`Processed Driver settings template ${method} event`, {id: entity.id}) //TODO: Remove this logger info
-        return hapi.response().code(204)
+        logger.info({id: entity.id}, `Processed Driver settings template ${method} event`) //TODO: Remove this logger info
+        return hapi.response()
     },
     options: {
         description: 'Update search based on driver settings template events',

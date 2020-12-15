@@ -1,4 +1,4 @@
-const Joi = require('@hapi/joi')
+const Joi = require('joi')
 const searchApi = require('../../elasticsearch/searchApi')
 const search = require('../../elasticsearch/search')
 const {logger} = require('@peoplenet/node-service-common')
@@ -27,8 +27,8 @@ module.exports = {
         } else if (method === 'DELETE') {
             await searchApi.delete('driver', entity)
         }
-        logger.info(`Processed Driver ${method} event`, {id: entity.id}) //TODO: Remove this logger info
-        return hapi.response().code(204)
+        logger.info({id: entity.id}, `Processed Driver ${method} event`) //TODO: Remove this logger info
+        return hapi.response()
     },
     options: {
         description: 'Update search based on driver events',

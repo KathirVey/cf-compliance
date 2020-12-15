@@ -1,4 +1,4 @@
-import Joi from '@hapi/joi'
+import Joi from 'joi'
 import moment from 'moment'
 import querystring from 'querystring'
 import {pick, isObject} from 'lodash'

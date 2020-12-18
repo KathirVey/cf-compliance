@@ -13,14 +13,11 @@
   "dependencies": {
     "@elastic/elasticsearch": "7.10.0",
     "@peoplenet/cf-services": "7.0.1",
-    "@peoplenet/node-service-common": "20.0.0",
+    "@peoplenet/node-service-common": "20.1.1",
     "node-cleanup": "2.1.2",
     "pg": "8.5.1",
     "query-string": "6.13.7",
     "sequelize": "6.3.5"
-  },
-  "resolutions": {
-    "dd-trace": "0.27.0"
   },
   "scripts": {
     "build": "yarn build:clean && yarn build:static && yarn build:js && yarn tarball",

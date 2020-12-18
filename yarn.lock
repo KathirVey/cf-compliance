@@ -1651,10 +1651,10 @@
     lodash "4.17.20"
     qs "6.9.4"
 
-"@peoplenet/node-service-common@20.0.0":
-  version "20.0.0"
-  resolved "https://artifactory.trimble.tools/artifactory/api/npm/pnet-virtual-npm/@peoplenet/node-service-common/-/@peoplenet/node-service-common-20.0.0.tgz#aa5856c7db7bf4096d2a6e322052333e08bc93e2"
-  integrity sha1-qlhWx9t79AltKm4yIFIzPgi8k+I=
+"@peoplenet/node-service-common@20.1.1":
+  version "20.1.1"
+  resolved "https://artifactory.trimble.tools/artifactory/api/npm/pnet-virtual-npm/@peoplenet/node-service-common/-/@peoplenet/node-service-common-20.1.1.tgz#7d35d8dca1d84f56de8ab00b3c3c78da65264d6d"
+  integrity sha1-fTXY3KHYT1beirALPDx42mUmTW0=
   dependencies:
     "@babel/cli" "7.12.8"
     "@babel/core" "7.12.9"
@@ -1678,7 +1678,7 @@
     babel-plugin-source-map-support "2.1.3"
     bluebird "3.7.2"
     consul "0.39.0"
-    dd-trace "0.29.1"
+    dd-trace "0.27.0"
     del "6.0.0"
     eslint "7.14.0"
     eslint-plugin-jest "24.1.3"
@@ -2930,7 +2930,7 @@ dateformat@^3.0.3:
   resolved "https://registry.yarnpkg.com/dateformat/-/dateformat-3.0.3.tgz#a6e37499a4d9a9cf85ef5872044d62901c9889ae"
   integrity sha512-jyCETtSl3VMZMWeRo7iY1FL19ges1t55hMo5yaam4Jrsm5EPL89UQkoQRyiI+Yf4k8r2ZpdngkV8hr1lIdjb3Q==
 
-dd-trace@0.27.0, dd-trace@0.29.1:
+dd-trace@0.27.0:
   version "0.27.0"
   resolved "https://registry.yarnpkg.com/dd-trace/-/dd-trace-0.27.0.tgz#6a82bdbe0d5486a2a7eefb26f2ecabfefab0a0ac"
   integrity sha512-e31qeaDIliYn/tl8yKiFiRmXnH1nSKGbpbLEE32V1aOp44oYYJIm0QF6KpQaMJWe7puzF/WHpmAyrTvPiodNSQ==

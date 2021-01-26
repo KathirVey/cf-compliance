@@ -70,7 +70,10 @@ export default {
         description: 'Get a driver with hours of service details',
         tags: ['api'],
         auth: 'user-profile',
-        app: {permission: 'DRIVER-SERVICE-CUSTOMER-DRIVER-READ'},
+        app: {
+            permission: 'DRIVER-SERVICE-CUSTOMER-DRIVER-READ',
+            overridePermission: ['CXS-CUSTOMER-READ']
+        },
         validate: {
             headers: authHeaders,
             params: Joi.object({

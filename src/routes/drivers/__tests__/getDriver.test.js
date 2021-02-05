@@ -124,3 +124,33 @@ it('should get the associated driver settings template for a driver', async () =
         url: '/drivers/login/konapun/hoursOfService'
     })
 })
+
+it('should get a driver via customerId query', async () => {
+    const request = {
+        query: {
+            customerId: 'someCustomerId'
+        },
+        headers: 'xyz',
+        params: {
+            driverId: '1'
+        },
+        server: {
+            inject: jest.fn()
+        }
+    }
+
+    driverService.get.mockResolvedValueOnce({id: 1, name: 'driver', profile: {loginId: 'konapun'}})
+    iseCompliance.get.mockRejectedValue({
+        description: {status: 404}
+    })
+    request.server.inject.mockResolvedValueOnce({result: {shift: 8}})
+    search.mockResolvedValueOnce([])
+    const result = await route.handler(request)
+    expect(result).toEqual({id: 1, name: 'driver', profile: {loginId: 'konapun'}, hoursOfService: {shift: 8}, vehicle: null, uniqueMemberGroup: null})
+    expect(driverService.get).toHaveBeenCalledWith('/driver-service/drivers/1?customerId=someCustomerId', {headers: request.headers})
+    expect(request.server.inject).toHaveBeenCalledWith({
+        headers: 'xyz',
+        method: 'GET',
+        url: '/drivers/login/konapun/hoursOfService'
+    })
+})

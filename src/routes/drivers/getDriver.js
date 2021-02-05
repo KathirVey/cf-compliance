@@ -2,6 +2,7 @@ import Joi from 'joi'
 import {authHeaders, logger} from '@peoplenet/node-service-common'
 import {driverService, enterpriseData} from '../../services'
 import iseCompliance from '../../services/iseCompliance'
+import {stringifyUrl} from 'query-string'
 import search from '../../elasticsearch/search'
 
 const getVehicleForDriver = async (loginId, headers) => {
@@ -43,10 +44,10 @@ const getUniqueMemberGroup = async driverId => {
 export default {
     method: 'GET',
     path: '/drivers/{driverId}',
-    async handler({headers, params, server}) {
+    async handler({headers, params, server, query}) {
         const {driverId} = params
-
-        const driver = await driverService.get(`/driver-service/drivers/${driverId}`, {headers})
+        const url = stringifyUrl({url: `/driver-service/drivers/${driverId}`, query: {customerId: query?.customerId}})
+        const driver = await driverService.get(url, {headers})
         const {loginId} = driver.profile
 
         const [{result: hoursOfService}, vehicle, uniqueMemberGroup] = await Promise.all([

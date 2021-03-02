@@ -46,7 +46,13 @@ export default {
     path: '/drivers/{driverId}',
     async handler({headers, params, server, query}) {
         const {driverId} = params
-        const url = stringifyUrl({url: `/driver-service/drivers/${driverId}`, query: {customerId: query?.customerId}})
+        const {customerId, managedDriver = false} = query 
+
+        // TODO: v1 path and query param check need to be removed when TFM completely switches to use managed drivers
+        const url = stringifyUrl({
+            url: managedDriver ? `/driver-service/v2/drivers/${driverId}` : `/driver-service/drivers/${driverId}`,
+            query: {customerId}
+        })
         const driver = await driverService.get(url, {headers})
         const {loginId} = driver.profile
 

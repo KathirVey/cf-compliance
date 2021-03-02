@@ -8,24 +8,30 @@ jest.mock('@elastic/elasticsearch')
     .mock('../../../services/iseCompliance')
     .mock('../../../elasticsearch/search')
 
-it('should get a driver with hours of service data', async () => {
-    const request = {
+let request
+beforeEach(() => {
+    request = {
         headers: 'xyz',
         params: {
             driverId: '1'
         },
+        query: {},
         server: {
             inject: jest.fn()
         }
     }
+})
 
+it('should get a driver with hours of service data', async () => {
     driverService.get.mockResolvedValueOnce({id: 1, name: 'driver', profile: {loginId: 'konapun'}})
     iseCompliance.get.mockRejectedValue({
         description: {status: 404}
     })
     request.server.inject.mockResolvedValueOnce({result: {shift: 8}})
     search.mockResolvedValueOnce([])
+
     const result = await route.handler(request)
+
     expect(result).toEqual({id: 1, name: 'driver', profile: {loginId: 'konapun'}, hoursOfService: {shift: 8}, vehicle: null, uniqueMemberGroup: null})
     expect(driverService.get).toHaveBeenCalledWith('/driver-service/drivers/1', {headers: request.headers})
     expect(request.server.inject).toHaveBeenCalledWith({
@@ -35,17 +41,28 @@ it('should get a driver with hours of service data', async () => {
     })
 })
 
-it('should get the associated vehicle for a driver', async () => {
-    const request = {
-        headers: 'xyz',
-        params: {
-            driverId: '1'
-        },
-        server: {
-            inject: jest.fn()
-        }
-    }
+it('should get a managed driver with hours of service data', async () => {
+    request.query.managedDriver = true
 
+    driverService.get.mockResolvedValueOnce({id: 1, name: 'driver', profile: {loginId: 'konapun'}})
+    iseCompliance.get.mockRejectedValue({
+        description: {status: 404}
+    })
+    request.server.inject.mockResolvedValueOnce({result: {shift: 8}})
+    search.mockResolvedValueOnce([])
+
+    const result = await route.handler(request)
+
+    expect(result).toEqual({id: 1, name: 'driver', profile: {loginId: 'konapun'}, hoursOfService: {shift: 8}, vehicle: null, uniqueMemberGroup: null})
+    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/1', {headers: request.headers})
+    expect(request.server.inject).toHaveBeenCalledWith({
+        headers: 'xyz',
+        method: 'GET',
+        url: '/drivers/login/konapun/hoursOfService'
+    })
+})
+
+it('should get the associated vehicle for a driver', async () => {
     driverService.get.mockResolvedValueOnce({id: 1, name: 'driver', profile: {loginId: 'konapun'}})
     iseCompliance.get.mockResolvedValueOnce({vehicleId: '1234'}) // driver vehicle
     enterpriseData.get.mockResolvedValueOnce({data: {id: 100}}) // vehicles
@@ -72,16 +89,6 @@ it('should get the associated vehicle for a driver', async () => {
 })
 
 it('should get the associated driver settings template for a driver', async () => {
-    const request = {
-        headers: 'xyz',
-        params: {
-            driverId: '1'
-        },
-        server: {
-            inject: jest.fn()
-        }
-    }
-
     driverService.get.mockResolvedValueOnce({id: 1, name: 'driver', profile: {loginId: 'konapun'}})
     search.mockResolvedValueOnce([{
         id: 'memberId',
@@ -94,6 +101,7 @@ it('should get the associated driver settings template for a driver', async () =
     request.server.inject.mockResolvedValueOnce({result: {shift: 8}})
 
     const result = await route.handler(request)
+
     expect(result).toEqual({
         id: 1,
         name: 'driver',
@@ -126,18 +134,7 @@ it('should get the associated driver settings template for a driver', async () =
 })
 
 it('should get a driver via customerId query', async () => {
-    const request = {
-        query: {
-            customerId: 'someCustomerId'
-        },
-        headers: 'xyz',
-        params: {
-            driverId: '1'
-        },
-        server: {
-            inject: jest.fn()
-        }
-    }
+    request.query.customerId = 'someCustomerId'
 
     driverService.get.mockResolvedValueOnce({id: 1, name: 'driver', profile: {loginId: 'konapun'}})
     iseCompliance.get.mockRejectedValue({
@@ -145,7 +142,9 @@ it('should get a driver via customerId query', async () => {
     })
     request.server.inject.mockResolvedValueOnce({result: {shift: 8}})
     search.mockResolvedValueOnce([])
+
     const result = await route.handler(request)
+
     expect(result).toEqual({id: 1, name: 'driver', profile: {loginId: 'konapun'}, hoursOfService: {shift: 8}, vehicle: null, uniqueMemberGroup: null})
     expect(driverService.get).toHaveBeenCalledWith('/driver-service/drivers/1?customerId=someCustomerId', {headers: request.headers})
     expect(request.server.inject).toHaveBeenCalledWith({

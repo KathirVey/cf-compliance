@@ -22,7 +22,8 @@ beforeEach(() => {
             artifacts: {
                 user: {
                     applicationCustomerUsers: [0]
-                }
+                },
+                hasPermission: jest.fn()
             }
         },
         server: {
@@ -70,6 +71,37 @@ it('should get drivers associated with a vehicle', async () => {
     expect(driverService.get).toHaveBeenCalledTimes(2)
     expect(driverService.get).toHaveBeenCalledWith('/driver-service/drivers/login/speed_racer', {headers})
     expect(driverService.get).toHaveBeenCalledWith('/driver-service/drivers/login/racer_x', {headers})
+})
+
+it('should support getting managed drivers associated with a vehicle', async () => {
+    request.auth.artifacts.hasPermission.mockReturnValueOnce(true)
+    const expectedDriverData = [
+        {
+            id: 1,
+            profile: {
+                displayName: 'Speed Racer',
+                loginId: 'speed_racer'
+            }
+        },
+        {
+            id: 2,
+            profile: {
+                displayName: 'Racer X',
+                loginId: 'racer_x'
+            }
+        }
+    ]
+    iseCompliance.get.mockResolvedValueOnce([{driverId: 'speed_racer'}, {driverId: 'racer_x'}])
+    driverService.get.mockResolvedValueOnce(expectedDriverData[0])
+    driverService.get.mockResolvedValueOnce(expectedDriverData[1])
+
+    const drivers = await route.handler(request)
+
+    expect(drivers).toEqual(expectedDriverData)
+    expect(iseCompliance.get).toHaveBeenCalledWith(`/api/vehicles/byVehicleId/1/drivers`, {headers: request.headers})
+    expect(driverService.get).toHaveBeenCalledTimes(2)
+    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/speed_racer', {headers: request.headers})
+    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/racer_x', {headers: request.headers})
 })
 
 it('should return an empty array if ISE returns a 404', async () => {
@@ -127,11 +159,11 @@ it('should return hours of service data for associated drivers if specified', as
 
     expect(drivers).toEqual([
         {
-            ...expected[0],
+            ...expected[0].customerDriver,
             hoursOfService: {availability: {ruleType: 'US'}}
         },
         {
-            ...expected[1],
+            ...expected[1].customerDriver,
             hoursOfService: {availability: {ruleType: 'CA'}}
         }
     ])

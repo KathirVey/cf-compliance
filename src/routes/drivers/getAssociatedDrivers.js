@@ -6,22 +6,28 @@ import iseCompliance from '../../services/iseCompliance'
 export default {
     method: 'GET',
     path: '/driversByVehicle/{id}',
-    async handler({headers, params, query, server}) {
+    async handler({auth, headers, params, query, server}) {
         const {id} = params
         const {hoursOfService: getHoursOfService} = query
+        const {hasPermission} = auth.artifacts
+        const isManagedDriver = hasPermission('DRIVER-SERVICE-MANAGED-DRIVER-READ')
+        // TODO: v1 path and perm check need to be removed when TFM completely switches to managed drivers
 
         try {
             const iseDrivers = await iseCompliance.get(`/api/vehicles/byVehicleId/${id}/drivers`, {headers})
             logger.debug(iseDrivers, 'Got ISE drivers')
-            const tfmDrivers = await Promise.all(iseDrivers.map(({driverId}) => driverService.get(`/driver-service/drivers/login/${driverId}`, {headers})))
+
+            const urlPrefix = isManagedDriver ? '/driver-service/v2/drivers' : '/driver-service/drivers/login'
+            const tfmDrivers = await Promise.all(iseDrivers.map(({driverId}) => driverService.get(`${urlPrefix}/${driverId}`, {headers})))
             logger.debug(tfmDrivers, 'Got TFM drivers')
 
             if (!getHoursOfService) return tfmDrivers
-            return Promise.all(tfmDrivers.map(async driver => {
+            return Promise.all(tfmDrivers.map(async driverResponse => {
+                const driver = isManagedDriver ? driverResponse : driverResponse?.customerDriver
                 const {result: hoursOfService} = await server.inject({
                     headers,
                     method: 'GET',
-                    url: `/drivers/login/${driver.customerDriver.profile.loginId}/hoursOfService`
+                    url: `/drivers/login/${driver?.profile?.loginId}/hoursOfService`
                 })
 
                 return {

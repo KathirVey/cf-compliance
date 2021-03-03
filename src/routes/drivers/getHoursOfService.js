@@ -27,17 +27,21 @@ export default {
             throw error
         })
 
-        logger.debug(availability, 'Got ISE availability')
+
         return {
-            availability: (availability?.availableByRule || []).map(rule =>
-                Object.entries(pick(rule, availabilityFields))
-                    .reduce((acc, [key, value]) => {
-                        if (isObject(value)) {
-                            return {...acc, ...value}
-                        } else {
-                            return {...acc, [key]: value}
-                        }
-                    }, {})),
+            availability: (availability?.availableByRule || []).map(rule => {
+                const hos = Object.entries(pick(rule, availabilityFields))
+                    .reduce((acc, [key, value]) => isObject(value) ? {...acc, ...value} : {...acc, [key]: value}, {})
+
+                const overallDrivingTimeConstraint = getConstraint(hos.overallDrivingTime, ['workshiftDutyTime', 'cycleDutyTime', 'workshiftRestBreakTime'], hos)
+                const overallDutyTimeConstraint = getConstraint(hos.overallDutyTime, ['cycleDutyTime'], hos)
+
+                return {
+                    ...hos,
+                    overallDrivingTimeConstraint,
+                    overallDutyTimeConstraint
+                }
+            }),
             certification: certification || []
         }
     },
@@ -58,15 +62,25 @@ export default {
     }
 }
 
+const getConstraint = (overall, lookupOrder, data) => {
+    const found = lookupOrder.filter(key => data[key] === overall)
+    return found.length ? found[0] : null
+}
+
 const availabilityFields = [
     'ruleType',
+    'availability.bestGuessOverallDrivingTime',
+    'availability.overallDrivingTime',
     'availability.workshiftDrivingTime',
+    'availability.workshiftElapsedTime',
+    'availability.overallDutyTime',
     'availability.workshiftDutyTime',
     'availability.cycleDutyTime',
     'availability.workshiftRestBreakTime',
     'ruleSet.workshiftDrivingMaximumTime',
     'ruleSet.workshiftOnDutyMaximumTime',
     'ruleSet.cycleOnDutyMaximumTime',
+    'ruleSet.workshiftRestBreakMinimumOffDutyTime',
     'ruleSet.workshiftRestBreakMaximumOnDutyTime'
 ]
 

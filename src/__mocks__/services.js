@@ -6,6 +6,7 @@ const mockService = () => ({
     patch: jest.fn()
 })
 
+export const billingDataBridge = mockService()
 export const driverService = mockService()
 export const enterpriseData = mockService()
 export const rawIseCompliance = mockService()

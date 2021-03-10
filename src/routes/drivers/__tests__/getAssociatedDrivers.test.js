@@ -1,4 +1,4 @@
-import {driverService} from '../../../services'
+import {billingDataBridge, driverService} from '../../../services'
 import iseCompliance from '../../../services/iseCompliance'
 import route from '../getAssociatedDrivers'
 
@@ -17,14 +17,6 @@ beforeEach(() => {
         },
         query: {
             hoursOfService: false
-        },
-        auth: {
-            artifacts: {
-                user: {
-                    applicationCustomerUsers: [0]
-                },
-                hasPermission: jest.fn()
-            }
         },
         server: {
             inject: jest.fn()
@@ -60,6 +52,7 @@ it('should get drivers associated with a vehicle', async () => {
             }
         }
     ]
+    billingDataBridge.get.mockResolvedValueOnce({})
     iseCompliance.get.mockResolvedValueOnce([{driverId: 'speed_racer'}, {driverId: 'racer_x'}])
     driverService.get.mockResolvedValueOnce(expected[0])
     driverService.get.mockResolvedValueOnce(expected[1])
@@ -67,6 +60,7 @@ it('should get drivers associated with a vehicle', async () => {
     const drivers = await route.handler(request)
 
     expect(drivers).toEqual(expected)
+    expect(billingDataBridge.get).toHaveBeenCalledWith('/customerLicenses', {headers})
     expect(iseCompliance.get).toHaveBeenCalledWith(`/api/vehicles/byVehicleId/1/drivers`, {headers})
     expect(driverService.get).toHaveBeenCalledTimes(2)
     expect(driverService.get).toHaveBeenCalledWith('/driver-service/drivers/login/speed_racer', {headers})
@@ -74,7 +68,6 @@ it('should get drivers associated with a vehicle', async () => {
 })
 
 it('should support getting managed drivers associated with a vehicle', async () => {
-    request.auth.artifacts.hasPermission.mockReturnValueOnce(true)
     const expectedDriverData = [
         {
             id: 1,
@@ -91,6 +84,7 @@ it('should support getting managed drivers associated with a vehicle', async () 
             }
         }
     ]
+    billingDataBridge.get.mockResolvedValueOnce({tidManagedDrivers: true})
     iseCompliance.get.mockResolvedValueOnce([{driverId: 'speed_racer'}, {driverId: 'racer_x'}])
     driverService.get.mockResolvedValueOnce(expectedDriverData[0])
     driverService.get.mockResolvedValueOnce(expectedDriverData[1])
@@ -98,6 +92,7 @@ it('should support getting managed drivers associated with a vehicle', async () 
     const drivers = await route.handler(request)
 
     expect(drivers).toEqual(expectedDriverData)
+    expect(billingDataBridge.get).toHaveBeenCalledWith('/customerLicenses', {headers: request.headers})
     expect(iseCompliance.get).toHaveBeenCalledWith(`/api/vehicles/byVehicleId/1/drivers`, {headers: request.headers})
     expect(driverService.get).toHaveBeenCalledTimes(2)
     expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/speed_racer', {headers: request.headers})
@@ -105,6 +100,7 @@ it('should support getting managed drivers associated with a vehicle', async () 
 })
 
 it('should return an empty array if ISE returns a 404', async () => {
+    billingDataBridge.get.mockResolvedValueOnce({})
     iseCompliance.get.mockRejectedValue({
         description: {
             status: 404
@@ -140,6 +136,7 @@ it('should return hours of service data for associated drivers if specified', as
             }
         }
     ]
+    billingDataBridge.get.mockResolvedValueOnce({})
     iseCompliance.get.mockResolvedValueOnce([{driverId: 'speed_racer'}, {driverId: 'racer_x'}])
     driverService.get.mockResolvedValueOnce(expected[0])
     driverService.get.mockResolvedValueOnce(expected[1])

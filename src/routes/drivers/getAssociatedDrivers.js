@@ -1,17 +1,18 @@
 import Joi from 'joi'
 import {authHeaders, logger} from '@peoplenet/node-service-common'
-import {driverService} from '../../services'
+import {billingDataBridge, driverService} from '../../services'
 import iseCompliance from '../../services/iseCompliance'
 
 export default {
     method: 'GET',
     path: '/driversByVehicle/{id}',
-    async handler({auth, headers, params, query, server}) {
+    async handler({headers, params, query, server}) {
         const {id} = params
         const {hoursOfService: getHoursOfService} = query
-        const {hasPermission} = auth.artifacts
-        const isManagedDriver = hasPermission('DRIVER-SERVICE-MANAGED-DRIVER-READ')
-        // TODO: v1 path and perm check need to be removed when TFM completely switches to managed drivers
+
+        const licenses = await billingDataBridge.get('/customerLicenses', {headers})
+        const {tidManagedDrivers: isManagedDriver = false} = licenses
+        // TODO: v1 path and license check need to be removed when TFM completely switches to managed drivers
 
         try {
             const iseDrivers = await iseCompliance.get(`/api/vehicles/byVehicleId/${id}/drivers`, {headers})

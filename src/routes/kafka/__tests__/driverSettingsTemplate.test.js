@@ -146,7 +146,7 @@ describe('driver settings template events', () => {
         expect(client.bulk).not.toHaveBeenCalled()
     })
 
-    it('should update driver search based on ASSIGN events', async () => {
+    it('should update appropriate driver search index based on ASSIGN events', async () => {
         const request = {
             payload: {
                 value: {
@@ -165,15 +165,16 @@ describe('driver settings template events', () => {
             }
         }
 
+        client.exists.mockResolvedValueOnce({body: true})
+            .mockResolvedValueOnce({body: false})
+
         await route.handler(request, hapi)
 
         expect(hapi.response).toHaveBeenCalledWith()
 
         expect(client.bulk).toHaveBeenCalledWith({
-            index: 'driver',
-            type: '_doc',
             body: [
-                {update: {_id: 'id1'}},
+                {update: {_id: 'id1', _index: 'driver'}},
                 {
                     doc: {
                         uniqueMemberGroup: {
@@ -183,7 +184,7 @@ describe('driver settings template events', () => {
                         }
                     }
                 },
-                {update: {_id: 'id2'}},
+                {update: {_id: 'id2', _index: 'managed_driver'}},
                 {
                     doc: {
                         uniqueMemberGroup: {
@@ -216,17 +217,18 @@ describe('driver settings template events', () => {
             }
         }
 
+        client.exists.mockResolvedValueOnce({body: false})
+            .mockResolvedValueOnce({body: true})
+
         await route.handler(request, hapi)
 
         expect(hapi.response).toHaveBeenCalledWith()
 
         expect(client.bulk).toHaveBeenCalledWith({
-            index: 'driver',
-            type: '_doc',
             body: [
-                {update: {_id: 'id1'}},
+                {update: {_id: 'id1', _index: 'managed_driver'}},
                 {doc: {uniqueMemberGroup: null}},
-                {update: {_id: 'id2'}},
+                {update: {_id: 'id2', _index: 'driver'}},
                 {doc: {uniqueMemberGroup: null}}
             ]
         })

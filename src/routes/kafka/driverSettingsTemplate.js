@@ -1,7 +1,7 @@
 import Joi from 'joi'
 import searchApi from '../../elasticsearch/searchApi'
 import {logger} from '@peoplenet/node-service-common'
-import {isEmpty, find, transform} from 'lodash'
+import {isEmpty, find, reduce} from 'lodash'
 import client from '../../elasticsearch/client'
 
 export default {
@@ -35,11 +35,23 @@ export default {
 }
 
 const bulkUpdateDriverSearch = async (members, uniqueMemberGroup) => {
-    const body = transform(members, (actions, membersData) => {
-        actions.push({
-            update: {_id: membersData.entityId}
+    const body = await reduce(members, async (reducedMembers, memberData) => {
+        const action = await reducedMembers
+        const index = await getDriverSearchIndex(memberData.entityId)
+        action.push({
+            update: {
+                _id: memberData.entityId,
+                _index: index
+            }
         })
-        actions.push({doc: {uniqueMemberGroup}})
-    }, [])
-    await client.bulk({index: 'driver', type: '_doc', body})
+        action.push({doc: {uniqueMemberGroup}})
+        return action
+    }, Promise.resolve([]))
+
+    await client.bulk({body})
+}
+
+const getDriverSearchIndex = async entityId => {
+    const {body} = await client.exists({index: 'driver', id: entityId})
+    return body ? 'driver' : 'managed_driver'
 }

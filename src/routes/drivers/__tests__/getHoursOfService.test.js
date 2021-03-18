@@ -24,10 +24,12 @@ it('should get hours of service info for a driver', async () => {
         availableByRule: [{
             ruleType: 'US',
             availability: {
-                workshiftDrivingTime: 60,
+                workshiftDrivingTime: 40,
                 workshiftDutyTime: 50,
-                cycleDutyTime: 40,
-                workshiftRestBreakTime: 30
+                cycleDutyTime: 60,
+                workshiftRestBreakTime: 30,
+                overallDrivingTime: 40,
+                overallDutyTime: 50
             },
             ruleSet: {
                 workshiftDrivingMaximumTime: 70,
@@ -49,14 +51,171 @@ it('should get hours of service info for a driver', async () => {
     expect(result).toEqual({
         availability: [{
             ruleType: 'US',
-            cycleDutyTime: 40,
+            cycleDutyTime: 60,
+            cycleOnDutyMaximumTime: 90,
+            workshiftDrivingMaximumTime: 70,
+            workshiftDrivingTime: 40,
+            workshiftDutyTime: 50,
+            workshiftOnDutyMaximumTime: 80,
+            workshiftRestBreakTime: 30,
+            workshiftRestBreakMaximumOnDutyTime: 100,
+            overallDrivingTime: 40,
+            overallDutyTime: 50,
+            overallDrivingTimeConstraint: null,
+            overallDutyTimeConstraint: null
+        }],
+        certification: [{c: 3}]
+    })
+})
+
+it('should constrain drive time by duty time if duty time is less than drive time', async () => {
+    request.query.startDateTime = 1234
+    iseCompliance.get.mockResolvedValueOnce({
+        availableByRule: [{
+            ruleType: 'US',
+            availability: {
+                workshiftDrivingTime: 60,
+                workshiftDutyTime: 50,
+                cycleDutyTime: 55,
+                workshiftRestBreakTime: 30,
+                workshiftRestBreakEnabled: true,
+                overallDrivingTime: 50,
+                overallDutyTime: 50
+            },
+            ruleSet: {
+                workshiftDrivingMaximumTime: 70,
+                workshiftOnDutyMaximumTime: 80,
+                cycleOnDutyMaximumTime: 90,
+                workshiftRestBreakMaximumOnDutyTime: 100
+            }
+        }]
+    })
+    iseCompliance.get.mockResolvedValueOnce([{c: 3}])
+
+    const {headers} = request
+    const result = await route.handler(request)
+
+    expect(iseCompliance.get).toHaveBeenCalledTimes(2)
+    expect(iseCompliance.get).toHaveBeenCalledWith('/api/DriverLogs/availability/byDriverId/konapun', {headers})
+    expect(iseCompliance.get).toHaveBeenCalledWith('/api/v2/DriverLogs/certificationStatus?startDateTime=1234&driverId=konapun', {headers})
+
+    expect(result).toEqual({
+        availability: [{
+            ruleType: 'US',
+            cycleDutyTime: 55,
             cycleOnDutyMaximumTime: 90,
             workshiftDrivingMaximumTime: 70,
             workshiftDrivingTime: 60,
             workshiftDutyTime: 50,
             workshiftOnDutyMaximumTime: 80,
             workshiftRestBreakTime: 30,
-            workshiftRestBreakMaximumOnDutyTime: 100
+            workshiftRestBreakMaximumOnDutyTime: 100,
+            overallDrivingTime: 50,
+            overallDutyTime: 50,
+            overallDrivingTimeConstraint: 'workshiftDutyTime',
+            overallDutyTimeConstraint: null
+        }],
+        certification: [{c: 3}]
+    })
+})
+
+it('should constrain drive time and duty time by cycle time if cycle time is less than drive time', async () => {
+    request.query.startDateTime = 1234
+    iseCompliance.get.mockResolvedValueOnce({ // availability
+        availableByRule: [{
+            ruleType: 'US',
+            availability: {
+                workshiftDrivingTime: 60,
+                workshiftDutyTime: 70,
+                cycleDutyTime: 50,
+                workshiftRestBreakTime: 30,
+                workshiftRestBreakEnabled: true,
+                overallDrivingTime: 50,
+                overallDutyTime: 50
+            },
+            ruleSet: {
+                workshiftDrivingMaximumTime: 70,
+                workshiftOnDutyMaximumTime: 80,
+                cycleOnDutyMaximumTime: 90,
+                workshiftRestBreakMaximumOnDutyTime: 100
+            }
+        }]
+    })
+    iseCompliance.get.mockResolvedValueOnce([{c: 3}])
+
+    const {headers} = request
+    const result = await route.handler(request)
+
+    expect(iseCompliance.get).toHaveBeenCalledTimes(2)
+    expect(iseCompliance.get).toHaveBeenCalledWith('/api/DriverLogs/availability/byDriverId/konapun', {headers})
+    expect(iseCompliance.get).toHaveBeenCalledWith('/api/v2/DriverLogs/certificationStatus?startDateTime=1234&driverId=konapun', {headers})
+
+    expect(result).toEqual({
+        availability: [{
+            ruleType: 'US',
+            cycleDutyTime: 50,
+            cycleOnDutyMaximumTime: 90,
+            workshiftDrivingMaximumTime: 70,
+            workshiftDrivingTime: 60,
+            workshiftDutyTime: 70,
+            workshiftOnDutyMaximumTime: 80,
+            workshiftRestBreakTime: 30,
+            workshiftRestBreakMaximumOnDutyTime: 100,
+            overallDrivingTime: 50,
+            overallDutyTime: 50,
+            overallDrivingTimeConstraint: 'cycleDutyTime',
+            overallDutyTimeConstraint: 'cycleDutyTime'
+        }],
+        certification: [{c: 3}]
+    })
+})
+
+it('should constrain drive time by break time if the driver requires a mandatory break', async () => {
+    request.query.startDateTime = 1234
+    iseCompliance.get.mockResolvedValueOnce({ // availability
+        availableByRule: [{
+            ruleType: 'US',
+            availability: {
+                workshiftDrivingTime: 60,
+                workshiftDutyTime: 70,
+                cycleDutyTime: 50,
+                workshiftRestBreakTime: 30,
+                overallDrivingTime: 30,
+                overallDutyTime: 70,
+                workshiftRestBreakEnabled: true
+            },
+            ruleSet: {
+                workshiftDrivingMaximumTime: 70,
+                workshiftOnDutyMaximumTime: 80,
+                cycleOnDutyMaximumTime: 90,
+                workshiftRestBreakMaximumOnDutyTime: 100
+            }
+        }]
+    })
+    iseCompliance.get.mockResolvedValueOnce([{c: 3}])
+
+    const {headers} = request
+    const result = await route.handler(request)
+
+    expect(iseCompliance.get).toHaveBeenCalledTimes(2)
+    expect(iseCompliance.get).toHaveBeenCalledWith('/api/DriverLogs/availability/byDriverId/konapun', {headers})
+    expect(iseCompliance.get).toHaveBeenCalledWith('/api/v2/DriverLogs/certificationStatus?startDateTime=1234&driverId=konapun', {headers})
+
+    expect(result).toEqual({
+        availability: [{
+            ruleType: 'US',
+            cycleDutyTime: 50,
+            cycleOnDutyMaximumTime: 90,
+            workshiftDrivingMaximumTime: 70,
+            workshiftDrivingTime: 60,
+            workshiftDutyTime: 70,
+            workshiftOnDutyMaximumTime: 80,
+            workshiftRestBreakTime: 30,
+            workshiftRestBreakMaximumOnDutyTime: 100,
+            overallDrivingTime: 30,
+            overallDutyTime: 70,
+            overallDrivingTimeConstraint: 'workshiftRestBreakTime',
+            overallDutyTimeConstraint: null
         }],
         certification: [{c: 3}]
     })

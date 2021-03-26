@@ -18,7 +18,7 @@ export default {
             const iseDrivers = await iseCompliance.get(`/api/vehicles/byVehicleId/${id}/drivers`, {headers})
             logger.debug(iseDrivers, 'Got ISE drivers')
 
-            const urlPrefix = isManagedDriver ? '/driver-service/v2/drivers' : '/driver-service/drivers/login'
+            const urlPrefix = isManagedDriver ? '/driver-service/v2/drivers/login' : '/driver-service/drivers/login'
             const tfmDrivers = await Promise.all(iseDrivers.map(({driverId}) => driverService.get(`${urlPrefix}/${driverId}`, {headers})))
             logger.debug(tfmDrivers, 'Got TFM drivers')
 

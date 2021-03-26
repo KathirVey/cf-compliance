@@ -95,8 +95,8 @@ it('should support getting managed drivers associated with a vehicle', async () 
     expect(billingDataBridge.get).toHaveBeenCalledWith('/customerLicenses', {headers: request.headers})
     expect(iseCompliance.get).toHaveBeenCalledWith(`/api/vehicles/byVehicleId/1/drivers`, {headers: request.headers})
     expect(driverService.get).toHaveBeenCalledTimes(2)
-    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/speed_racer', {headers: request.headers})
-    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/racer_x', {headers: request.headers})
+    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/speed_racer', {headers: request.headers})
+    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/racer_x', {headers: request.headers})
 })
 
 it('should return an empty array if ISE returns a 404', async () => {

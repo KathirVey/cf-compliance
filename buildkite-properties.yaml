@@ -1,13 +1,21 @@
-node:
-  global:
-    kubernetes:
-      namespace: core-teams-dev
-      environmentRepo: ttm-cf-platform/core-teams-environments
-      envGitRepo: bitbucket
-      releaseName: cf-compliance
-      chartInRepo: false
+version: 1
+pipelineType: node14
+
+settings:
+  buildCommand: "yarn ci-install && yarn ci-build"
+  prBuildCommand: "touch cf-compliance.tar.gz && yarn ci-install && yarn ci-pullreq"
+  buildkiteAgent: non-prod
+  envGitRepo: bitbucket
+
+apps:
   cf-compliance:
-    imageName: pnet-core-teams/cf-compliance
-    executableSource: dist
+    docker:
+      dockerfile: .dockerfile/Dockerfile-cf-compliance
+      imageName: pnet-core-teams/cf-compliance
     kubernetes:
+      chartInRepo: false
+      environmentRepo: ttm-cf-platform/core-teams-environments
+      namespace:
+        - core-teams-dev
+      releaseName: cf-compliance
       imageTagPath: deployment.app.image.tag

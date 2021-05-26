@@ -23,10 +23,10 @@ const getVehicleForDriver = async (loginId, headers) => {
         const {data: vehicle} = await enterpriseData.get(`vehicles/${device.vehicle.id}`, {headers})
         return vehicle
     } catch (error) {
-        logger.error(error)
         if (error.description?.status === 404) {
             return null
         }
+        logger.error(error)
     }
 }
 

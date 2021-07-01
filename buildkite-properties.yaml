@@ -6,6 +6,13 @@ settings:
   prBuildCommand: "touch cf-compliance.tar.gz && yarn ci-install && yarn ci-pullreq"
   buildkiteAgent: non-prod
   envGitRepo: bitbucket
+  sonar:
+    enable: true
+    hostUrl: "https://sonar.trimble.tools"
+    projectNamePrefix: "TTM - CF-PLATFORM - "
+    projectKey: "TTM.CF-PLATFORM:cf-compliance"
+    projectSecret: CF_PLATFORM_SONAR_KEY
+    enforce: true
 
 apps:
   cf-compliance:

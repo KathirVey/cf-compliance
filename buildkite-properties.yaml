@@ -2,8 +2,8 @@ version: 1
 pipelineType: node14
 
 settings:
-  buildCommand: "yarn ci-install && yarn ci-build"
-  prBuildCommand: "touch cf-compliance.tar.gz && yarn ci-install && yarn ci-pullreq"
+  buildCommand: 'yarn ci-install && yarn ci-build && buildkite-agent artifact upload "coverage/lcov.info"'
+  prBuildCommand: 'touch cf-compliance.tar.gz && yarn ci-install && yarn ci-pullreq && buildkite-agent artifact upload "coverage/lcov.info"'
   buildkiteAgent: non-prod
   envGitRepo: bitbucket
   sonar:
@@ -13,6 +13,9 @@ settings:
     projectKey: "TTM.CF-PLATFORM:cf-compliance"
     projectSecret: CF_PLATFORM_SONAR_KEY
     enforce: true
+  sonarArtifactsDownload:
+    fromAnyStep:
+    - "coverage/*"
 
 apps:
   cf-compliance:

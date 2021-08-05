@@ -39,7 +39,7 @@
     "tarball": "nsc-scripts tarball",
     "test": "nsc-scripts test",
     "test:ci": "nsc-scripts test -w 1",
-    "verify": "yarn lint:commit && yarn lint && yarn test:ci",
+    "verify": "yarn lint:commit && yarn lint && yarn test:ci --coverage",
     "version": "nsc-scripts version"
   },
   "husky": {

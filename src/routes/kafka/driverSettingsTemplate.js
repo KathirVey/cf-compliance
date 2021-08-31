@@ -37,11 +37,10 @@ export default {
 const bulkUpdateDriverSearch = async (members, uniqueMemberGroup) => {
     const body = await reduce(members, async (reducedMembers, memberData) => {
         const action = await reducedMembers
-        const index = await getDriverSearchIndex(memberData.entityId)
         action.push({
             update: {
                 _id: memberData.entityId,
-                _index: index
+                _index: 'driver'
             }
         })
         action.push({doc: {uniqueMemberGroup}})
@@ -49,9 +48,4 @@ const bulkUpdateDriverSearch = async (members, uniqueMemberGroup) => {
     }, Promise.resolve([]))
 
     await client.bulk({body})
-}
-
-const getDriverSearchIndex = async entityId => {
-    const {body} = await client.exists({index: 'driver', id: entityId})
-    return body ? 'driver' : 'managed_driver'
 }

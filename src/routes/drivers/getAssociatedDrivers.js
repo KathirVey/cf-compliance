@@ -1,6 +1,6 @@
 import Joi from 'joi'
 import {authHeaders, logger} from '@peoplenet/node-service-common'
-import {billingDataBridge, driverService} from '../../services'
+import {driverService} from '../../services'
 import iseCompliance from '../../services/iseCompliance'
 import {stringifyUrl} from 'query-string'
 
@@ -9,22 +9,14 @@ export default {
     path: '/driversByVehicle/{id}',
     async handler({headers, params, query, server}) {
         const {id} = params
-        const {hoursOfService: getHoursOfService, cid, customerId} = query
-
-        const licenseUrl = cid ? `/customerLicenses/${cid}` : `/customerLicenses`
-
-        const licenses = await billingDataBridge.get(licenseUrl, {headers})
-
-        const {tidManagedDrivers: isManagedDriver = false} = licenses
-
-        // TODO: v1 path and license check need to be removed when TFM completely switches to managed drivers
+        const {hoursOfService: getHoursOfService, customerId} = query
 
         try {
             const iseDrivers = await iseCompliance.get(`/api/vehicles/byVehicleId/${id}/drivers`, {headers})
 
             const tfmDrivers = await Promise.all(iseDrivers.map(({driverId}) => {
                 const urlPrefix = stringifyUrl({
-                    url: isManagedDriver ? `/driver-service/v2/drivers/login/${driverId}` : `/driver-service/drivers/login/${driverId}`,
+                    url: `/driver-service/v2/drivers/login/${driverId}`,
                     query: {customerId}
                 })
                 return driverService.get(urlPrefix, {headers})
@@ -32,7 +24,7 @@ export default {
 
             if (!getHoursOfService) return tfmDrivers
             return Promise.all(tfmDrivers.map(async driverResponse => {
-                const driver = isManagedDriver ? driverResponse : driverResponse?.customerDriver
+                const driver = driverResponse
                 const {result: hoursOfService} = await server.inject({
                     headers,
                     method: 'GET',
@@ -68,7 +60,6 @@ export default {
             }).required().description('Vehicle ID'),
             query: Joi.object({
                 hoursOfService: Joi.boolean().default(false),
-                cid: Joi.string().optional(),
                 customerId: Joi.string().optional()
             }).required()
         }

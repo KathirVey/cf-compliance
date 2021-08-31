@@ -165,9 +165,6 @@ describe('driver settings template events', () => {
             }
         }
 
-        client.exists.mockResolvedValueOnce({body: true})
-            .mockResolvedValueOnce({body: false})
-
         await route.handler(request, hapi)
 
         expect(hapi.response).toHaveBeenCalledWith()
@@ -184,7 +181,7 @@ describe('driver settings template events', () => {
                         }
                     }
                 },
-                {update: {_id: 'id2', _index: 'managed_driver'}},
+                {update: {_id: 'id2', _index: 'driver'}},
                 {
                     doc: {
                         uniqueMemberGroup: {
@@ -217,16 +214,13 @@ describe('driver settings template events', () => {
             }
         }
 
-        client.exists.mockResolvedValueOnce({body: false})
-            .mockResolvedValueOnce({body: true})
-
         await route.handler(request, hapi)
 
         expect(hapi.response).toHaveBeenCalledWith()
 
         expect(client.bulk).toHaveBeenCalledWith({
             body: [
-                {update: {_id: 'id1', _index: 'managed_driver'}},
+                {update: {_id: 'id1', _index: 'driver'}},
                 {doc: {uniqueMemberGroup: null}},
                 {update: {_id: 'id2', _index: 'driver'}},
                 {doc: {uniqueMemberGroup: null}}

@@ -5,7 +5,7 @@ jest
     .mock('../../../elasticsearch/client')
     .mock('../../../elasticsearch/search')
 
-describe('drivers events', () => {
+describe('managed drivers events', () => {
     let hapi
     let route
     let payloadData
@@ -22,16 +22,18 @@ describe('drivers events', () => {
             profile: {
                 id: 'profileId',
                 firstName: 'Aaron',
-                lastName: 'Paul'
+                lastName: 'Paul',
+                autoProvisioned: false
             },
             customer: {
+                id: 'customerId',
                 companyId: 75,
                 description: 'My Company'
             }
         }
     })
 
-    it('should handle driver create events with hydrated uniqueMemberGroup', async () => {
+    it('should handle managed driver create events with hydrated uniqueMemberGroup', async () => {
         client.exists.mockResolvedValue({body: false})
         search.mockResolvedValueOnce([])
 
@@ -40,7 +42,7 @@ describe('drivers events', () => {
                 value: {
                     method: 'CREATE',
                     payload: {
-                        id: 'driverCreateId',
+                        id: 'managedDriverCreateId',
                         ...payloadData
                     }
                 }
@@ -53,14 +55,14 @@ describe('drivers events', () => {
             select: ['id', 'name', 'description'],
             from: 'driverSettingsTemplates',
             where: {
-                'associations.members.entityId.keyword': 'driverCreateId'
+                'associations.members.entityId.keyword': 'managedDriverCreateId'
             }
         })
 
         expect(hapi.response).toHaveBeenCalledWith()
         expect(client.create).toHaveBeenCalledWith({
             body: {
-                id: 'driverCreateId',
+                id: 'managedDriverCreateId',
                 status: 'ACTIVE',
                 loginInfo: {
                     loginId: 'test222',
@@ -69,15 +71,17 @@ describe('drivers events', () => {
                 profile: {
                     id: 'profileId',
                     firstName: 'Aaron',
-                    lastName: 'Paul'
+                    lastName: 'Paul',
+                    autoProvisioned: false
                 },
                 customer: {
                     companyId: 75,
-                    description: 'My Company'
+                    description: 'My Company',
+                    id: 'customerId'
                 },
                 uniqueMemberGroup: {}
             },
-            id: 'driverCreateId',
+            id: 'managedDriverCreateId',
             index: 'driver',
             type: '_doc'
         })
@@ -85,7 +89,7 @@ describe('drivers events', () => {
         expect(client.delete).not.toHaveBeenCalled()
     })
 
-    it('should handle driver update events with hydrated uniqueMemberGroup', async () => {
+    it('should handle managed driver update events with hydrated uniqueMemberGroup', async () => {
         client.exists.mockResolvedValue({body: true})
         search.mockResolvedValueOnce(
             [{
@@ -101,7 +105,7 @@ describe('drivers events', () => {
                 value: {
                     method: 'UPDATE',
                     payload: {
-                        id: 'driverUpdateId',
+                        id: 'managedDriverUpdateId',
                         ...payloadData
                     }
                 }
@@ -114,7 +118,7 @@ describe('drivers events', () => {
             select: ['id', 'name', 'description'],
             from: 'driverSettingsTemplates',
             where: {
-                'associations.members.entityId.keyword': 'driverUpdateId'
+                'associations.members.entityId.keyword': 'managedDriverUpdateId'
             }
         })
 
@@ -122,7 +126,7 @@ describe('drivers events', () => {
         expect(client.update).toHaveBeenCalledWith({
             body: {
                 doc: {
-                    id: 'driverUpdateId',
+                    id: 'managedDriverUpdateId',
                     status: 'ACTIVE',
                     loginInfo: {
                         loginId: 'test222',
@@ -131,11 +135,13 @@ describe('drivers events', () => {
                     profile: {
                         id: 'profileId',
                         firstName: 'Aaron',
-                        lastName: 'Paul'
+                        lastName: 'Paul',
+                        autoProvisioned: false
                     },
                     customer: {
                         companyId: 75,
-                        description: 'My Company'
+                        description: 'My Company',
+                        id: 'customerId'
                     },
                     uniqueMemberGroup: {
                         description: 'description',
@@ -144,7 +150,7 @@ describe('drivers events', () => {
                     }
                 }
             },
-            id: 'driverUpdateId',
+            id: 'managedDriverUpdateId',
             index: 'driver',
             type: '_doc'
         })
@@ -152,7 +158,7 @@ describe('drivers events', () => {
         expect(client.delete).not.toHaveBeenCalled()
     })
 
-    it('should handle driver delete events', async () => {
+    it('should handle managed driver delete events', async () => {
         client.exists.mockResolvedValue({body: true})
 
         const request = {
@@ -160,7 +166,7 @@ describe('drivers events', () => {
                 value: {
                     method: 'DELETE',
                     payload: {
-                        id: 'driverDeleteId',
+                        id: 'managedDriverDeleteId',
                         ...payloadData
                     }
                 }
@@ -171,7 +177,7 @@ describe('drivers events', () => {
 
         expect(hapi.response).toHaveBeenCalledWith()
         expect(client.delete).toHaveBeenCalledWith({
-            id: 'driverDeleteId',
+            id: 'managedDriverDeleteId',
             index: 'driver',
             type: '_doc'
         })

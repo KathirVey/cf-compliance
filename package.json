@@ -25,7 +25,7 @@
     "build:js": "BABEL_ENV=production nsc-scripts babel src -d dist",
     "build:static": "nsc-scripts copy",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
-    "ci-build": "yarn verify && yarn build",
+    "ci-build": "yarn build:clean && yarn verify && yarn build:static && yarn build:js && yarn tarball",
     "ci-install": "yarn install --frozen-lockfile --ignore-optional",
     "ci-pullreq": "yarn verify && yarn build:js",
     "coverage": "yarn run test --coverage",

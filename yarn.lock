@@ -1651,10 +1651,10 @@
     lodash "4.17.21"
     qs "6.10.1"
 
-"@peoplenet/node-service-common@22.0.1":
-  version "22.0.1"
-  resolved "https://artifactory.trimble.tools/artifactory/api/npm/pnet-virtual-npm/@peoplenet/node-service-common/-/@peoplenet/node-service-common-22.0.1.tgz#f171d81255bb27bf62678e8ae8bdacb1f57ec395"
-  integrity sha1-8XHYElW7J79iZ46K6L2ssfV+w5U=
+"@peoplenet/node-service-common@22.1.0":
+  version "22.1.0"
+  resolved "https://artifactory.trimble.tools/artifactory/api/npm/pnet-virtual-npm/@peoplenet/node-service-common/-/@peoplenet/node-service-common-22.1.0.tgz#331d8a44774321165a8df5e3075472dd6d6e30d8"
+  integrity sha1-Mx2KRHdDIRZajfXjB1Ry3W1uMNg=
   dependencies:
     "@babel/cli" "7.14.8"
     "@babel/core" "7.12.9"

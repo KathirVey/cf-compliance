@@ -46,5 +46,8 @@
     "hooks": {
       "commit-msg": "nsc-scripts commitlint -e=$GIT_PARAMS"
     }
+  },
+  "resolutions": {
+    "handlebars": "4.7.7"
   }
 }

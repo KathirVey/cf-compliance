@@ -1,6 +1,6 @@
 import Joi from 'joi'
 import {authHeaders, logger} from '@peoplenet/node-service-common'
-import {driverService, enterpriseData} from '../../services'
+import {driverService} from '../../services'
 import iseCompliance from '../../services/iseCompliance'
 import {stringifyUrl} from 'query-string'
 import search from '../../elasticsearch/search'
@@ -8,19 +8,20 @@ import search from '../../elasticsearch/search'
 const getVehicleForDriver = async (loginId, headers) => {
     try {
         const driverVehicle = await iseCompliance.get(`/api/Drivers/byDriverId/${loginId}/vehicle`, {headers})
-        const devices = await search({
-            select: ['vehicle'],
-            from: 'devices',
+
+        const [vehicle] = await search({
+            select: ['id', 'devices', 'customerVehicleId'],
+            from: 'vehicles',
             where: {
-                'serialNumber.keyword': driverVehicle.vehicleId
+                'customerVehicleId.keyword': driverVehicle.vehicleId
             }
         })
-        if (devices.length === 0) {
-            logger.error(`Unable to find device with DSN ${driverVehicle.vehicleId} in search`)
+
+        if (!vehicle) {
+            logger.error(`Unable to find vehicle with customerVehicleId: ${driverVehicle.vehicleId} in search`)
             return null
         }
-        const device = devices[0]
-        const {data: vehicle} = await enterpriseData.get(`vehicles/${device.vehicle.id}`, {headers})
+
         return vehicle
     } catch (error) {
         if (error.description?.status === 404) {

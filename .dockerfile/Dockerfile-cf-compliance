@@ -1,4 +1,6 @@
 FROM node:14-alpine
 WORKDIR /usr/src/app
 ADD cf-compliance.tar.gz /usr/src/app
+RUN adduser -D trimble
+USER trimble
 CMD [ "npm", "start" ]

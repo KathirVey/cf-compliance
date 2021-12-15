@@ -50,7 +50,11 @@ describe('pfm terminals events', () => {
 
     it('should handle pfm terminal create event', async () => {
         client.exists.mockResolvedValue({body: false})
-        search.mockResolvedValueOnce([])
+        search.mockResolvedValueOnce(
+            [{
+                id: 1000000
+            }]
+        )
 
         const request = {
             payload: {
@@ -70,10 +74,18 @@ describe('pfm terminals events', () => {
 
         await route.handler(request, hapi)
 
+        expect(search).toHaveBeenCalledWith({
+            select: ['id'],
+            from: 'customers',
+            where: {
+                pfmId: 3471
+            }
+        })
         expect(hapi.response).toHaveBeenCalledWith()
         expect(client.create).toHaveBeenCalledWith({
             body: {
                 id: 57714,
+                customerId: 1000000,
                 cid: 3471,
                 termid: 57714,
                 created: '2019-09-30T14:52:24.010Z',
@@ -116,6 +128,11 @@ describe('pfm terminals events', () => {
 
     it('should handle pfm terminal update event', async () => {
         client.exists.mockResolvedValue({body: true})
+        search.mockResolvedValueOnce(
+            [{
+                id: 1000000
+            }]
+        )
 
         const request = {
             payload: {
@@ -135,11 +152,19 @@ describe('pfm terminals events', () => {
 
         await route.handler(request, hapi)
 
+        expect(search).toHaveBeenCalledWith({
+            select: ['id'],
+            from: 'customers',
+            where: {
+                pfmId: 3471
+            }
+        })
         expect(hapi.response).toHaveBeenCalledWith()
         expect(client.update).toHaveBeenCalledWith({
             body: {
                 doc: {
                     id: 57714,
+                    customerId: 1000000,
                     cid: 3471,
                     termid: 57714,
                     created: '2019-09-30T14:52:24.010Z',
@@ -178,6 +203,41 @@ describe('pfm terminals events', () => {
             type: '_doc'
         })
         expect(client.create).not.toHaveBeenCalled()
+        expect(client.delete).not.toHaveBeenCalled()
+    })
+
+    it('should handle pfm terminal event when customerId is not found', async () => {
+        client.exists.mockResolvedValue({body: true})
+        search.mockResolvedValueOnce([])
+
+        const request = {
+            payload: {
+                rowVersion: '812098',
+                rowDate: '2021-12-10T18:03:18.660Z',
+                operation: 'update',
+                identity: [{
+                    key: 'termid',
+                    value: 57714,
+                    type: 'Int'
+                }],
+                payload: {
+                    ...payloadData
+                }
+            }
+        }
+
+        await route.handler(request, hapi)
+
+        expect(search).toHaveBeenCalledWith({
+            select: ['id'],
+            from: 'customers',
+            where: {
+                pfmId: 3471
+            }
+        })
+        expect(hapi.response).toHaveBeenCalledWith()
+        expect(client.create).not.toHaveBeenCalled()
+        expect(client.update).not.toHaveBeenCalled()
         expect(client.delete).not.toHaveBeenCalled()
     })
 

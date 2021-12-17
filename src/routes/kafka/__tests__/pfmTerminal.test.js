@@ -58,16 +58,18 @@ describe('pfm terminals events', () => {
 
         const request = {
             payload: {
-                rowVersion: '812098',
-                rowDate: '2021-12-10T18:03:18.660Z',
-                operation: 'update',
-                identity: [{
-                    key: 'termid',
-                    value: 57714,
-                    type: 'Int'
-                }],
-                payload: {
-                    ...payloadData
+                value: {
+                    rowVersion: '812098',
+                    rowDate: '2021-12-10T18:03:18.660Z',
+                    operation: 'update',
+                    identity: [{
+                        key: 'termid',
+                        value: 57714,
+                        type: 'Int'
+                    }],
+                    payload: {
+                        ...payloadData
+                    }
                 }
             }
         }
@@ -136,16 +138,18 @@ describe('pfm terminals events', () => {
 
         const request = {
             payload: {
-                rowVersion: '812098',
-                rowDate: '2021-12-10T18:03:18.660Z',
-                operation: 'update',
-                identity: [{
-                    key: 'termid',
-                    value: 57714,
-                    type: 'Int'
-                }],
-                payload: {
-                    ...payloadData
+                value: {
+                    rowVersion: '812098',
+                    rowDate: '2021-12-10T18:03:18.660Z',
+                    operation: 'update',
+                    identity: [{
+                        key: 'termid',
+                        value: 57714,
+                        type: 'Int'
+                    }],
+                    payload: {
+                        ...payloadData
+                    }
                 }
             }
         }
@@ -212,16 +216,18 @@ describe('pfm terminals events', () => {
 
         const request = {
             payload: {
-                rowVersion: '812098',
-                rowDate: '2021-12-10T18:03:18.660Z',
-                operation: 'update',
-                identity: [{
-                    key: 'termid',
-                    value: 57714,
-                    type: 'Int'
-                }],
-                payload: {
-                    ...payloadData
+                value: {
+                    rowVersion: '812098',
+                    rowDate: '2021-12-10T18:03:18.660Z',
+                    operation: 'update',
+                    identity: [{
+                        key: 'termid',
+                        value: 57714,
+                        type: 'Int'
+                    }],
+                    payload: {
+                        ...payloadData
+                    }
                 }
             }
         }
@@ -246,16 +252,18 @@ describe('pfm terminals events', () => {
 
         const request = {
             payload: {
-                rowVersion: '812098',
-                rowDate: '2021-12-10T18:03:18.660Z',
-                operation: 'delete',
-                identity: [{
-                    key: 'termid',
-                    value: 57714,
-                    type: 'Int'
-                }],
-                payload: {
-                    ...payloadData
+                value: {
+                    rowVersion: '812098',
+                    rowDate: '2021-12-10T18:03:18.660Z',
+                    operation: 'delete',
+                    identity: [{
+                        key: 'termid',
+                        value: 57714,
+                        type: 'Int'
+                    }],
+                    payload: {
+                        ...payloadData
+                    }
                 }
             }
         }

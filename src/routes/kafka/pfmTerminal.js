@@ -6,10 +6,9 @@ const {logger} = require('@peoplenet/node-service-common')
 module.exports = {
     method: 'POST',
     path: '/kafka/pfmTerminal',
-    handler: async ({payload: message}, hapi) => {
-        logger.debug(message, 'pfm terminal message')
-        const {operation, payload: entity} = message
-        logger.debug(entity, 'pfm terminal payload')
+    handler: async ({payload}, hapi) => {
+        const {value} = payload
+        const {operation, payload: entity} = value
         entity.id = entity.termid
         if (operation.toLowerCase() === 'delete') {
             await searchApi.delete('pfm_terminal', entity)

@@ -5,13 +5,13 @@ const {logger} = require('@peoplenet/node-service-common')
 
 module.exports = {
     method: 'POST',
-    path: '/kafka/pfmTerminal',
+    path: '/kafka/pfmDriver',
     handler: async ({payload}, hapi) => {
         const {value} = payload
         const {operation, payload: entity} = value
-        entity.id = entity.termid
+        entity.id = entity.did
         if (operation.toLowerCase() === 'delete') {
-            await searchApi.delete('pfm_terminal', entity)
+            await searchApi.delete('pfm_driver', entity)
         } else {
             const customerId = await getCustomerIdFromCid(entity.cid)
             if (!customerId) {
@@ -19,16 +19,33 @@ module.exports = {
                 return hapi.response()
             }
             entity.customerId = customerId
-            await searchApi.upsert('pfm_terminal', entity)
+            const driver = mapper(entity)
+            await searchApi.upsert('pfm_driver', driver)
         }
-        logger.info({name: entity.name}, `Processed terminal event`)
+        logger.info({driverId: entity.did}, `Processed driver event`)
         return hapi.response()
     },
     options: {
-        description: 'Update search based on pfm_terminal events',
+        description: 'Update search based on pfm_driver events',
         tags: ['api'],
         validate: {
             payload: Joi.object().required()
         }
+    }
+}
+
+const mapper = payload => {
+    return {
+        id: payload.id,
+        customerId: payload.customerId,
+        cid: payload.cid,
+        did: payload.did,
+        vid: payload.vid,
+        active: payload.active,
+        name: payload.name,
+        idNumber: payload.idNumber, // maps to personId
+        termid: payload.termid, // maps to home terminal source key
+        created: payload.created,
+        deleted: payload.deleted
     }
 }

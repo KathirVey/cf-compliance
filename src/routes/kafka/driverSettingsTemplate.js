@@ -15,6 +15,7 @@ export default {
         const {members = []} = driverMembers
         if (method === 'CREATE' || method === 'UPDATE') {
             await searchApi.upsert('driver_settings_template', entity)
+            if (!isEmpty(members)) await bulkUpdateDriverSearch(members, {id, name, description})
         } else if (method === 'DELETE') {
             await searchApi.delete('driver_settings_template', entity)
         } else if (method === 'ASSIGN' && !isEmpty(members)) {

@@ -227,4 +227,77 @@ describe('driver settings template events', () => {
             ]
         })
     })
+
+    it('should handle update driver search based on UPDATE driver settings events', async () => {
+        client.exists.mockResolvedValue({body: true})
+
+        const request = {
+            payload: {
+                value: {
+                    method: 'UPDATE',
+                    payload: {
+                        id: 'id',
+                        ...payloadData,
+                        associations: [
+                            {
+                                groupType: 'DRIVER',
+                                members: [{entityId: 'id1'}, {entityId: 'id2'}]
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+
+        await route.handler(request, hapi)
+
+        expect(hapi.response).toHaveBeenCalledWith()
+        expect(client.update).toHaveBeenCalledWith({
+            body: {
+                doc: {
+                    id: 'id',
+                    name: 'Template Name - 1',
+                    description: 'My Template',
+                    customer: {
+                        companyId: 75,
+                        description: 'My Company'
+                    },
+                    associations: [
+                        {
+                            groupType: 'DRIVER',
+                            members: [{entityId: 'id1'}, {entityId: 'id2'}]
+                        }
+                    ]
+                }
+            },
+            id: 'id',
+            index: 'driver_settings_template',
+            type: '_doc'
+        })
+
+        expect(client.bulk).toHaveBeenCalledWith({
+            body: [
+                {update: {_id: 'id1', _index: 'driver'}},
+                {
+                    doc: {
+                        uniqueMemberGroup: {
+                            id: 'id',
+                            name: 'Template Name - 1',
+                            description: 'My Template'
+                        }
+                    }
+                },
+                {update: {_id: 'id2', _index: 'driver'}},
+                {
+                    doc: {
+                        uniqueMemberGroup: {
+                            id: 'id',
+                            name: 'Template Name - 1',
+                            description: 'My Template'
+                        }
+                    }
+                }
+            ]
+        })
+    })
 })

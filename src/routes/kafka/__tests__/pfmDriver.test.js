@@ -152,10 +152,10 @@ describe('pfm driver events', () => {
                 cid: 4629,
                 did: 1005620,
                 vid: null,
-                active: 1,
+                driverStatus: 'Active',
                 name: 'Shawn M Shipp',
                 idNumber: 2504434,
-                termid: 35611,
+                terminal: 35611,
                 created: '2016-11-05T05:19:29.877Z',
                 deleted: null
             },
@@ -213,10 +213,10 @@ describe('pfm driver events', () => {
                     cid: 4629,
                     did: 1005620,
                     vid: null,
-                    active: 1,
+                    driverStatus: 'Active',
                     name: 'Shawn M Shipp',
                     idNumber: 2504434,
-                    termid: 35611,
+                    terminal: 35611,
                     created: '2016-11-05T05:19:29.877Z',
                     deleted: null
                 }

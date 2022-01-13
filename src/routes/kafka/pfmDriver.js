@@ -41,10 +41,10 @@ const mapper = payload => {
         cid: payload.cid,
         did: payload.did,
         vid: payload.vid,
-        active: payload.active,
+        driverStatus: payload.active === 0 ? 'Inactive' : 'Active',
         name: payload.name,
         idNumber: payload.idNumber, // maps to personId
-        termid: payload.termid, // maps to home terminal source key
+        terminal: payload.termid, // maps to home terminal source key
         created: payload.created,
         deleted: payload.deleted
     }

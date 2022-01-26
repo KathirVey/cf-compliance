@@ -3,22 +3,26 @@ import moment from 'moment'
 import querystring from 'querystring'
 import {pick, isObject} from 'lodash'
 import {authHeaders, logger} from '@peoplenet/node-service-common'
-import iseCompliance from '../../services/iseCompliance'
+import {iseCompliance} from '../../services'
+import getIseHeaders from '../../util/getIseHeaders'
 
 export default {
     method: 'GET',
     path: '/drivers/login/{loginId}/hoursOfService',
-    async handler({headers, params, query}) {
+    async handler({auth, params, query}) {
         const {loginId} = params
         const options = {
             startDateTime: moment().subtract(1, 'weeks').toISOString(),
             ...pick(query, ['startDateTime', 'endDateTime']),
             driverId: loginId
         }
+        const {user, hasPermission} = auth.artifacts
+        const pfmCid = hasPermission('CXS-CUSTOMER-READ') ? query.pfmCid : user.companyId
 
+        const iseHeaders = getIseHeaders(pfmCid)
         const [availability, certification] = await Promise.all([
-            iseCompliance.get(`/api/DriverLogs/availability/byDriverId/${loginId}`, {headers}),
-            iseCompliance.get(`/api/v2/DriverLogs/certificationStatus?${querystring.stringify(options)}`, {headers})
+            iseCompliance.get(`/api/DriverLogs/availability/byDriverId/${loginId}`, {headers: iseHeaders}),
+            iseCompliance.get(`/api/v2/DriverLogs/certificationStatus?${querystring.stringify(options)}`, {headers: iseHeaders})
         ]).catch(error => {
             if (error.description?.status === 404) {
                 logger.debug('Got 404 from ISE; returning []')
@@ -26,7 +30,6 @@ export default {
             }
             throw error
         })
-
 
         return {
             availability: (availability?.availableByRule || []).map(rule => {

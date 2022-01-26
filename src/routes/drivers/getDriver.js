@@ -1,13 +1,14 @@
 import Joi from 'joi'
 import {authHeaders, logger} from '@peoplenet/node-service-common'
-import {driverService} from '../../services'
-import iseCompliance from '../../services/iseCompliance'
+import {driverService, iseCompliance} from '../../services'
 import {stringifyUrl} from 'query-string'
 import search from '../../elasticsearch/search'
+import getIseHeaders from '../../util/getIseHeaders'
 
-const getVehicleForDriver = async (loginId, headers) => {
+const getVehicleForDriver = async (loginId, pfmCid) => {
     try {
-        const driverVehicle = await iseCompliance.get(`/api/Drivers/byDriverId/${loginId}/vehicle`, {headers})
+        const iseHeaders = getIseHeaders(pfmCid)
+        const driverVehicle = await iseCompliance.get(`/api/Drivers/byDriverId/${loginId}/vehicle`, {headers: iseHeaders})
 
         const [vehicle] = await search({
             select: ['id', 'devices', 'customerVehicleId'],
@@ -45,9 +46,11 @@ const getUniqueMemberGroup = async driverId => {
 export default {
     method: 'GET',
     path: '/drivers/{driverId}',
-    async handler({headers, params, server, query}) {
+    async handler({auth, headers, params, server, query}) {
         const {driverId} = params
         const {customerId} = query
+        const {hasPermission, user} = auth.artifacts
+        const pfmCid = hasPermission('CXS-CUSTOMER-READ') ? query.pfmCid : user.companyId
 
         const url = stringifyUrl({
             url: `/driver-service/v2/drivers/${driverId}`,
@@ -62,7 +65,7 @@ export default {
                 method: 'GET',
                 url: `/drivers/login/${loginId}/hoursOfService`
             }),
-            getVehicleForDriver(loginId, headers),
+            getVehicleForDriver(loginId, pfmCid),
             getUniqueMemberGroup(driverId)
         ])
 

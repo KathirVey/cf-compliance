@@ -1,20 +1,37 @@
-import iseCompliance from '../../../services/iseCompliance'
+import {iseCompliance} from '../../../services'
 import route from '../getHoursOfService'
 
-jest.mock('../../../services')
-    .mock('../../../services/iseCompliance')
+process.env.ISE_COMPLIANCE_AUTH = 'someAuthToken'
 
-let request
+jest.mock('../../../services')
+
+let request, iseHeaders
 
 beforeEach(() => {
     request = {
-        query: {},
+        auth: {
+            artifacts: {
+                hasPermission: jest.fn(),
+                user: {
+                    companyId: 'userPfmCid'
+                }
+            }
+        },
+        query: {
+            pfmCid: 'queryPfmCid'
+        },
         headers: {
             'x-application-customer': '00-0000-00'
         },
         params: {
             loginId: 'konapun'
         }
+    }
+    iseHeaders = {
+        'content-type': 'application/json',
+        authorization: `Basic someAuthToken`,
+        'x-authenticate-orgid': 'root',
+        'x-filter-orgid': 'userPfmCid'
     }
 })
 
@@ -41,12 +58,11 @@ it('should get hours of service info for a driver', async () => {
     })
     iseCompliance.get.mockResolvedValueOnce([{c: 3}]) // certification
 
-    const {headers} = request
     const result = await route.handler(request)
 
     expect(iseCompliance.get).toHaveBeenCalledTimes(2)
-    expect(iseCompliance.get).toHaveBeenCalledWith('/api/DriverLogs/availability/byDriverId/konapun', {headers})
-    expect(iseCompliance.get).toHaveBeenCalledWith('/api/v2/DriverLogs/certificationStatus?startDateTime=1234&driverId=konapun', {headers})
+    expect(iseCompliance.get).toHaveBeenCalledWith('/api/DriverLogs/availability/byDriverId/konapun', {headers: iseHeaders})
+    expect(iseCompliance.get).toHaveBeenCalledWith('/api/v2/DriverLogs/certificationStatus?startDateTime=1234&driverId=konapun', {headers: iseHeaders})
 
     expect(result).toEqual({
         availability: [{
@@ -92,12 +108,11 @@ it('should constrain drive time by duty time if duty time is less than drive tim
     })
     iseCompliance.get.mockResolvedValueOnce([{c: 3}])
 
-    const {headers} = request
     const result = await route.handler(request)
 
     expect(iseCompliance.get).toHaveBeenCalledTimes(2)
-    expect(iseCompliance.get).toHaveBeenCalledWith('/api/DriverLogs/availability/byDriverId/konapun', {headers})
-    expect(iseCompliance.get).toHaveBeenCalledWith('/api/v2/DriverLogs/certificationStatus?startDateTime=1234&driverId=konapun', {headers})
+    expect(iseCompliance.get).toHaveBeenCalledWith('/api/DriverLogs/availability/byDriverId/konapun', {headers: iseHeaders})
+    expect(iseCompliance.get).toHaveBeenCalledWith('/api/v2/DriverLogs/certificationStatus?startDateTime=1234&driverId=konapun', {headers: iseHeaders})
 
     expect(result).toEqual({
         availability: [{
@@ -143,12 +158,11 @@ it('should constrain drive time and duty time by cycle time if cycle time is les
     })
     iseCompliance.get.mockResolvedValueOnce([{c: 3}])
 
-    const {headers} = request
     const result = await route.handler(request)
 
     expect(iseCompliance.get).toHaveBeenCalledTimes(2)
-    expect(iseCompliance.get).toHaveBeenCalledWith('/api/DriverLogs/availability/byDriverId/konapun', {headers})
-    expect(iseCompliance.get).toHaveBeenCalledWith('/api/v2/DriverLogs/certificationStatus?startDateTime=1234&driverId=konapun', {headers})
+    expect(iseCompliance.get).toHaveBeenCalledWith('/api/DriverLogs/availability/byDriverId/konapun', {headers: iseHeaders})
+    expect(iseCompliance.get).toHaveBeenCalledWith('/api/v2/DriverLogs/certificationStatus?startDateTime=1234&driverId=konapun', {headers: iseHeaders})
 
     expect(result).toEqual({
         availability: [{
@@ -194,12 +208,11 @@ it('should constrain drive time by break time if the driver requires a mandatory
     })
     iseCompliance.get.mockResolvedValueOnce([{c: 3}])
 
-    const {headers} = request
     const result = await route.handler(request)
 
     expect(iseCompliance.get).toHaveBeenCalledTimes(2)
-    expect(iseCompliance.get).toHaveBeenCalledWith('/api/DriverLogs/availability/byDriverId/konapun', {headers})
-    expect(iseCompliance.get).toHaveBeenCalledWith('/api/v2/DriverLogs/certificationStatus?startDateTime=1234&driverId=konapun', {headers})
+    expect(iseCompliance.get).toHaveBeenCalledWith('/api/DriverLogs/availability/byDriverId/konapun', {headers: iseHeaders})
+    expect(iseCompliance.get).toHaveBeenCalledWith('/api/v2/DriverLogs/certificationStatus?startDateTime=1234&driverId=konapun', {headers: iseHeaders})
 
     expect(result).toEqual({
         availability: [{
@@ -222,11 +235,9 @@ it('should constrain drive time by break time if the driver requires a mandatory
 })
 
 it('should pick a default start date of one week ago if not provided', async () => {
-    const {headers} = request
-
     await route.handler(request)
 
-    expect(iseCompliance.get).toHaveBeenCalledWith('/api/v2/DriverLogs/certificationStatus?startDateTime=1999-12-26T03%3A04%3A05.006Z&driverId=konapun', {headers})
+    expect(iseCompliance.get).toHaveBeenCalledWith('/api/v2/DriverLogs/certificationStatus?startDateTime=1999-12-26T03%3A04%3A05.006Z&driverId=konapun', {headers: iseHeaders})
 })
 
 it('should give an empty array for availability and ceritifcation if no data is found', async () => {
@@ -234,12 +245,11 @@ it('should give an empty array for availability and ceritifcation if no data is 
     iseCompliance.get.mockResolvedValueOnce() // availability
     iseCompliance.get.mockResolvedValueOnce() // certification
 
-    const {headers} = request
     const result = await route.handler(request)
 
     expect(iseCompliance.get).toHaveBeenCalledTimes(2)
-    expect(iseCompliance.get).toHaveBeenCalledWith('/api/DriverLogs/availability/byDriverId/konapun', {headers})
-    expect(iseCompliance.get).toHaveBeenCalledWith('/api/v2/DriverLogs/certificationStatus?startDateTime=1234&driverId=konapun', {headers})
+    expect(iseCompliance.get).toHaveBeenCalledWith('/api/DriverLogs/availability/byDriverId/konapun', {headers: iseHeaders})
+    expect(iseCompliance.get).toHaveBeenCalledWith('/api/v2/DriverLogs/certificationStatus?startDateTime=1234&driverId=konapun', {headers: iseHeaders})
 
     expect(result).toEqual({availability: [], certification: []})
 })
@@ -249,12 +259,11 @@ it('should handle 404s from ISE', async () => {
     iseCompliance.get.mockRejectedValueOnce({description: {status: 404}})
     iseCompliance.get.mockResolvedValueOnce([{c: 3}]) // certification
 
-    const {headers} = request
     const result = await route.handler(request)
 
     expect(iseCompliance.get).toHaveBeenCalledTimes(2)
-    expect(iseCompliance.get).toHaveBeenCalledWith('/api/DriverLogs/availability/byDriverId/konapun', {headers})
-    expect(iseCompliance.get).toHaveBeenCalledWith('/api/v2/DriverLogs/certificationStatus?startDateTime=1234&driverId=konapun', {headers})
+    expect(iseCompliance.get).toHaveBeenCalledWith('/api/DriverLogs/availability/byDriverId/konapun', {headers: iseHeaders})
+    expect(iseCompliance.get).toHaveBeenCalledWith('/api/v2/DriverLogs/certificationStatus?startDateTime=1234&driverId=konapun', {headers: iseHeaders})
 
     expect(result).toEqual({
         availability: [],

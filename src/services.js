@@ -1,6 +1,6 @@
 import makeService from '@peoplenet/cf-services'
 
-const {billingDataBridge, driverService, enterpriseData, iseCompliance: rawIseCompliance, connectedfleetcache} = makeService([
+const {billingDataBridge, driverService, enterpriseData, iseCompliance, connectedfleetcache} = makeService([
     'billingDataBridge',
     'driverService',
     'enterpriseData',
@@ -12,5 +12,5 @@ const {billingDataBridge, driverService, enterpriseData, iseCompliance: rawIseCo
     }
 })
 
-export {billingDataBridge, enterpriseData, driverService, rawIseCompliance, connectedfleetcache}
+export {billingDataBridge, enterpriseData, driverService, iseCompliance, connectedfleetcache}
 

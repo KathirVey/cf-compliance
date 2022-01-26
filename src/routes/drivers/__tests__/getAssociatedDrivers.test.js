@@ -1,26 +1,41 @@
-import {driverService} from '../../../services'
-import iseCompliance from '../../../services/iseCompliance'
+import {driverService, iseCompliance} from '../../../services'
 import route from '../getAssociatedDrivers'
 
-jest.mock('../../../services')
-    .mock('../../../services/iseCompliance')
+process.env.ISE_COMPLIANCE_AUTH = 'someAuthToken'
 
-let request, hapi
+jest.mock('../../../services')
+
+let request, hapi, iseHeaders
 
 beforeEach(() => {
     request = {
+        auth: {
+            artifacts: {
+                hasPermission: jest.fn(),
+                user: {
+                    companyId: 'userPfmCid'
+                }
+            }
+        },
         headers: {
-            'x-application-customer': '00-0000-00'
+            'x-application-customer': 'ac_id'
         },
         params: {
             id: 1
         },
         query: {
-            hoursOfService: false
+            hoursOfService: false,
+            pfmCid: 'queryPfmCid'
         },
         server: {
             inject: jest.fn()
         }
+    }
+    iseHeaders = {
+        'content-type': 'application/json',
+        authorization: `Basic someAuthToken`,
+        'x-authenticate-orgid': 'root',
+        'x-filter-orgid': 'userPfmCid'
     }
 
     hapi = {
@@ -54,10 +69,10 @@ it('should support getting drivers associated with a vehicle', async () => {
     const drivers = await route.handler(request)
 
     expect(drivers).toEqual(expectedDriverData)
-    expect(iseCompliance.get).toHaveBeenCalledWith(`/api/vehicles/byVehicleId/1/drivers`, {headers: request.headers})
+    expect(iseCompliance.get).toHaveBeenCalledWith(`/api/vehicles/byVehicleId/1/drivers`, {headers: iseHeaders})
     expect(driverService.get).toHaveBeenCalledTimes(2)
-    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/speed_racer', {headers: request.headers})
-    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/racer_x', {headers: request.headers})
+    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/speed_racer?customerId=userPfmCid', {headers: request.headers})
+    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/racer_x?customerId=userPfmCid', {headers: request.headers})
 })
 
 it('should return an empty array if ISE returns a 404', async () => {
@@ -101,13 +116,17 @@ it('should return hours of service data for associated drivers if specified', as
 
     const drivers = await route.handler(request)
 
-    expect(iseCompliance.get).toHaveBeenCalledWith('/api/vehicles/byVehicleId/1/drivers', {headers})
+    expect(iseCompliance.get).toHaveBeenCalledWith('/api/vehicles/byVehicleId/1/drivers', {headers: iseHeaders})
     expect(driverService.get).toHaveBeenCalledTimes(2)
-    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/speed_racer', {headers})
-    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/racer_x', {headers})
+    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/speed_racer?customerId=userPfmCid', {headers})
+    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/racer_x?customerId=userPfmCid', {headers})
 
     expect(server.inject).toHaveBeenCalledTimes(2)
-    expect(server.inject).toHaveBeenCalledWith({headers, method: 'GET', url: '/drivers/login/speed_racer/hoursOfService'})
+    expect(server.inject).toHaveBeenCalledWith({
+        headers,
+        method: 'GET',
+        url: '/drivers/login/speed_racer/hoursOfService'
+    })
     expect(server.inject).toHaveBeenCalledWith({headers, method: 'GET', url: '/drivers/login/racer_x/hoursOfService'})
 
     expect(drivers).toEqual([
@@ -122,14 +141,13 @@ it('should return hours of service data for associated drivers if specified', as
     ])
 })
 
-
 it('should support getting drivers and HOS info for CXSupport', async () => {
+    request.auth.artifacts.hasPermission.mockReturnValue(true)
+
     const {server, headers} = request
 
-    request.query = {
-        hoursOfService: true,
-        customerId: 'someCustId'
-    }
+    request.query.hoursOfService = true
+
     const expectedDriverData = [
         {
             id: 1,
@@ -155,13 +173,21 @@ it('should support getting drivers and HOS info for CXSupport', async () => {
 
     const drivers = await route.handler(request)
 
-    expect(iseCompliance.get).toHaveBeenCalledWith(`/api/vehicles/byVehicleId/1/drivers`, {headers: request.headers})
-
+    expect(iseCompliance.get).toHaveBeenCalledWith(`/api/vehicles/byVehicleId/1/drivers`, {
+        headers: {
+            ...iseHeaders,
+            'x-filter-orgid': 'queryPfmCid'
+        }
+    })
     expect(driverService.get).toHaveBeenCalledTimes(2)
-    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/speed_racer?customerId=someCustId', {headers: request.headers})
-    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/racer_x?customerId=someCustId', {headers: request.headers})
+    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/speed_racer?customerId=queryPfmCid', {headers: request.headers})
+    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/racer_x?customerId=queryPfmCid', {headers: request.headers})
 
-    expect(server.inject).toHaveBeenCalledWith({headers, method: 'GET', url: '/drivers/login/speed_racer/hoursOfService'})
+    expect(server.inject).toHaveBeenCalledWith({
+        headers,
+        method: 'GET',
+        url: '/drivers/login/speed_racer/hoursOfService'
+    })
     expect(server.inject).toHaveBeenCalledWith({headers, method: 'GET', url: '/drivers/login/racer_x/hoursOfService'})
 
     expect(drivers).toEqual([

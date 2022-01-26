@@ -1,23 +1,26 @@
 import Joi from 'joi'
 import {authHeaders, logger} from '@peoplenet/node-service-common'
-import {driverService} from '../../services'
-import iseCompliance from '../../services/iseCompliance'
+import {driverService, iseCompliance} from '../../services'
 import {stringifyUrl} from 'query-string'
+import getIseHeaders from '../../util/getIseHeaders'
 
 export default {
     method: 'GET',
     path: '/driversByVehicle/{id}',
-    async handler({headers, params, query, server}) {
+    async handler({auth, headers, params, query, server}) {
         const {id} = params
-        const {hoursOfService: getHoursOfService, customerId} = query
+        const {hoursOfService: getHoursOfService} = query
+        const {user, hasPermission} = auth.artifacts
+        const pfmCid = hasPermission('CXS-CUSTOMER-READ') ? query.pfmCid : user.companyId
 
         try {
-            const iseDrivers = await iseCompliance.get(`/api/vehicles/byVehicleId/${id}/drivers`, {headers})
+            const iseHeaders = getIseHeaders(pfmCid)
+            const iseDrivers = await iseCompliance.get(`/api/vehicles/byVehicleId/${id}/drivers`, {headers: iseHeaders})
 
             const tfmDrivers = await Promise.all(iseDrivers.map(({driverId}) => {
                 const urlPrefix = stringifyUrl({
                     url: `/driver-service/v2/drivers/login/${driverId}`,
-                    query: {customerId}
+                    query: {customerId: pfmCid}
                 })
                 return driverService.get(urlPrefix, {headers})
             }))

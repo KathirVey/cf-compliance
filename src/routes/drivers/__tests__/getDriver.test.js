@@ -1,17 +1,27 @@
-import {driverService} from '../../../services'
-import iseCompliance from '../../../services/iseCompliance'
+import {driverService, iseCompliance} from '../../../services'
 import search from '../../../elasticsearch/search'
 import route from '../getDriver'
 
+process.env.ISE_COMPLIANCE_AUTH = 'someAuthToken'
+
 jest.mock('@elastic/elasticsearch')
     .mock('../../../services')
-    .mock('../../../services/iseCompliance')
     .mock('../../../elasticsearch/search')
 
-let request
+let request, iseHeaders
 beforeEach(() => {
     request = {
-        headers: 'xyz',
+        auth: {
+            artifacts: {
+                hasPermission: jest.fn(),
+                user: {
+                    companyId: 'userPfmCid'
+                }
+            }
+        },
+        headers: {
+            'x-application-customer': 'ac_id'
+        },
         params: {
             driverId: '1'
         },
@@ -19,6 +29,12 @@ beforeEach(() => {
         server: {
             inject: jest.fn()
         }
+    }
+    iseHeaders = {
+        'content-type': 'application/json',
+        authorization: `Basic someAuthToken`,
+        'x-authenticate-orgid': 'root',
+        'x-filter-orgid': 'userPfmCid'
     }
 })
 
@@ -35,7 +51,7 @@ it('should get a driver with hours of service data', async () => {
     expect(result).toEqual({id: 1, name: 'driver', profile: {loginId: 'konapun'}, hoursOfService: {shift: 8}, vehicle: null, uniqueMemberGroup: null})
     expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/1', {headers: request.headers})
     expect(request.server.inject).toHaveBeenCalledWith({
-        headers: 'xyz',
+        headers: request.headers,
         method: 'GET',
         url: '/drivers/login/konapun/hoursOfService'
     })
@@ -52,14 +68,14 @@ it('should get the associated vehicle for a driver', async () => {
 
     expect(result).toEqual({id: 1, name: 'driver', profile: {loginId: 'konapunLeft'}, hoursOfService: {shift: 8}, vehicle: {id: 90, devices: []}, uniqueMemberGroup: null})
     expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/1', {headers: request.headers})
-    expect(iseCompliance.get).toHaveBeenCalledWith('/api/Drivers/byDriverId/konapunLeft/vehicle', {headers: request.headers})
+    expect(iseCompliance.get).toHaveBeenCalledWith('/api/Drivers/byDriverId/konapunLeft/vehicle', {headers: iseHeaders})
     expect(search).toHaveBeenCalledWith({
         select: ['id', 'devices', 'customerVehicleId'],
         from: 'vehicles',
         where: {'customerVehicleId.keyword': '1234'}
     })
     expect(request.server.inject).toHaveBeenCalledWith({
-        headers: 'xyz',
+        headers: request.headers,
         method: 'GET',
         url: '/drivers/login/konapunLeft/hoursOfService'
     })
@@ -88,7 +104,7 @@ it('should get the associated driver settings template for a driver', async () =
     })
 
     expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/1', {headers: request.headers})
-    expect(iseCompliance.get).toHaveBeenCalledWith('/api/Drivers/byDriverId/konapun/vehicle', {headers: request.headers})
+    expect(iseCompliance.get).toHaveBeenCalledWith('/api/Drivers/byDriverId/konapun/vehicle', {headers: iseHeaders})
     expect(search).toHaveBeenCalledWith({
         select: ['id', 'devices', 'customerVehicleId'],
         from: 'vehicles',
@@ -102,7 +118,7 @@ it('should get the associated driver settings template for a driver', async () =
         }
     })
     expect(request.server.inject).toHaveBeenCalledWith({
-        headers: 'xyz',
+        headers: request.headers,
         method: 'GET',
         url: '/drivers/login/konapun/hoursOfService'
     })
@@ -123,7 +139,7 @@ it('should get a driver via customerId query', async () => {
     expect(result).toEqual({id: 1, name: 'driver', profile: {loginId: 'konapun'}, hoursOfService: {shift: 8}, vehicle: null, uniqueMemberGroup: null})
     expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/1?customerId=someCustomerId', {headers: request.headers})
     expect(request.server.inject).toHaveBeenCalledWith({
-        headers: 'xyz',
+        headers: request.headers,
         method: 'GET',
         url: '/drivers/login/konapun/hoursOfService'
     })

@@ -9,6 +9,6 @@ const mockService = () => ({
 export const billingDataBridge = mockService()
 export const driverService = mockService()
 export const enterpriseData = mockService()
-export const rawIseCompliance = mockService()
+export const iseCompliance = mockService()
 export const connectedfleetcache = mockService()
 

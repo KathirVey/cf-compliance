@@ -6,21 +6,21 @@ import getIseHeaders from '../../util/getIseHeaders'
 
 export default {
     method: 'GET',
-    path: '/driversByVehicle/{id}',
+    path: '/driversByVehicle/{customerVehicleId}',
     async handler({auth, headers, params, query, server}) {
-        const {id} = params
-        const {hoursOfService: getHoursOfService} = query
+        const {customerVehicleId} = params
+        const {hoursOfService: getHoursOfService, upsCustomerId} = query
         const {user, hasPermission} = auth.artifacts
         const pfmCid = hasPermission('CXS-CUSTOMER-READ') ? query.pfmCid : user.companyId
 
         try {
             const iseHeaders = getIseHeaders(pfmCid)
-            const iseDrivers = await iseCompliance.get(`/api/vehicles/byVehicleId/${id}/drivers`, {headers: iseHeaders})
+            const iseDrivers = await iseCompliance.get(`/api/vehicles/byVehicleId/${customerVehicleId}/drivers`, {headers: iseHeaders})
 
             const tfmDrivers = await Promise.all(iseDrivers.map(({driverId}) => {
                 const urlPrefix = stringifyUrl({
                     url: `/driver-service/v2/drivers/login/${driverId}`,
-                    query: {customerId: pfmCid}
+                    query: {customerId: upsCustomerId}
                 })
                 return driverService.get(urlPrefix, {headers})
             }))

@@ -20,6 +20,7 @@ describe('driver settings template events', () => {
                 {groupType: 'DRIVER', members: []}
             ]
         }
+        client.bulk.mockResolvedValueOnce({body: {error: false}})
     })
 
     it('should handle driver settings template create events', async () => {

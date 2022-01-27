@@ -12,16 +12,24 @@ export default {
         const {method, payload: entity} = value
         const {id, name, description, associations = []} = entity
         const driverMembers = find(associations, {groupType: 'DRIVER'})
+        let error = []
         const {members = []} = driverMembers
         if (method === 'CREATE' || method === 'UPDATE') {
             await searchApi.upsert('driver_settings_template', entity)
-            if (!isEmpty(members)) await bulkUpdateDriverSearch(members, {id, name, description})
+            if (!isEmpty(members)) {
+                error = await bulkUpdateDriverSearch(members, {id, name, description})
+            }
         } else if (method === 'DELETE') {
-            await searchApi.delete('driver_settings_template', entity)
+            error = await searchApi.delete('driver_settings_template', entity)
         } else if (method === 'ASSIGN' && !isEmpty(members)) {
-            await bulkUpdateDriverSearch(members, {id, name, description})
+            error = await bulkUpdateDriverSearch(members, {id, name, description})
         } else if (method === 'UNASSIGN' && !isEmpty(members)) {
-            await bulkUpdateDriverSearch(members, null)
+            error = await bulkUpdateDriverSearch(members, null)
+        }
+
+        if (error?.length) {
+            logger.error({error}, 'Error during bulk driver update')
+            return hapi.response().code(207)
         }
         logger.info({id: entity.id}, `Processed Driver settings template ${method} event`) //TODO: Remove this logger info
         return hapi.response()
@@ -47,6 +55,20 @@ const bulkUpdateDriverSearch = async (members, uniqueMemberGroup) => {
         action.push({doc: {uniqueMemberGroup}})
         return action
     }, Promise.resolve([]))
+    const {body: {errors, items}} = await client.bulk({body})
 
-    await client.bulk({body})
+    const erroredDocument = []
+
+    if (errors) {
+        items.map(item => {
+            const operation = Object.keys(item)[0]
+            if (item[operation].error) {
+                erroredDocument.push({
+                    status: item[operation].status,
+                    error: item[operation].error
+                })
+            }
+        })
+    }
+    return erroredDocument
 }

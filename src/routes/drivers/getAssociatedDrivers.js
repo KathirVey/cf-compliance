@@ -9,7 +9,7 @@ export default {
     path: '/driversByVehicle/{customerVehicleId}',
     async handler({auth, headers, params, query, server}) {
         const {customerVehicleId} = params
-        const {hoursOfService: getHoursOfService, upsCustomerId} = query
+        const {hoursOfService: getHoursOfService} = query
         const {user, hasPermission} = auth.artifacts
         const pfmCid = hasPermission('CXS-CUSTOMER-READ') ? query.pfmCid : user.companyId
 
@@ -19,8 +19,7 @@ export default {
 
             const tfmDrivers = await Promise.all(iseDrivers.map(({driverId}) => {
                 const urlPrefix = stringifyUrl({
-                    url: `/driver-service/v2/drivers/login/${driverId}`,
-                    query: {customerId: upsCustomerId}
+                    url: `/driver-service/v2/drivers/login/${driverId}`
                 })
                 return driverService.get(urlPrefix, {headers})
             }))
@@ -31,7 +30,7 @@ export default {
                 const {result: hoursOfService} = await server.inject({
                     headers,
                     method: 'GET',
-                    url: `/drivers/login/${driver?.profile?.loginId}/hoursOfService`
+                    url: `/drivers/login/${driver?.profile?.loginId}/hoursOfService?pfmCid=${pfmCid}`
                 })
 
                 return {
@@ -59,11 +58,11 @@ export default {
         validate: {
             headers: authHeaders,
             params: Joi.object({
-                id: Joi.string().required()
-            }).required().description('Vehicle ID'),
+                customerVehicleId: Joi.string().required()
+            }).required().description('Customer Vehicle ID'),
             query: Joi.object({
                 hoursOfService: Joi.boolean().default(false),
-                customerId: Joi.string().optional()
+                pfmCid: Joi.string().optional()
             }).required()
         }
     }

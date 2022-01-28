@@ -125,9 +125,9 @@ it('should return hours of service data for associated drivers if specified', as
     expect(server.inject).toHaveBeenCalledWith({
         headers,
         method: 'GET',
-        url: '/drivers/login/speed_racer/hoursOfService'
+        url: '/drivers/login/speed_racer/hoursOfService?pfmCid=userPfmCid'
     })
-    expect(server.inject).toHaveBeenCalledWith({headers, method: 'GET', url: '/drivers/login/racer_x/hoursOfService'})
+    expect(server.inject).toHaveBeenCalledWith({headers, method: 'GET', url: '/drivers/login/racer_x/hoursOfService?pfmCid=userPfmCid'})
 
     expect(drivers).toEqual([
         {
@@ -147,7 +147,6 @@ it('should support getting drivers and HOS info for CXSupport', async () => {
     const {server, headers} = request
 
     request.query.hoursOfService = true
-    request.query.upsCustomerId = 'cust_id'
 
     const expectedDriverData = [
         {
@@ -181,15 +180,15 @@ it('should support getting drivers and HOS info for CXSupport', async () => {
         }
     })
     expect(driverService.get).toHaveBeenCalledTimes(2)
-    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/speed_racer?customerId=cust_id', {headers: request.headers})
-    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/racer_x?customerId=cust_id', {headers: request.headers})
+    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/speed_racer', {headers: request.headers})
+    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/racer_x', {headers: request.headers})
 
     expect(server.inject).toHaveBeenCalledWith({
         headers,
         method: 'GET',
-        url: '/drivers/login/speed_racer/hoursOfService'
+        url: '/drivers/login/speed_racer/hoursOfService?pfmCid=queryPfmCid'
     })
-    expect(server.inject).toHaveBeenCalledWith({headers, method: 'GET', url: '/drivers/login/racer_x/hoursOfService'})
+    expect(server.inject).toHaveBeenCalledWith({headers, method: 'GET', url: '/drivers/login/racer_x/hoursOfService?pfmCid=queryPfmCid'})
 
     expect(drivers).toEqual([
         {

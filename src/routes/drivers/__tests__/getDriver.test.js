@@ -53,7 +53,7 @@ it('should get a driver with hours of service data', async () => {
     expect(request.server.inject).toHaveBeenCalledWith({
         headers: request.headers,
         method: 'GET',
-        url: '/drivers/login/konapun/hoursOfService'
+        url: '/drivers/login/konapun/hoursOfService?pfmCid=userPfmCid'
     })
 })
 
@@ -77,7 +77,7 @@ it('should get the associated vehicle for a driver', async () => {
     expect(request.server.inject).toHaveBeenCalledWith({
         headers: request.headers,
         method: 'GET',
-        url: '/drivers/login/konapunLeft/hoursOfService'
+        url: '/drivers/login/konapunLeft/hoursOfService?pfmCid=userPfmCid'
     })
 })
 
@@ -120,27 +120,6 @@ it('should get the associated driver settings template for a driver', async () =
     expect(request.server.inject).toHaveBeenCalledWith({
         headers: request.headers,
         method: 'GET',
-        url: '/drivers/login/konapun/hoursOfService'
-    })
-})
-
-it('should get a driver via customerId query', async () => {
-    request.query.customerId = 'someCustomerId'
-
-    driverService.get.mockResolvedValueOnce({id: 1, name: 'driver', profile: {loginId: 'konapun'}})
-    iseCompliance.get.mockRejectedValue({
-        description: {status: 404}
-    })
-    request.server.inject.mockResolvedValueOnce({result: {shift: 8}})
-    search.mockResolvedValueOnce([])
-
-    const result = await route.handler(request)
-
-    expect(result).toEqual({id: 1, name: 'driver', profile: {loginId: 'konapun'}, hoursOfService: {shift: 8}, vehicle: null, uniqueMemberGroup: null})
-    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/1?customerId=someCustomerId', {headers: request.headers})
-    expect(request.server.inject).toHaveBeenCalledWith({
-        headers: request.headers,
-        method: 'GET',
-        url: '/drivers/login/konapun/hoursOfService'
+        url: '/drivers/login/konapun/hoursOfService?pfmCid=userPfmCid'
     })
 })

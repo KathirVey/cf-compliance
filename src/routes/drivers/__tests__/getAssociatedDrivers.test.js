@@ -13,12 +13,13 @@ beforeEach(() => {
             artifacts: {
                 hasPermission: jest.fn(),
                 user: {
-                    companyId: 'userPfmCid'
+                    companyId: 'userPfmCid',
+                    applicationCustomerId: 'user_ac_id'
                 }
             }
         },
         headers: {
-            'x-application-customer': 'ac_id'
+            'x-application-customer': 'user_ac_id'
         },
         params: {
             customerVehicleId: 1
@@ -125,9 +126,13 @@ it('should return hours of service data for associated drivers if specified', as
     expect(server.inject).toHaveBeenCalledWith({
         headers,
         method: 'GET',
-        url: '/drivers/login/speed_racer/hoursOfService?pfmCid=userPfmCid'
+        url: '/drivers/login/speed_racer/hoursOfService?applicationCustomerId=user_ac_id&pfmCid=userPfmCid'
     })
-    expect(server.inject).toHaveBeenCalledWith({headers, method: 'GET', url: '/drivers/login/racer_x/hoursOfService?pfmCid=userPfmCid'})
+    expect(server.inject).toHaveBeenCalledWith({
+        headers,
+        method: 'GET',
+        url: '/drivers/login/racer_x/hoursOfService?applicationCustomerId=user_ac_id&pfmCid=userPfmCid'
+    })
 
     expect(drivers).toEqual([
         {
@@ -142,11 +147,12 @@ it('should return hours of service data for associated drivers if specified', as
 })
 
 it('should support getting drivers and HOS info for CXSupport', async () => {
-    request.auth.artifacts.hasPermission.mockReturnValue(true)
-
     const {server, headers} = request
 
+    request.auth.artifacts.hasPermission.mockReturnValue(true)
     request.query.hoursOfService = true
+    request.query.applicationCustomerId = 'other_ac_id'
+    request.query.pfmCid = 'other_pfm_cid'
 
     const expectedDriverData = [
         {
@@ -168,27 +174,41 @@ it('should support getting drivers and HOS info for CXSupport', async () => {
     iseCompliance.get.mockResolvedValueOnce([{driverId: 'speed_racer'}, {driverId: 'racer_x'}])
     driverService.get.mockResolvedValueOnce(expectedDriverData[0])
     driverService.get.mockResolvedValueOnce(expectedDriverData[1])
-    server.inject.mockResolvedValueOnce({result: {availability: {ruleType: 'US'}}})
-    server.inject.mockResolvedValueOnce({result: {availability: {ruleType: 'CA'}}})
+    request.server.inject.mockResolvedValueOnce({result: {availability: {ruleType: 'US'}}})
+    request.server.inject.mockResolvedValueOnce({result: {availability: {ruleType: 'CA'}}})
 
     const drivers = await route.handler(request)
 
     expect(iseCompliance.get).toHaveBeenCalledWith(`/api/vehicles/byVehicleId/1/drivers`, {
         headers: {
             ...iseHeaders,
-            'x-filter-orgid': 'queryPfmCid'
+            'x-filter-orgid': 'other_pfm_cid'
         }
     })
     expect(driverService.get).toHaveBeenCalledTimes(2)
-    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/speed_racer', {headers: request.headers})
-    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/racer_x', {headers: request.headers})
+    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/speed_racer', {
+        headers: {
+            ...request.headers,
+            'x-application-customer': 'other_ac_id'
+        }
+    })
+    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/racer_x', {
+        headers: {
+            ...request.headers,
+            'x-application-customer': 'other_ac_id'
+        }
+    })
 
     expect(server.inject).toHaveBeenCalledWith({
         headers,
         method: 'GET',
-        url: '/drivers/login/speed_racer/hoursOfService?pfmCid=queryPfmCid'
+        url: '/drivers/login/speed_racer/hoursOfService?applicationCustomerId=other_ac_id&pfmCid=other_pfm_cid'
     })
-    expect(server.inject).toHaveBeenCalledWith({headers, method: 'GET', url: '/drivers/login/racer_x/hoursOfService?pfmCid=queryPfmCid'})
+    expect(server.inject).toHaveBeenCalledWith({
+        headers,
+        method: 'GET',
+        url: '/drivers/login/racer_x/hoursOfService?applicationCustomerId=other_ac_id&pfmCid=other_pfm_cid'
+    })
 
     expect(drivers).toEqual([
         {

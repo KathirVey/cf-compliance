@@ -9,19 +9,25 @@ export default {
     path: '/driversByVehicle/{customerVehicleId}',
     async handler({auth, headers, params, query, server}) {
         const {customerVehicleId} = params
-        const {hoursOfService: getHoursOfService} = query
+        const {hoursOfService: getHoursOfService, upsCustomerId} = query
         const {user, hasPermission} = auth.artifacts
         const pfmCid = hasPermission('CXS-CUSTOMER-READ') ? query.pfmCid : user.companyId
+        const applicationCustomerId = hasPermission('CXS-CUSTOMER-READ') ? query.applicationCustomerId : user.applicationCustomerId
 
         try {
             const iseHeaders = getIseHeaders(pfmCid)
             const iseDrivers = await iseCompliance.get(`/api/vehicles/byVehicleId/${customerVehicleId}/drivers`, {headers: iseHeaders})
 
+            const driverServiceHeaders = {
+                ...headers,
+                'x-application-customer': applicationCustomerId
+            }
             const tfmDrivers = await Promise.all(iseDrivers.map(({driverId}) => {
                 const urlPrefix = stringifyUrl({
-                    url: `/driver-service/v2/drivers/login/${driverId}`
+                    url: `/driver-service/v2/drivers/login/${driverId}`,
+                    query: {customerId: upsCustomerId}
                 })
-                return driverService.get(urlPrefix, {headers})
+                return driverService.get(urlPrefix, {headers: driverServiceHeaders})
             }))
 
             if (!getHoursOfService) return tfmDrivers
@@ -30,7 +36,10 @@ export default {
                 const {result: hoursOfService} = await server.inject({
                     headers,
                     method: 'GET',
-                    url: `/drivers/login/${driver?.profile?.loginId}/hoursOfService?pfmCid=${pfmCid}`
+                    url: stringifyUrl({
+                        url: `/drivers/login/${driver?.profile?.loginId}/hoursOfService`,
+                        query: {pfmCid, applicationCustomerId, upsCustomerId}
+                    })
                 })
 
                 return {
@@ -59,11 +68,7 @@ export default {
             headers: authHeaders,
             params: Joi.object({
                 customerVehicleId: Joi.string().required()
-            }).required().description('Customer Vehicle ID'),
-            query: Joi.object({
-                hoursOfService: Joi.boolean().default(false),
-                pfmCid: Joi.string().optional()
-            }).required()
+            }).required().description('Customer Vehicle ID')
         }
     }
 }

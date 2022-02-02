@@ -15,12 +15,13 @@ beforeEach(() => {
             artifacts: {
                 hasPermission: jest.fn(),
                 user: {
-                    companyId: 'userPfmCid'
+                    companyId: 'userPfmCid',
+                    applicationCustomerId: 'user_ac_id'
                 }
             }
         },
         headers: {
-            'x-application-customer': 'ac_id'
+            'x-application-customer': 'user_ac_id'
         },
         params: {
             driverId: '1'

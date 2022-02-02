@@ -11,7 +11,7 @@ export default {
         const {value} = payload
         const {method, payload: entity} = value
         const {id, name, description, associations = []} = entity
-        const driverMembers = find(associations, {groupType: 'DRIVER'})
+        const driverMembers = find(associations, {groupType: 'DRIVER'}) || []
         let error = []
         const {members = []} = driverMembers
         if (method === 'CREATE' || method === 'UPDATE') {

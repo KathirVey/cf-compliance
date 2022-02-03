@@ -60,10 +60,7 @@ export default {
             headers: authHeaders,
             params: Joi.object({
                 loginId: Joi.string().required()
-            }).required().description('Driver Login ID'),
-            query: Joi.object({
-                pfmCid: Joi.string().optional()
-            }).required()
+            }).required().description('Driver Login ID')
         }
     }
 }

@@ -49,18 +49,14 @@ export default {
     async handler({auth, headers, params, server, query}) {
         const {driverId} = params
         const {hasPermission, user} = auth.artifacts
-        const {applicationCustomerId, upsCustomerId} = query
+        const {upsCustomerId} = query
         const pfmCid = (hasPermission('CXS-CUSTOMER-READ') ? query.pfmCid : user.companyId) || user.companyId
 
-        const driverServiceHeaders = {
-            ...headers,
-            'x-application-customer': applicationCustomerId || user.applicationCustomerId
-        }
         const url = stringifyUrl({
             url: `/driver-service/v2/drivers/${driverId}`,
             query: {customerId: upsCustomerId}
         })
-        const driver = await driverService.get(url, {headers: driverServiceHeaders})
+        const driver = await driverService.get(url, {headers})
         const {loginId} = driver.profile
 
         const [{result: hoursOfService}, vehicle, uniqueMemberGroup] = await Promise.all([

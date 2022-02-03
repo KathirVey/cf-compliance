@@ -186,18 +186,8 @@ it('should support getting drivers and HOS info for CXSupport', async () => {
         }
     })
     expect(driverService.get).toHaveBeenCalledTimes(2)
-    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/speed_racer', {
-        headers: {
-            ...request.headers,
-            'x-application-customer': 'other_ac_id'
-        }
-    })
-    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/racer_x', {
-        headers: {
-            ...request.headers,
-            'x-application-customer': 'other_ac_id'
-        }
-    })
+    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/speed_racer', {headers})
+    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/racer_x', {headers})
 
     expect(server.inject).toHaveBeenCalledWith({
         headers,

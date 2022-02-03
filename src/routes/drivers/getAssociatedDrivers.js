@@ -18,16 +18,12 @@ export default {
             const iseHeaders = getIseHeaders(pfmCid)
             const iseDrivers = await iseCompliance.get(`/api/vehicles/byVehicleId/${customerVehicleId}/drivers`, {headers: iseHeaders})
 
-            const driverServiceHeaders = {
-                ...headers,
-                'x-application-customer': applicationCustomerId
-            }
             const tfmDrivers = await Promise.all(iseDrivers.map(({driverId}) => {
                 const urlPrefix = stringifyUrl({
                     url: `/driver-service/v2/drivers/login/${driverId}`,
                     query: {customerId: upsCustomerId}
                 })
-                return driverService.get(urlPrefix, {headers: driverServiceHeaders})
+                return driverService.get(urlPrefix, {headers})
             }))
 
             if (!getHoursOfService) return tfmDrivers

@@ -1,0 +1,36 @@
+{
+    "value": {
+        "specversion": "1.0",
+        "id": "43fe7bfc-67ea-430f-931f-ffe3a9253d55",
+        "source": "trimble.transportation.compliance",
+        "type": "trimble.transportation.compliance.hours-of-service.availability.v1",
+        "data": {
+            "accountIdentifiers": {
+                "pfmId": "5097"
+            },
+            "driver": {
+                "username": "ErikS3"
+            },
+            "hosRuleSetName": "Us7DayPropertyCarrying",
+            "cycleDuty": "00:00:00",
+            "cycleDutyOffDutyPeriods": "-1.00:00:00",
+            "dailyDriving": "-1.00:00:00",
+            "dailyDuty": "-1.00:00:00",
+            "dailyOffDuty": "-1.00:00:00",
+            "drivingTimeLeft": "00:00:00",
+            "gainTimeAt": "2022-05-18T02:14:00",
+            "displayLocation": "MN Crystal (Big Back Yard)",
+            "lastCalculatedTime": "2022-05-16T16:14:48",
+            "mostRecentStatus": "Off",
+            "mostRecentStatusDateTime": "2022-05-16T16:14:00",
+            "projectedDrivingTime": "08:00:00",
+            "statusStartDate": "2022-05-16T00:00:00",
+            "workshiftDriving": "11:00:00",
+            "workshiftDuty": "00:00:00",
+            "workshiftBreak": "3.21:42:00",
+            "workshiftElapsed": "-1.00:00:00",
+            "workshiftRestBreak": "08:00:00",
+            "lastUpdatedAt": "2022-05-16T16:14:48.87"
+        }
+    }
+}

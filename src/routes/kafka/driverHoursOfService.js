@@ -17,8 +17,8 @@ module.exports = {
         const companyId = hosMessage.accountIdentifiers.pfmId
 
         if (isNaN(companyId)) {
-            logger.error(`Invalid pfmId: ${hosMessage.accountIdentifiers.pfmId} on incoming message`)
-            return hapi.response()
+            logger.error(`Invalid pfmId: ${hosMessage.accountIdentifiers.pfmId} on incoming message.`)
+            return hapi.response({message: `Invalid pfmId: ${hosMessage.accountIdentifiers.pfmId} on incoming message.`}).code(200)
         }
 
         // TODO: remove the config after EFS sends the required ruleset info on the message
@@ -26,7 +26,7 @@ module.exports = {
         const rulesetIdNotFound = !rulesetId || rulesetId < 0
 
         if (rulesetIdNotFound) {
-            logger.warn(`Unable to find ruleSetId for: ${hosMessage.hosRuleSetName} in driverRuleSets config`)
+            logger.warn(`Unable to find ruleSetId for: ${hosMessage.hosRuleSetName} in driverRuleSets config.`)
         }
 
         const [driver] = await search({
@@ -39,9 +39,17 @@ module.exports = {
         })
 
         if (!driver) {
-            logger.error(`Unable to find driver with loginId: ${hosMessage.driver.username} in search`)
-            return hapi.response()
+            logger.error(`Unable to find driver with loginId: ${hosMessage.driver.username} in search.`)
+            return hapi.response({message: `Unable to find driver with loginId: ${hosMessage.driver.username} in search.`}).code(200)
         }
+
+        const skipMessage = driver.hasOwnProperty('hoursOfService')
+            && moment(driver.hoursOfService.lastUpdatedAt).isAfter(hosMessage.lastUpdatedAt)
+        if (skipMessage) {
+            logger.info('Skipping message since a more recent HOS event has been already processed.')
+            return hapi.response({message: 'Skipping message since a more recent HOS event has been already processed.'}).code(200)
+        }
+
         const iseHeaders = getIseHeaders(companyId)
 
         const ruleSet = rulesetIdNotFound
@@ -83,7 +91,7 @@ module.exports = {
             doc_as_upsert: true
         })
         logger.info(`Processed driver HOS event messageId: ${value.id} for driverId: ${updatedDriver._id}`)
-        return hapi.response()
+        return hapi.response({message: `Processed driver HOS event messageId: ${value.id} for driverId: ${updatedDriver._id}`}).code(204)
     },
     options: {
         description: 'Update search based on driver hours of service events',

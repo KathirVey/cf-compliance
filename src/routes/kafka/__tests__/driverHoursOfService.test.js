@@ -38,14 +38,14 @@ describe('driver hours of service events', () => {
                 workshiftDuty: '00:00:00',
                 workshiftBreak: '3.21:42:00',
                 workshiftElapsed: '-1.00:00:00',
-                lastUpdatedAt: '2022-05-16T16:14:48.87',
+                lastUpdatedAt: '2022-05-16T16:00:00.00',
                 ...data
             }
         }
     }
 
     beforeEach(() => {
-        hapi = {response: jest.fn().mockReturnThis()}
+        hapi = {response: jest.fn().mockReturnThis(), code: jest.fn()}
         route = require('../driverHoursOfService')
         iseHeaders = {
             'content-type': 'application/json',
@@ -88,7 +88,7 @@ describe('driver hours of service events', () => {
             loginDateTime: '2022-03-24T15:55:00',
             logoutDateTime: null
         })
-        client.update.mockResolvedValueOnce({body: {id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9'}})
+        client.update.mockResolvedValueOnce({body: {_id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9'}})
 
         const payloadData = createPayloadData({
             hosRuleSetName: 'Us7DayPropertyCarrying',
@@ -148,7 +148,8 @@ describe('driver hours of service events', () => {
             },
             doc_as_upsert: true
         })
-        expect(hapi.response).toHaveBeenCalledWith()
+        expect(hapi.response).toHaveBeenCalledWith({message: 'Processed driver HOS event messageId: 43fe7bfc-67ea-430f-931f-ffe3a9253d55 for driverId: ea631aad-5d8c-4b37-a25c-5f0bd23164b9'})
+        expect(hapi.code).toHaveBeenCalledWith(204)
     })
 
     it('should process driver hours of service event with default ISE values', async () => {
@@ -165,7 +166,7 @@ describe('driver hours of service events', () => {
             loginDateTime: '2022-03-24T15:55:00',
             logoutDateTime: null
         })
-        client.update.mockResolvedValueOnce({body: {id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9'}})
+        client.update.mockResolvedValueOnce({body: {_id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9'}})
 
         const payloadData = createPayloadData({
             hosRuleSetName: 'Us7DayPropertyCarrying',
@@ -225,7 +226,8 @@ describe('driver hours of service events', () => {
             },
             doc_as_upsert: true
         })
-        expect(hapi.response).toHaveBeenCalledWith()
+        expect(hapi.response).toHaveBeenCalledWith({message: 'Processed driver HOS event messageId: 43fe7bfc-67ea-430f-931f-ffe3a9253d55 for driverId: ea631aad-5d8c-4b37-a25c-5f0bd23164b9'})
+        expect(hapi.code).toHaveBeenCalledWith(204)
     })
 
     it('should process driver hours of service event when vehicle is not found', async () => {
@@ -239,7 +241,7 @@ describe('driver hours of service events', () => {
             description: {status: 404}
         })
 
-        client.update.mockResolvedValueOnce({body: {id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9'}})
+        client.update.mockResolvedValueOnce({body: {_id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9'}})
 
         const payloadData = createPayloadData({
             hosRuleSetName: 'Us7DayPropertyCarrying',
@@ -299,76 +301,8 @@ describe('driver hours of service events', () => {
             },
             doc_as_upsert: true
         })
-        expect(hapi.response).toHaveBeenCalledWith()
-    })
-
-    it('should not process driver hours of service event when pfmId is invalid', async () => {
-        const payloadData = createPayloadData({
-            hosRuleSetName: 'Us7DayPropertyCarrying',
-            cycleDuty: '1.21:22:17',
-            dailyDriving: '3:00:00',
-            dailyDuty: '04:03:36',
-            drivingTimeLeft: '00:00:00',
-            workshiftRestBreak: '08:00:00',
-            mostRecentStatusDateTime: '2000-01-02T02:04:05Z',
-            accountIdentifiers: {
-                pfmId: 'a57'
-            }
-        })
-
-        const request = {
-            payload: {
-                value: {
-                    ...payloadData
-                }
-            }
-        }
-
-        await route.handler(request, hapi)
-
-        expect(search).not.toHaveBeenCalled()
-        expect(iseCompliance.get).toHaveBeenCalledTimes(0)
-        expect(client.update).not.toHaveBeenCalled()
-        expect(hapi.response).toHaveBeenCalledWith()
-    })
-
-    it('should not process driver hours of service event when driver is not found in search', async () => {
-        search.mockResolvedValueOnce([])
-
-        const payloadData = createPayloadData({
-            hosRuleSetName: 'Us7DayPropertyCarrying',
-            cycleDuty: '1.21:22:17',
-            dailyDriving: '3:00:00',
-            dailyDuty: '04:03:36',
-            drivingTimeLeft: '00:00:00',
-            workshiftRestBreak: '08:00:00',
-            mostRecentStatusDateTime: '2000-01-02T02:04:05Z',
-            accountIdentifiers: {
-                pfmId: '57'
-            }
-        })
-
-        const request = {
-            payload: {
-                value: {
-                    ...payloadData
-                }
-            }
-        }
-
-        await route.handler(request, hapi)
-
-        expect(search).toHaveBeenCalledWith({
-            select: [],
-            from: 'drivers',
-            where: {
-                'externalSources.eFleetSuite.driverId.keyword': 'some_driver',
-                'customer.companyId': 57
-            }
-        })
-        expect(iseCompliance.get).toHaveBeenCalledTimes(0)
-        expect(client.update).not.toHaveBeenCalled()
-        expect(hapi.response).toHaveBeenCalledWith()
+        expect(hapi.response).toHaveBeenCalledWith({message: 'Processed driver HOS event messageId: 43fe7bfc-67ea-430f-931f-ffe3a9253d55 for driverId: ea631aad-5d8c-4b37-a25c-5f0bd23164b9'})
+        expect(hapi.code).toHaveBeenCalledWith(204)
     })
 
     it('should process driver hours of service event when rulesetId is not found', async () => {
@@ -380,7 +314,7 @@ describe('driver hours of service events', () => {
             loginDateTime: '2022-03-24T15:55:00',
             logoutDateTime: null
         })
-        client.update.mockResolvedValueOnce({body: {id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9'}})
+        client.update.mockResolvedValueOnce({body: {_id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9'}})
 
         const payloadData = createPayloadData({
             hosRuleSetName: 'Us7DayProperty_Fake_News',
@@ -439,7 +373,8 @@ describe('driver hours of service events', () => {
             },
             doc_as_upsert: true
         })
-        expect(hapi.response).toHaveBeenCalledWith()
+        expect(hapi.response).toHaveBeenCalledWith({message: 'Processed driver HOS event messageId: 43fe7bfc-67ea-430f-931f-ffe3a9253d55 for driverId: ea631aad-5d8c-4b37-a25c-5f0bd23164b9'})
+        expect(hapi.code).toHaveBeenCalledWith(204)
     })
 
     it('should process driver hours of service event when rulesetId is unknown', async () => {
@@ -447,7 +382,7 @@ describe('driver hours of service events', () => {
         iseCompliance.get.mockRejectedValueOnce({
             description: {status: 404}
         })
-        client.update.mockResolvedValueOnce({body: {id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9'}})
+        client.update.mockResolvedValueOnce({body: {_id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9'}})
 
         const payloadData = createPayloadData({
             hosRuleSetName: 'Unknown',
@@ -506,6 +441,134 @@ describe('driver hours of service events', () => {
             },
             doc_as_upsert: true
         })
-        expect(hapi.response).toHaveBeenCalledWith()
+        expect(hapi.response).toHaveBeenCalledWith({message: 'Processed driver HOS event messageId: 43fe7bfc-67ea-430f-931f-ffe3a9253d55 for driverId: ea631aad-5d8c-4b37-a25c-5f0bd23164b9'})
+        expect(hapi.code).toHaveBeenCalledWith(204)
     })
+
+    it('should not process driver hours of service event when pfmId is invalid', async () => {
+        const payloadData = createPayloadData({
+            hosRuleSetName: 'Us7DayPropertyCarrying',
+            cycleDuty: '1.21:22:17',
+            dailyDriving: '3:00:00',
+            dailyDuty: '04:03:36',
+            drivingTimeLeft: '00:00:00',
+            workshiftRestBreak: '08:00:00',
+            mostRecentStatusDateTime: '2000-01-02T02:04:05Z',
+            accountIdentifiers: {
+                pfmId: 'a57'
+            }
+        })
+
+        const request = {
+            payload: {
+                value: {
+                    ...payloadData
+                }
+            }
+        }
+
+        await route.handler(request, hapi)
+
+        expect(search).not.toHaveBeenCalled()
+        expect(iseCompliance.get).toHaveBeenCalledTimes(0)
+        expect(client.update).not.toHaveBeenCalled()
+        expect(hapi.response).toHaveBeenCalledWith({message: 'Invalid pfmId: a57 on incoming message.'})
+        expect(hapi.code).toHaveBeenCalledWith(200)
+    })
+
+    it('should not process driver hours of service event when driver is not found in search', async () => {
+        search.mockResolvedValueOnce([])
+
+        const payloadData = createPayloadData({
+            hosRuleSetName: 'Us7DayPropertyCarrying',
+            cycleDuty: '1.21:22:17',
+            dailyDriving: '3:00:00',
+            dailyDuty: '04:03:36',
+            drivingTimeLeft: '00:00:00',
+            workshiftRestBreak: '08:00:00',
+            mostRecentStatusDateTime: '2000-01-02T02:04:05Z',
+            accountIdentifiers: {
+                pfmId: '57'
+            }
+        })
+
+        const request = {
+            payload: {
+                value: {
+                    ...payloadData
+                }
+            }
+        }
+
+        await route.handler(request, hapi)
+
+        expect(search).toHaveBeenCalledWith({
+            select: [],
+            from: 'drivers',
+            where: {
+                'externalSources.eFleetSuite.driverId.keyword': 'some_driver',
+                'customer.companyId': 57
+            }
+        })
+        expect(iseCompliance.get).toHaveBeenCalledTimes(0)
+        expect(client.update).not.toHaveBeenCalled()
+        expect(hapi.response).toHaveBeenCalledWith({message: 'Unable to find driver with loginId: some_driver in search.'})
+        expect(hapi.code).toHaveBeenCalledWith(200)
+    })
+
+    it('should not process stale driver hours of service event', async () => {
+        driverFromSearch.hoursOfService = {
+            workshiftBreak: '3.21:42:00',
+            workshiftElapsed: '-1.00:00:00',
+            workshiftRestBreak: '08:00:00',
+            lastUpdatedAt: '2022-05-16T16:01:00.00'
+        }
+
+        search.mockResolvedValueOnce([driverFromSearch])
+        iseCompliance.get.mockResolvedValueOnce({ // vehicle
+            driverId: 'some_driver',
+            vehicleId: 'some_vehicle_id',
+            loggedIn: true,
+            loginDateTime: '2022-03-24T15:55:00',
+            logoutDateTime: null
+        })
+        client.update.mockResolvedValueOnce({body: {id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9'}})
+
+        const payloadData = createPayloadData({
+            hosRuleSetName: 'Us7DayProperty_Fake_News',
+            cycleDuty: '1.21:22:17',
+            dailyDriving: '3:00:00',
+            dailyDuty: '04:03:36',
+            drivingTimeLeft: '00:00:00',
+            workshiftRestBreak: '08:10:00',
+            mostRecentStatusDateTime: '2000-01-02T02:04:05Z',
+            accountIdentifiers: {
+                pfmId: '57'
+            }
+        })
+
+        const request = {
+            payload: {
+                value: {
+                    ...payloadData
+                }
+            }
+        }
+
+        await route.handler(request, hapi)
+
+        expect(search).toHaveBeenCalledWith({
+            select: [],
+            from: 'drivers',
+            where: {
+                'externalSources.eFleetSuite.driverId.keyword': 'some_driver',
+                'customer.companyId': 57
+            }
+        })
+        expect(iseCompliance.get).toHaveBeenCalledTimes(0)
+        expect(client.update).not.toHaveBeenCalled()
+        expect(hapi.response).toHaveBeenCalledWith({message: 'Skipping message since a more recent HOS event has been already processed.'})
+        expect(hapi.code).toHaveBeenCalledWith(200)
+    })
+
 })

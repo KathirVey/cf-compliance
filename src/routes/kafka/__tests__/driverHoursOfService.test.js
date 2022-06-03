@@ -133,7 +133,7 @@ describe('driver hours of service events', () => {
                 doc: {
                     hoursOfService: {
                         ...payloadData.data,
-                        lastLogbookUpdateDate: payloadData.data.mostRecentStatusDateTime,
+                        lastLogbookUpdateDate: '2000-01-02T02:04:05.000Z',
                         currentDriverType: payloadData.data.hosRuleSetName,
                         currentDutyStatus: payloadData.data.mostRecentStatus,
                         totalTimeInCurrentDutyStatus: '01:00',
@@ -211,7 +211,7 @@ describe('driver hours of service events', () => {
                 doc: {
                     hoursOfService: {
                         ...payloadData.data,
-                        lastLogbookUpdateDate: payloadData.data.mostRecentStatusDateTime,
+                        lastLogbookUpdateDate: '2000-01-02T02:04:05.000Z',
                         currentDriverType: payloadData.data.hosRuleSetName,
                         currentDutyStatus: payloadData.data.mostRecentStatus,
                         totalTimeInCurrentDutyStatus: '01:00',
@@ -286,7 +286,7 @@ describe('driver hours of service events', () => {
                 doc: {
                     hoursOfService: {
                         ...payloadData.data,
-                        lastLogbookUpdateDate: payloadData.data.mostRecentStatusDateTime,
+                        lastLogbookUpdateDate: '2000-01-02T02:04:05.000Z',
                         currentDriverType: payloadData.data.hosRuleSetName,
                         currentDutyStatus: payloadData.data.mostRecentStatus,
                         totalTimeInCurrentDutyStatus: '01:00',
@@ -358,7 +358,7 @@ describe('driver hours of service events', () => {
                 doc: {
                     hoursOfService: {
                         ...payloadData.data,
-                        lastLogbookUpdateDate: payloadData.data.mostRecentStatusDateTime,
+                        lastLogbookUpdateDate: '2000-01-02T02:04:05.000Z',
                         currentDriverType: payloadData.data.hosRuleSetName,
                         currentDutyStatus: payloadData.data.mostRecentStatus,
                         totalTimeInCurrentDutyStatus: '01:00',
@@ -426,7 +426,7 @@ describe('driver hours of service events', () => {
                 doc: {
                     hoursOfService: {
                         ...payloadData.data,
-                        lastLogbookUpdateDate: payloadData.data.mostRecentStatusDateTime,
+                        lastLogbookUpdateDate: '2000-01-02T02:04:05.000Z',
                         currentDriverType: payloadData.data.hosRuleSetName,
                         currentDutyStatus: payloadData.data.mostRecentStatus,
                         totalTimeInCurrentDutyStatus: '01:00',

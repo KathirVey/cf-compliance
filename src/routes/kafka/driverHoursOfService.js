@@ -46,8 +46,8 @@ module.exports = {
         const skipMessage = driver.hasOwnProperty('hoursOfService')
             && moment(driver.hoursOfService.lastUpdatedAt).isAfter(hosMessage.lastUpdatedAt)
         if (skipMessage) {
-            logger.info('Skipping message since a more recent HOS event has been already processed.')
-            return hapi.response({message: 'Skipping message since a more recent HOS event has been already processed.'}).code(200)
+            logger.info(`Skipping message since a more recent HOS event has been already processed for driverId: ${driver.id}.`)
+            return hapi.response({message: `Skipping message since a more recent HOS event has been already processed for driverId: ${driver.id}.`}).code(200)
         }
 
         const iseHeaders = getIseHeaders(companyId)
@@ -66,7 +66,9 @@ module.exports = {
             }
         }
 
-        hosMessage.vehicleId = driverVehicle ? driverVehicle.vehicleId : 'Unavailable'
+        if (driverVehicle) {
+            hosMessage.vehicleId = driverVehicle.vehicleId
+        }
 
         const hoursOfService = {
             ...hosMessage,
@@ -75,6 +77,8 @@ module.exports = {
             currentDutyStatus: hosMessage.mostRecentStatus,
             totalTimeInCurrentDutyStatus: getTimeDiff(hosMessage.mostRecentStatusDateTime),
             availableDriveTime: getIseDefault(hosMessage.drivingTimeLeft),
+            availableDutyTime: getIseDefault(hosMessage.dailyDuty),
+            availableCycleTime: getIseDefault(hosMessage.cycleDuty),
             driveTimeUsed: calculateTimeUsed(hosMessage.dailyDriving, ruleSet?.workshiftDrivingMaximumTime),
             onDutyTimeUsed: calculateTimeUsed(hosMessage.dailyDuty, ruleSet?.workshiftOnDutyMaximumTime),
             timeUntilBreak: getIseDefault(hosMessage.workshiftRestBreak),
@@ -111,14 +115,14 @@ const calculateTimeUsed = (field, ruleSetConstraint) => {
     }
     const fieldInMinutes = convertToMinutes(field)
     const diff = ruleSetConstraint - fieldInMinutes
-    return getHoursAndMinutes(diff)
+    return getDuration(diff)
 }
 
 const getIseDefault = field => {
     if (Object.keys(ISE_CONSTANTS).includes(field)) {
         return ISE_CONSTANTS[field]
     }
-    return getHoursAndMinutes(convertToMinutes(field))
+    return getDuration(convertToMinutes(field))
 }
 
 const convertToMinutes = field => {
@@ -128,11 +132,19 @@ const convertToMinutes = field => {
 
 const getTimeDiff = field => {
     const elapsedMinutes = moment().diff(moment(field), 'minutes')
-    return getHoursAndMinutes(elapsedMinutes)
+    return getDuration(elapsedMinutes)
 }
 
-const getHoursAndMinutes = elapsedMinutes => {
-    return moment().startOf('day').add(elapsedMinutes, 'minutes').format('HH:mm')
+const getDuration = elapsedMinutes => {
+    // get total duration in hours and minutes
+    // eg: 62 => 01:02, 2709 => 45:09
+    const hours = elapsedMinutes / 60
+    const minutes = elapsedMinutes % 60
+    return `${format(hours)}:${format(minutes)}`
+}
+
+const format = value => {
+    return String(Math.floor(value)).padStart(2, '0')
 }
 
 const ISE_CONSTANTS = {

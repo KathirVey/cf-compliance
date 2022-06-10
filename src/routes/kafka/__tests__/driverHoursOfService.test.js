@@ -138,6 +138,8 @@ describe('driver hours of service events', () => {
                         currentDutyStatus: payloadData.data.mostRecentStatus,
                         totalTimeInCurrentDutyStatus: '01:00',
                         availableDriveTime: '00:00',
+                        availableDutyTime: '04:03',
+                        availableCycleTime: '45:22',
                         driveTimeUsed: '08:00',
                         onDutyTimeUsed: '09:57',
                         timeUntilBreak: '08:00',
@@ -216,6 +218,8 @@ describe('driver hours of service events', () => {
                         currentDutyStatus: payloadData.data.mostRecentStatus,
                         totalTimeInCurrentDutyStatus: '01:00',
                         availableDriveTime: '00:00',
+                        availableCycleTime: 'N/A',
+                        availableDutyTime: 'UNKNOWN',
                         driveTimeUsed: 'EXEMPT',
                         onDutyTimeUsed: 'UNKNOWN',
                         timeUntilBreak: 'ELD EXEMPT',
@@ -291,10 +295,11 @@ describe('driver hours of service events', () => {
                         currentDutyStatus: payloadData.data.mostRecentStatus,
                         totalTimeInCurrentDutyStatus: '01:00',
                         availableDriveTime: '00:00',
+                        availableDutyTime: '04:03',
+                        availableCycleTime: '45:22',
                         driveTimeUsed: '08:00',
                         onDutyTimeUsed: '09:57',
                         timeUntilBreak: '08:00',
-                        vehicleId: 'Unavailable',
                         cycleTimeUsed: '14:38'
                     }
                 }
@@ -363,6 +368,8 @@ describe('driver hours of service events', () => {
                         currentDutyStatus: payloadData.data.mostRecentStatus,
                         totalTimeInCurrentDutyStatus: '01:00',
                         availableDriveTime: '00:00',
+                        availableDutyTime: '04:03',
+                        availableCycleTime: '45:22',
                         driveTimeUsed: 'Unknown',
                         onDutyTimeUsed: 'Unknown',
                         timeUntilBreak: '08:10',
@@ -431,10 +438,11 @@ describe('driver hours of service events', () => {
                         currentDutyStatus: payloadData.data.mostRecentStatus,
                         totalTimeInCurrentDutyStatus: '01:00',
                         availableDriveTime: '00:00',
+                        availableDutyTime: '04:03',
+                        availableCycleTime: '45:22',
                         driveTimeUsed: 'Unknown',
                         onDutyTimeUsed: 'Unknown',
                         timeUntilBreak: '06:03',
-                        vehicleId: 'Unavailable',
                         cycleTimeUsed: 'Unknown'
                     }
                 }
@@ -567,7 +575,7 @@ describe('driver hours of service events', () => {
         })
         expect(iseCompliance.get).toHaveBeenCalledTimes(0)
         expect(client.update).not.toHaveBeenCalled()
-        expect(hapi.response).toHaveBeenCalledWith({message: 'Skipping message since a more recent HOS event has been already processed.'})
+        expect(hapi.response).toHaveBeenCalledWith({message: 'Skipping message since a more recent HOS event has been already processed for driverId: ea631aad-5d8c-4b37-a25c-5f0bd23164b9.'})
         expect(hapi.code).toHaveBeenCalledWith(200)
     })
 

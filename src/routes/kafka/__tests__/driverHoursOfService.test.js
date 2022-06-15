@@ -97,6 +97,8 @@ describe('driver hours of service events', () => {
             dailyDuty: '04:03:36',
             drivingTimeLeft: '00:00:00',
             workshiftRestBreak: '08:00:00',
+            workshiftDriving: '05:00:00',
+            workshiftDuty: '04:10:00',
             mostRecentStatusDateTime: '2000-01-02T02:04:05Z',
             accountIdentifiers: {
                 pfmId: '57'
@@ -140,8 +142,8 @@ describe('driver hours of service events', () => {
                         availableDriveTime: '00:00',
                         availableDutyTime: '04:03',
                         availableCycleTime: '45:22',
-                        driveTimeUsed: '08:00',
-                        onDutyTimeUsed: '09:57',
+                        driveTimeUsed: '06:00',
+                        onDutyTimeUsed: '09:50',
                         timeUntilBreak: '08:00',
                         vehicleId: 'some_vehicle_id',
                         cycleTimeUsed: '14:38'
@@ -177,6 +179,8 @@ describe('driver hours of service events', () => {
             dailyDuty: '-3.00:00:00',
             drivingTimeLeft: '00:00:00',
             workshiftRestBreak: '-4.00:00:00',
+            workshiftDriving: '-2.00:00:00',
+            workshiftDuty: '-3.00:00:00',
             mostRecentStatusDateTime: '2000-01-02T02:04:05Z',
             accountIdentifiers: {
                 pfmId: '57'
@@ -254,6 +258,8 @@ describe('driver hours of service events', () => {
             dailyDuty: '04:03:36',
             drivingTimeLeft: '00:00:00',
             workshiftRestBreak: '08:00:00',
+            workshiftDriving: '05:00:00',
+            workshiftDuty: '04:10:00',
             mostRecentStatusDateTime: '2000-01-02T02:04:05Z',
             accountIdentifiers: {
                 pfmId: '57'
@@ -297,8 +303,8 @@ describe('driver hours of service events', () => {
                         availableDriveTime: '00:00',
                         availableDutyTime: '04:03',
                         availableCycleTime: '45:22',
-                        driveTimeUsed: '08:00',
-                        onDutyTimeUsed: '09:57',
+                        driveTimeUsed: '06:00',
+                        onDutyTimeUsed: '09:50',
                         timeUntilBreak: '08:00',
                         cycleTimeUsed: '14:38'
                     }
@@ -328,6 +334,8 @@ describe('driver hours of service events', () => {
             dailyDuty: '04:03:36',
             drivingTimeLeft: '00:00:00',
             workshiftRestBreak: '08:10:00',
+            workshiftDriving: '05:00:00',
+            workshiftDuty: '04:10:00',
             mostRecentStatusDateTime: '2000-01-02T02:04:05Z',
             accountIdentifiers: {
                 pfmId: '57'
@@ -398,6 +406,8 @@ describe('driver hours of service events', () => {
             dailyDuty: '04:03:36',
             drivingTimeLeft: '00:00:00',
             workshiftRestBreak: '06:03:00',
+            workshiftDriving: '05:00:00',
+            workshiftDuty: '04:10:00',
             mostRecentStatusDateTime: '2000-01-02T02:04:05Z',
             accountIdentifiers: {
                 pfmId: '57'
@@ -461,6 +471,8 @@ describe('driver hours of service events', () => {
             dailyDuty: '04:03:36',
             drivingTimeLeft: '00:00:00',
             workshiftRestBreak: '08:00:00',
+            workshiftDriving: '05:00:00',
+            workshiftDuty: '04:10:00',
             mostRecentStatusDateTime: '2000-01-02T02:04:05Z',
             accountIdentifiers: {
                 pfmId: 'a57'
@@ -494,6 +506,8 @@ describe('driver hours of service events', () => {
             dailyDuty: '04:03:36',
             drivingTimeLeft: '00:00:00',
             workshiftRestBreak: '08:00:00',
+            workshiftDriving: '05:00:00',
+            workshiftDuty: '04:10:00',
             mostRecentStatusDateTime: '2000-01-02T02:04:05Z',
             accountIdentifiers: {
                 pfmId: '57'
@@ -549,6 +563,8 @@ describe('driver hours of service events', () => {
             dailyDuty: '04:03:36',
             drivingTimeLeft: '00:00:00',
             workshiftRestBreak: '08:10:00',
+            workshiftDriving: '05:00:00',
+            workshiftDuty: '04:10:00',
             mostRecentStatusDateTime: '2000-01-02T02:04:05Z',
             accountIdentifiers: {
                 pfmId: '57'

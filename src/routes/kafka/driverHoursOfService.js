@@ -79,8 +79,8 @@ module.exports = {
             availableDriveTime: getIseDefault(hosMessage.drivingTimeLeft),
             availableDutyTime: getIseDefault(hosMessage.dailyDuty),
             availableCycleTime: getIseDefault(hosMessage.cycleDuty),
-            driveTimeUsed: calculateTimeUsed(hosMessage.dailyDriving, ruleSet?.workshiftDrivingMaximumTime),
-            onDutyTimeUsed: calculateTimeUsed(hosMessage.dailyDuty, ruleSet?.workshiftOnDutyMaximumTime),
+            driveTimeUsed: calculateTimeUsed(hosMessage.workshiftDriving, ruleSet?.workshiftDrivingMaximumTime),
+            onDutyTimeUsed: calculateTimeUsed(hosMessage.workshiftDuty, ruleSet?.workshiftOnDutyMaximumTime),
             timeUntilBreak: getIseDefault(hosMessage.workshiftRestBreak),
             cycleTimeUsed: calculateTimeUsed(hosMessage.cycleDuty, ruleSet?.cycleOnDutyMaximumTime)
         }

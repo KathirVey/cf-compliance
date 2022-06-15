@@ -73,7 +73,7 @@ module.exports = {
         const hoursOfService = {
             ...hosMessage,
             lastLogbookUpdateDate: moment.parseZone(hosMessage.mostRecentStatusDateTime).toISOString(),
-            currentDriverType: hosMessage.hosRuleSetName,
+            currentDriverType: ruleSet?.description ?? 'Unknown',
             currentDutyStatus: hosMessage.mostRecentStatus,
             totalTimeInCurrentDutyStatus: getTimeDiff(hosMessage.mostRecentStatusDateTime),
             availableDriveTime: getIseDefault(hosMessage.drivingTimeLeft),

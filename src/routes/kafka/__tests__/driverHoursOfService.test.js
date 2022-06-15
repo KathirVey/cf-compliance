@@ -14,6 +14,7 @@ describe('driver hours of service events', () => {
     let hapi,
         route,
         iseHeaders,
+        ruleSet,
         driverFromSearch
 
     const createPayloadData = data => {
@@ -72,15 +73,18 @@ describe('driver hours of service events', () => {
                 }
             }
         }
+        ruleSet = { // ruleset
+            workshiftDrivingMaximumTime: 660,
+            workshiftOnDutyMaximumTime: 840,
+            cycleOnDutyMaximumTime: 3600,
+            ruleSetType: 'Us7DayPassengerCarrying',
+            description: 'US 7-day passenger-carrying'
+        }
     })
 
     it('should process driver hours of service event', async () => {
         search.mockResolvedValueOnce([driverFromSearch])
-        iseCompliance.get.mockResolvedValueOnce({ // ruleset
-            workshiftDrivingMaximumTime: 660,
-            workshiftOnDutyMaximumTime: 840,
-            cycleOnDutyMaximumTime: 3600
-        })
+        iseCompliance.get.mockResolvedValueOnce(ruleSet)
         iseCompliance.get.mockResolvedValueOnce({ // vehicle
             driverId: 'some_driver',
             vehicleId: 'some_vehicle_id',
@@ -136,7 +140,7 @@ describe('driver hours of service events', () => {
                     hoursOfService: {
                         ...payloadData.data,
                         lastLogbookUpdateDate: '2000-01-02T02:04:05.000Z',
-                        currentDriverType: payloadData.data.hosRuleSetName,
+                        currentDriverType: 'US 7-day passenger-carrying',
                         currentDutyStatus: payloadData.data.mostRecentStatus,
                         totalTimeInCurrentDutyStatus: '01:00',
                         availableDriveTime: '00:00',
@@ -158,11 +162,7 @@ describe('driver hours of service events', () => {
 
     it('should process driver hours of service event with default ISE values', async () => {
         search.mockResolvedValueOnce([driverFromSearch])
-        iseCompliance.get.mockResolvedValueOnce({ // ruleset
-            workshiftDrivingMaximumTime: 660,
-            workshiftOnDutyMaximumTime: 840,
-            cycleOnDutyMaximumTime: 3600
-        })
+        iseCompliance.get.mockResolvedValueOnce(ruleSet)
         iseCompliance.get.mockResolvedValueOnce({ // vehicle
             driverId: 'some_driver',
             vehicleId: 'some_vehicle_id',
@@ -218,7 +218,7 @@ describe('driver hours of service events', () => {
                     hoursOfService: {
                         ...payloadData.data,
                         lastLogbookUpdateDate: '2000-01-02T02:04:05.000Z',
-                        currentDriverType: payloadData.data.hosRuleSetName,
+                        currentDriverType: 'US 7-day passenger-carrying',
                         currentDutyStatus: payloadData.data.mostRecentStatus,
                         totalTimeInCurrentDutyStatus: '01:00',
                         availableDriveTime: '00:00',
@@ -240,11 +240,7 @@ describe('driver hours of service events', () => {
 
     it('should process driver hours of service event when vehicle is not found', async () => {
         search.mockResolvedValueOnce([driverFromSearch])
-        iseCompliance.get.mockResolvedValueOnce({ // ruleset
-            workshiftDrivingMaximumTime: 660,
-            workshiftOnDutyMaximumTime: 840,
-            cycleOnDutyMaximumTime: 3600
-        })
+        iseCompliance.get.mockResolvedValueOnce(ruleSet)
         iseCompliance.get.mockRejectedValueOnce({
             description: {status: 404}
         })
@@ -297,7 +293,7 @@ describe('driver hours of service events', () => {
                     hoursOfService: {
                         ...payloadData.data,
                         lastLogbookUpdateDate: '2000-01-02T02:04:05.000Z',
-                        currentDriverType: payloadData.data.hosRuleSetName,
+                        currentDriverType: 'US 7-day passenger-carrying',
                         currentDutyStatus: payloadData.data.mostRecentStatus,
                         totalTimeInCurrentDutyStatus: '01:00',
                         availableDriveTime: '00:00',
@@ -372,7 +368,7 @@ describe('driver hours of service events', () => {
                     hoursOfService: {
                         ...payloadData.data,
                         lastLogbookUpdateDate: '2000-01-02T02:04:05.000Z',
-                        currentDriverType: payloadData.data.hosRuleSetName,
+                        currentDriverType: 'Unknown',
                         currentDutyStatus: payloadData.data.mostRecentStatus,
                         totalTimeInCurrentDutyStatus: '01:00',
                         availableDriveTime: '00:00',
@@ -444,7 +440,7 @@ describe('driver hours of service events', () => {
                     hoursOfService: {
                         ...payloadData.data,
                         lastLogbookUpdateDate: '2000-01-02T02:04:05.000Z',
-                        currentDriverType: payloadData.data.hosRuleSetName,
+                        currentDriverType: 'Unknown',
                         currentDutyStatus: payloadData.data.mostRecentStatus,
                         totalTimeInCurrentDutyStatus: '01:00',
                         availableDriveTime: '00:00',

@@ -1,0 +1,47 @@
+{
+    "value": {
+        "rowVersion": "1",
+        "rowDate": "2021-12-10T18:03:18.660Z",
+        "operation": "update",
+        "identity": [
+            {
+                "key": "termid",
+                "value": 54,
+                "type": "Int"
+            }
+        ],
+        "payload": {
+            "cid": 57,
+            "termid": 54,
+            "created": "2019-09-30T14:52:24.010Z",
+            "createUid": 269110,
+            "deleted": null,
+            "deleteUid": null,
+            "active": 1,
+            "name": "Benjamins terminal",
+            "street1": "4420 Baker Road",
+            "street2": "",
+            "street3": "",
+            "city": "St. Louis Park",
+            "state": "MN",
+            "zipcode": "55231",
+            "starttime": "1900-01-01T05:00:00.000Z",
+            "timezone": -300,
+            "dstObserved": 1,
+            "tzid": 4,
+            "starttimeReg": 0,
+            "pcUsMiles": 0,
+            "pcCanadaMiles": 0,
+            "pcCan": 1,
+            "pcUs": 1,
+            "pcUsCreated": "2019-09-30T14:52:24.010Z",
+            "pcUsUid": 269110,
+            "pcCanCreated": "2019-09-30T14:52:24.010Z",
+            "pcCanUid": 269110,
+            "iseKey": 400000261,
+            "iseUpdated": "2021-12-10T18:02:52.000Z",
+            "iseMigrate": true,
+            "cidRetention": 6
+        }
+    }
+}

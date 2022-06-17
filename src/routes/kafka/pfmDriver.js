@@ -41,7 +41,8 @@ const mapper = payload => {
         cid: payload.cid,
         did: payload.did,
         vid: payload.vid,
-        driverStatus: payload.active === 0 ? 'Inactive' : 'Active',
+        // According to the PFM teams, 1 is active and any other value means inactive.
+        driverStatus: payload.active === 1 ? 'Active' : 'Inactive',
         name: payload.name,
         idNumber: payload.idNumber, // maps to personId
         terminal: payload.termid, // maps to home terminal source key

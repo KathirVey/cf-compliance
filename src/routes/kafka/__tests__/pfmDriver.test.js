@@ -7,21 +7,17 @@ jest
 
 describe('pfm driver events', () => {
     let hapi,
-        route,
-        payloadData
+        route
 
-    beforeEach(() => {
-        hapi = {response: jest.fn().mockReturnThis()}
-        route = require('../pfmDriver')
-        payloadData = {
+    const createPayloadData = data => {
+        return {
             cid: 4629,
             did: 1005620,
             vid: null,
             created: '2016-11-05T05:19:29.877Z',
             createUid: 190546,
-            deleted: null,
             deleteUid: null,
-            active: 1,
+            deleted: null,
             name: 'Shawn M Shipp',
             idNumber: 2504434,
             password: 2504434,
@@ -103,8 +99,14 @@ describe('pfm driver events', () => {
             iseUserKey: 87254,
             iseUpdated: '2021-09-23T20:16:57.000Z',
             usingIseLogs: true,
-            iseWelcomeSent: 1
+            iseWelcomeSent: 1,
+            ...data
         }
+    }
+
+    beforeEach(() => {
+        hapi = {response: jest.fn().mockReturnThis()}
+        route = require('../pfmDriver')
     })
 
     it('should handle pfm driver create event', async () => {
@@ -115,6 +117,7 @@ describe('pfm driver events', () => {
             }]
         )
 
+        const payloadData = createPayloadData({active: 1})
         const request = {
             payload: {
                 value: {
@@ -175,6 +178,7 @@ describe('pfm driver events', () => {
             }]
         )
 
+        const payloadData = createPayloadData({active: 2})
         const request = {
             payload: {
                 value: {
@@ -213,7 +217,7 @@ describe('pfm driver events', () => {
                     cid: 4629,
                     did: 1005620,
                     vid: null,
-                    driverStatus: 'Active',
+                    driverStatus: 'Inactive',
                     name: 'Shawn M Shipp',
                     idNumber: 2504434,
                     terminal: 35611,
@@ -233,6 +237,7 @@ describe('pfm driver events', () => {
         client.exists.mockResolvedValue({body: false})
         search.mockResolvedValueOnce([])
 
+        const payloadData = createPayloadData({active: null})
         const request = {
             payload: {
                 value: {
@@ -276,6 +281,7 @@ describe('pfm driver events', () => {
             }]
         )
 
+        const payloadData = createPayloadData({active: 0})
         const request = {
             payload: {
                 value: {

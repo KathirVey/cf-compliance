@@ -6,6 +6,7 @@ import {logger} from '@peoplenet/node-service-common'
 import client from '../../elasticsearch/client'
 import search from '../../elasticsearch/search'
 const ruleSets = require('../../config/driverRuleSets')
+const DEFAULT_RULESET_VALUE = -1
 
 module.exports = {
     method: 'POST',
@@ -79,8 +80,10 @@ module.exports = {
             availableDriveTime: getIseDefault(hosMessage.drivingTimeLeft),
             availableDutyTime: getIseDefault(hosMessage.dailyDuty),
             availableCycleTime: getIseDefault(hosMessage.cycleDuty),
-            driveTimeUsed: calculateTimeUsed(hosMessage.workshiftDriving, ruleSet?.workshiftDrivingMaximumTime),
-            onDutyTimeUsed: calculateTimeUsed(hosMessage.workshiftDuty, ruleSet?.workshiftOnDutyMaximumTime),
+            workShiftDriveTimeUsed: calculateTimeUsed(hosMessage.workshiftDriving, ruleSet?.workshiftDrivingMaximumTime),
+            workShiftOnDutyTimeUsed: calculateTimeUsed(hosMessage.workshiftDuty, ruleSet?.workshiftOnDutyMaximumTime),
+            dailyDriveTimeUsed: calculateTimeUsed(hosMessage.dailyDriving, ruleSet?.dailyDrivingMaximumTime),
+            dailyOnDutyTimeUsed: calculateTimeUsed(hosMessage.dailyDuty, ruleSet?.dailyOnDutyMaximumTime),
             timeUntilBreak: getIseDefault(hosMessage.workshiftRestBreak),
             cycleTimeUsed: calculateTimeUsed(hosMessage.cycleDuty, ruleSet?.cycleOnDutyMaximumTime)
         }
@@ -109,6 +112,10 @@ module.exports = {
 const calculateTimeUsed = (field, ruleSetConstraint) => {
     if (!ruleSetConstraint) {
         return 'Unknown'
+    }
+    // ruleset values for dailyDriving/dailyDuty max time are -1 for US driver types
+    if (ruleSetConstraint === DEFAULT_RULESET_VALUE) {
+        return 'N/A'
     }
     if (Object.keys(ISE_CONSTANTS).includes(field)) {
         return ISE_CONSTANTS[field]

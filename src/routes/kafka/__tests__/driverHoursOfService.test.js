@@ -77,6 +77,8 @@ describe('driver hours of service events', () => {
             workshiftDrivingMaximumTime: 660,
             workshiftOnDutyMaximumTime: 840,
             cycleOnDutyMaximumTime: 3600,
+            dailyDrivingMaximumTime: -1,
+            dailyOnDutyMaximumTime: -1,
             ruleSetType: 'Us7DayPassengerCarrying',
             description: 'US 7-day passenger-carrying'
         }
@@ -146,8 +148,98 @@ describe('driver hours of service events', () => {
                         availableDriveTime: '00:00',
                         availableDutyTime: '04:03',
                         availableCycleTime: '45:22',
-                        driveTimeUsed: '06:00',
-                        onDutyTimeUsed: '09:50',
+                        workShiftDriveTimeUsed: '06:00',
+                        workShiftOnDutyTimeUsed: '09:50',
+                        dailyDriveTimeUsed: 'N/A',
+                        dailyOnDutyTimeUsed: 'N/A',
+                        timeUntilBreak: '08:00',
+                        vehicleId: 'some_vehicle_id',
+                        cycleTimeUsed: '14:38'
+                    }
+                }
+            },
+            doc_as_upsert: true
+        })
+        expect(hapi.response).toHaveBeenCalledWith({message: 'Processed driver HOS event messageId: 43fe7bfc-67ea-430f-931f-ffe3a9253d55 for driverId: ea631aad-5d8c-4b37-a25c-5f0bd23164b9'})
+        expect(hapi.code).toHaveBeenCalledWith(204)
+    })
+
+    it('should process driver hours of service event - Canada driver type', async () => {
+        search.mockResolvedValueOnce([driverFromSearch])
+        iseCompliance.get.mockResolvedValueOnce({ // ruleset
+            workshiftDrivingMaximumTime: 780,
+            workshiftOnDutyMaximumTime: 840,
+            cycleOnDutyMaximumTime: 3600,
+            dailyDrivingMaximumTime: 780,
+            dailyOnDutyMaximumTime: 840,
+            ruleSetType: 'CanadaSouthOfLatitude60NWellService',
+            description: 'CanadaSouthOfLatitude60N'
+        })
+        iseCompliance.get.mockResolvedValueOnce({ // vehicle
+            driverId: 'some_driver',
+            vehicleId: 'some_vehicle_id',
+            loggedIn: true,
+            loginDateTime: '2022-03-24T15:55:00',
+            logoutDateTime: null
+        })
+        client.update.mockResolvedValueOnce({body: {_id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9'}})
+
+        const payloadData = createPayloadData({
+            hosRuleSetName: 'CanadaSouthOfLatitude60NWellService',
+            cycleDuty: '1.21:22:17',
+            dailyDriving: '3:00:00',
+            dailyDuty: '04:03:00',
+            drivingTimeLeft: '00:00:00',
+            workshiftRestBreak: '08:00:00',
+            workshiftDriving: '05:00:00',
+            workshiftDuty: '04:10:00',
+            mostRecentStatusDateTime: '2000-01-02T02:04:05Z',
+            accountIdentifiers: {
+                pfmId: '57'
+            }
+        })
+
+        const request = {
+            payload: {
+                value: {
+                    ...payloadData
+                }
+            }
+        }
+
+        await route.handler(request, hapi)
+
+        expect(search).toHaveBeenCalledWith({
+            select: [],
+            from: 'drivers',
+            where: {
+                'externalSources.eFleetSuite.driverId.keyword': 'some_driver',
+                'customer.companyId': 57
+            }
+        })
+        expect(iseCompliance.get).toHaveBeenCalledTimes(2)
+        expect(iseCompliance.get).toHaveBeenCalledWith('/api/HosRuleSet/details/22', {headers: iseHeaders})
+        expect(iseCompliance.get).toHaveBeenCalledWith('/api/Drivers/byDriverId/some_driver/vehicle', {headers: iseHeaders})
+        expect(client.update).toHaveBeenCalled()
+        expect(client.update).toHaveBeenCalledWith({
+            index: 'driver',
+            type: '_doc',
+            id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9',
+            body: {
+                doc: {
+                    hoursOfService: {
+                        ...payloadData.data,
+                        lastLogbookUpdateDate: '2000-01-02T02:04:05.000Z',
+                        currentDriverType: 'CanadaSouthOfLatitude60N',
+                        currentDutyStatus: payloadData.data.mostRecentStatus,
+                        totalTimeInCurrentDutyStatus: '01:00',
+                        availableDriveTime: '00:00',
+                        availableDutyTime: '04:03',
+                        availableCycleTime: '45:22',
+                        workShiftDriveTimeUsed: '08:00',
+                        workShiftOnDutyTimeUsed: '09:50',
+                        dailyDriveTimeUsed: '10:00',
+                        dailyOnDutyTimeUsed: '09:57',
                         timeUntilBreak: '08:00',
                         vehicleId: 'some_vehicle_id',
                         cycleTimeUsed: '14:38'
@@ -224,8 +316,10 @@ describe('driver hours of service events', () => {
                         availableDriveTime: '00:00',
                         availableCycleTime: 'N/A',
                         availableDutyTime: 'UNKNOWN',
-                        driveTimeUsed: 'EXEMPT',
-                        onDutyTimeUsed: 'UNKNOWN',
+                        workShiftDriveTimeUsed: 'EXEMPT',
+                        workShiftOnDutyTimeUsed: 'UNKNOWN',
+                        dailyDriveTimeUsed: 'N/A',
+                        dailyOnDutyTimeUsed: 'N/A',
                         timeUntilBreak: 'ELD EXEMPT',
                         vehicleId: 'some_vehicle_id',
                         cycleTimeUsed: 'N/A'
@@ -299,8 +393,10 @@ describe('driver hours of service events', () => {
                         availableDriveTime: '00:00',
                         availableDutyTime: '04:03',
                         availableCycleTime: '45:22',
-                        driveTimeUsed: '06:00',
-                        onDutyTimeUsed: '09:50',
+                        workShiftDriveTimeUsed: '06:00',
+                        workShiftOnDutyTimeUsed: '09:50',
+                        dailyDriveTimeUsed: 'N/A',
+                        dailyOnDutyTimeUsed: 'N/A',
                         timeUntilBreak: '08:00',
                         cycleTimeUsed: '14:38'
                     }
@@ -374,8 +470,10 @@ describe('driver hours of service events', () => {
                         availableDriveTime: '00:00',
                         availableDutyTime: '04:03',
                         availableCycleTime: '45:22',
-                        driveTimeUsed: 'Unknown',
-                        onDutyTimeUsed: 'Unknown',
+                        workShiftDriveTimeUsed: 'Unknown',
+                        workShiftOnDutyTimeUsed: 'Unknown',
+                        dailyDriveTimeUsed: 'Unknown',
+                        dailyOnDutyTimeUsed: 'Unknown',
                         timeUntilBreak: '08:10',
                         vehicleId: 'some_vehicle_id',
                         cycleTimeUsed: 'Unknown'
@@ -446,8 +544,10 @@ describe('driver hours of service events', () => {
                         availableDriveTime: '00:00',
                         availableDutyTime: '04:03',
                         availableCycleTime: '45:22',
-                        driveTimeUsed: 'Unknown',
-                        onDutyTimeUsed: 'Unknown',
+                        workShiftDriveTimeUsed: 'Unknown',
+                        workShiftOnDutyTimeUsed: 'Unknown',
+                        dailyDriveTimeUsed: 'Unknown',
+                        dailyOnDutyTimeUsed: 'Unknown',
                         timeUntilBreak: '06:03',
                         cycleTimeUsed: 'Unknown'
                     }

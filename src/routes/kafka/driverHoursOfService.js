@@ -3,9 +3,11 @@ import moment from 'moment'
 import {iseCompliance} from '../../services'
 import getIseHeaders from '../../util/getIseHeaders'
 import {logger} from '@peoplenet/node-service-common'
+import {isEmpty} from 'lodash'
 import client from '../../elasticsearch/client'
 import search from '../../elasticsearch/search'
 const ruleSets = require('../../config/driverRuleSets')
+const redisClient = require('../../redis/redisClient')
 const DEFAULT_RULESET_VALUE = -1
 
 module.exports = {
@@ -22,11 +24,11 @@ module.exports = {
             return hapi.response({message: `Invalid pfmId: ${hosMessage.accountIdentifiers.pfmId} on incoming message.`}).code(200)
         }
 
-        // TODO: remove the config after EFS sends the required ruleset info on the message
+        // TODO: remove the config and caching after EFS sends the required ruleset info on the message
         const rulesetId = ruleSets[hosMessage.hosRuleSetName]
-        const rulesetIdNotFound = !rulesetId || rulesetId < 0
+        const rulesetIdFound = rulesetId && rulesetId > 0
 
-        if (rulesetIdNotFound) {
+        if (!rulesetIdFound) {
             logger.warn(`Unable to find ruleSetId for: ${hosMessage.hosRuleSetName} in driverRuleSets config.`)
         }
 
@@ -53,9 +55,17 @@ module.exports = {
 
         const iseHeaders = getIseHeaders(companyId)
 
-        const ruleSet = rulesetIdNotFound
-            ? null
-            : await iseCompliance.get(`/api/HosRuleSet/details/${rulesetId}`, {headers: iseHeaders})
+        let ruleSet = null
+        if (rulesetIdFound) {
+            const cacheKey = `ruleset:${rulesetId}`
+            const {[cacheKey]: ruleSetFromCache} = await redisClient.get(cacheKey)
+            if (isEmpty(ruleSetFromCache)) {
+                ruleSet = await iseCompliance.get(`/api/HosRuleSet/details/${rulesetId}`, {headers: iseHeaders})
+                await redisClient.set({[cacheKey]: ruleSet})
+            } else {
+                ruleSet = ruleSetFromCache
+            }
+        }
 
         let driverVehicle
         try {
@@ -98,7 +108,7 @@ module.exports = {
             doc_as_upsert: true
         })
         logger.info(`Processed driver HOS event messageId: ${value.id} for driverId: ${updatedDriver._id}`)
-        return hapi.response({message: `Processed driver HOS event messageId: ${value.id} for driverId: ${updatedDriver._id}`}).code(204)
+        return hapi.response({message: `Processed driver HOS event messageId: ${value.id}, cid: ${value.data.accountIdentifiers.pfmId} for driverId: ${updatedDriver._id}`}).code(204)
     },
     options: {
         description: 'Update search based on driver hours of service events',

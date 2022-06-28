@@ -49,7 +49,7 @@ module.exports = {
         const skipMessage = driver.hasOwnProperty('hoursOfService')
             && moment(driver.hoursOfService.lastUpdatedAt).isAfter(hosMessage.lastUpdatedAt)
         if (skipMessage) {
-            logger.info(`Skipping message since a more recent HOS event has been already processed for driverId: ${driver.id}.`)
+            logger.trace(`Skipping message since a more recent HOS event has been already processed for driverId: ${driver.id}.`)
             return hapi.response({message: `Skipping message since a more recent HOS event has been already processed for driverId: ${driver.id}.`}).code(200)
         }
 
@@ -107,7 +107,7 @@ module.exports = {
             },
             doc_as_upsert: true
         })
-        logger.info(`Processed driver HOS event messageId: ${value.id} for driverId: ${updatedDriver._id}`)
+        logger.trace(`Processed driver HOS event messageId: ${value.id} for driverId: ${updatedDriver._id}`)
         return hapi.response({message: `Processed driver HOS event messageId: ${value.id}, cid: ${value.data.accountIdentifiers.pfmId} for driverId: ${updatedDriver._id}`}).code(204)
     },
     options: {

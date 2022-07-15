@@ -81,12 +81,14 @@ module.exports = {
             hosMessage.vehicleId = driverVehicle.vehicleId
         }
 
+        const totalTimeInCurrentDutyStatus = getTimeDiff(hosMessage.mostRecentStatusDateTime)
         const hoursOfService = {
             ...hosMessage,
             lastLogbookUpdateDate: moment.parseZone(hosMessage.mostRecentStatusDateTime).toISOString(),
             currentDriverType: ruleSet?.description ?? 'Unknown',
             currentDutyStatus: hosMessage.mostRecentStatus,
-            totalTimeInCurrentDutyStatus: getTimeDiff(hosMessage.mostRecentStatusDateTime),
+            totalTimeInCurrentDutyStatus,
+            hoursInCurrentDutyStatus: getHoursInCurrentDutyStatus(totalTimeInCurrentDutyStatus),
             availableDriveTime: getIseDefault(hosMessage.drivingTimeLeft),
             availableDutyTime: getIseDefault(hosMessage.workshiftDuty),
             availableCycleTime: getIseDefault(hosMessage.cycleDuty),
@@ -133,6 +135,11 @@ const calculateTimeUsed = (field, ruleSetConstraint) => {
     const fieldInMinutes = convertToMinutes(field)
     const diff = ruleSetConstraint - fieldInMinutes
     return getDuration(diff)
+}
+
+const getHoursInCurrentDutyStatus = field => {
+    const time = field.split(':')
+    return parseInt(time[0]) + parseInt(time[1]) / 60 //converting to fractional hours for filtering
 }
 
 const getIseDefault = field => {

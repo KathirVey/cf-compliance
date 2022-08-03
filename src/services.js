@@ -1,16 +1,24 @@
-import makeService from '@peoplenet/cf-services'
+const {ENV_PREFIX: env = 'dev'} = process.env
+const makeService = require('@peoplenet/cf-services')
 
-const {billingDataBridge, driverService, enterpriseData, iseCompliance, connectedfleetcache} = makeService([
+const customServiceConfig = {
+    enterpriseData: {suffix: '/v1'},
+    compliance: {
+        baseURL: {
+            dev: 'https://cloud.dev.api.trimblecloud.com/transportation/compliance/v1',
+            staging: 'https://cloud.stage.api.trimblecloud.com/transportation/compliance/v1',
+            prod: ''
+        }[env]
+    }
+}
+
+const services = makeService([
     'billingDataBridge',
+    'compliance',
+    'connectedfleetcache',
     'driverService',
     'enterpriseData',
-    'iseCompliance',
-    'connectedfleetcache'
-], {
-    customServiceConfig: {
-        enterpriseData: {suffix: '/v1'}
-    }
-})
+    'iseCompliance'
+], {customServiceConfig})
 
-export {billingDataBridge, enterpriseData, driverService, iseCompliance, connectedfleetcache}
-
+module.exports = services

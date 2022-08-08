@@ -25,8 +25,17 @@ module.exports = {
         }
 
         // TODO: remove the config and caching after EFS sends the required ruleset info on the message
-        const rulesetId = ruleSets[hosMessage.hosRuleSetName]
-        const rulesetIdFound = rulesetId && rulesetId > 0
+        // Added an extra check to handle integer values in the 'hosRuleSetName' prop
+        let rulesetId
+        const isRuleSetIdPositiveInteger = Number.isInteger(hosMessage.hosRuleSetName) && hosMessage.hosRuleSetName > 0
+
+        if (isRuleSetIdPositiveInteger) {
+            rulesetId = hosMessage.hosRuleSetName
+        } else {
+            rulesetId = ruleSets[hosMessage.hosRuleSetName]
+        }
+
+        const rulesetIdFound = isRuleSetIdPositiveInteger ? true : rulesetId && rulesetId > 0
 
         if (!rulesetIdFound) {
             logger.warn(`Unable to find ruleSetId for: ${hosMessage.hosRuleSetName} in driverRuleSets config.`)

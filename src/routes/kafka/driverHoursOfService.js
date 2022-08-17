@@ -88,6 +88,18 @@ module.exports = {
 
         if (driverVehicle) {
             hosMessage.vehicleId = driverVehicle.vehicleId
+
+            const [edVehicleId] = await search({
+                select: ['id'],
+                from: 'vehicles',
+                where: {
+                    'customerVehicleId.keyword': driverVehicle.vehicleId,
+                    'customerIds.pfmCid': parseInt(companyId)
+                }
+            })
+            if (edVehicleId) {
+                hosMessage.edVehicleId = edVehicleId.id
+            }
         }
 
         const totalTimeInCurrentDutyStatus = getTimeDiff(hosMessage.mostRecentStatusDateTime)

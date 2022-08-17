@@ -17,7 +17,8 @@ describe('driver hours of service events', () => {
         route,
         iseHeaders,
         ruleSet,
-        driverFromSearch
+        driverFromSearch,
+        vehicleFromSearch
 
     const createPayloadData = data => {
         return {
@@ -75,6 +76,9 @@ describe('driver hours of service events', () => {
                 }
             }
         }
+        vehicleFromSearch = {
+            id: 74044
+        }
         ruleSet = { // ruleset
             workshiftDrivingMaximumTime: 660,
             workshiftOnDutyMaximumTime: 840,
@@ -88,6 +92,7 @@ describe('driver hours of service events', () => {
 
     it('should process driver hours of service event - ruleset not in cache', async () => {
         search.mockResolvedValueOnce([driverFromSearch])
+        search.mockResolvedValueOnce([vehicleFromSearch])
         redisClient.get.mockResolvedValueOnce({'ruleset:3': {}})
         iseCompliance.get.mockResolvedValueOnce(ruleSet)
         iseCompliance.get.mockResolvedValueOnce({ // vehicle
@@ -132,6 +137,14 @@ describe('driver hours of service events', () => {
                 'customer.companyId': 57
             }
         })
+        expect(search).toHaveBeenCalledWith({
+            select: ['id'],
+            from: 'vehicles',
+            where: {
+                'customerVehicleId.keyword': 'some_vehicle_id',
+                'customerIds.pfmCid': 57
+            }
+        })
         expect(redisClient.get).toHaveBeenCalled()
         expect(iseCompliance.get).toHaveBeenCalledTimes(2)
         expect(iseCompliance.get).toHaveBeenCalledWith('/api/HosRuleSet/details/3', {headers: iseHeaders})
@@ -160,7 +173,8 @@ describe('driver hours of service events', () => {
                         dailyOnDutyTimeUsed: 'N/A',
                         timeUntilBreak: '08:00',
                         vehicleId: 'some_vehicle_id',
-                        cycleTimeUsed: '14:38'
+                        cycleTimeUsed: '14:38',
+                        edVehicleId: 74044
                     }
                 }
             },
@@ -172,6 +186,7 @@ describe('driver hours of service events', () => {
 
     it('should process driver hours of service event - ruleset in cache', async () => {
         search.mockResolvedValueOnce([driverFromSearch])
+        search.mockResolvedValueOnce([vehicleFromSearch])
         redisClient.get.mockResolvedValueOnce({'ruleset:3': ruleSet})
         iseCompliance.get.mockResolvedValueOnce({ // vehicle
             driverId: 'some_driver',
@@ -215,6 +230,14 @@ describe('driver hours of service events', () => {
                 'customer.companyId': 57
             }
         })
+        expect(search).toHaveBeenCalledWith({
+            select: ['id'],
+            from: 'vehicles',
+            where: {
+                'customerVehicleId.keyword': 'some_vehicle_id',
+                'customerIds.pfmCid': 57
+            }
+        })
         expect(redisClient.get).toHaveBeenCalledWith('ruleset:3')
         expect(iseCompliance.get).toHaveBeenCalledTimes(1)
         expect(iseCompliance.get).toHaveBeenCalledWith('/api/Drivers/byDriverId/some_driver/vehicle', {headers: iseHeaders})
@@ -242,7 +265,8 @@ describe('driver hours of service events', () => {
                         dailyOnDutyTimeUsed: 'N/A',
                         timeUntilBreak: '08:00',
                         vehicleId: 'some_vehicle_id',
-                        cycleTimeUsed: '14:38'
+                        cycleTimeUsed: '14:38',
+                        edVehicleId: 74044
                     }
                 }
             },
@@ -263,6 +287,7 @@ describe('driver hours of service events', () => {
             description: 'CanadaSouthOfLatitude60N'
         }
         search.mockResolvedValueOnce([driverFromSearch])
+        search.mockResolvedValueOnce([vehicleFromSearch])
         redisClient.get.mockResolvedValueOnce({'ruleset:22': {}})
         iseCompliance.get.mockResolvedValueOnce(canadianRuleset)
         iseCompliance.get.mockResolvedValueOnce({ // vehicle
@@ -307,6 +332,14 @@ describe('driver hours of service events', () => {
                 'customer.companyId': 57
             }
         })
+        expect(search).toHaveBeenCalledWith({
+            select: ['id'],
+            from: 'vehicles',
+            where: {
+                'customerVehicleId.keyword': 'some_vehicle_id',
+                'customerIds.pfmCid': 57
+            }
+        })
         expect(redisClient.get).toHaveBeenCalled()
         expect(iseCompliance.get).toHaveBeenCalledTimes(2)
         expect(iseCompliance.get).toHaveBeenCalledWith('/api/HosRuleSet/details/22', {headers: iseHeaders})
@@ -335,7 +368,8 @@ describe('driver hours of service events', () => {
                         dailyOnDutyTimeUsed: '09:57',
                         timeUntilBreak: '08:00',
                         vehicleId: 'some_vehicle_id',
-                        cycleTimeUsed: '14:38'
+                        cycleTimeUsed: '14:38',
+                        edVehicleId: 74044
                     }
                 }
             },
@@ -347,6 +381,7 @@ describe('driver hours of service events', () => {
 
     it('should process driver hours of service event with default ISE values', async () => {
         search.mockResolvedValueOnce([driverFromSearch])
+        search.mockResolvedValueOnce([vehicleFromSearch])
         redisClient.get.mockResolvedValueOnce({'ruleset:3': {}})
         iseCompliance.get.mockResolvedValueOnce(ruleSet)
         iseCompliance.get.mockResolvedValueOnce({ // vehicle
@@ -391,6 +426,14 @@ describe('driver hours of service events', () => {
                 'customer.companyId': 57
             }
         })
+        expect(search).toHaveBeenCalledWith({
+            select: ['id'],
+            from: 'vehicles',
+            where: {
+                'customerVehicleId.keyword': 'some_vehicle_id',
+                'customerIds.pfmCid': 57
+            }
+        })
         expect(redisClient.get).toHaveBeenCalled()
         expect(iseCompliance.get).toHaveBeenCalledTimes(2)
         expect(iseCompliance.get).toHaveBeenCalledWith('/api/HosRuleSet/details/3', {headers: iseHeaders})
@@ -419,7 +462,8 @@ describe('driver hours of service events', () => {
                         dailyOnDutyTimeUsed: 'N/A',
                         timeUntilBreak: 'ELD EXEMPT',
                         vehicleId: 'some_vehicle_id',
-                        cycleTimeUsed: 'N/A'
+                        cycleTimeUsed: 'N/A',
+                        edVehicleId: 74044
                     }
                 }
             },
@@ -509,6 +553,7 @@ describe('driver hours of service events', () => {
 
     it('should process driver hours of service event when rulesetId is not found', async () => {
         search.mockResolvedValueOnce([driverFromSearch])
+        search.mockResolvedValueOnce([vehicleFromSearch])
         iseCompliance.get.mockResolvedValueOnce({ // vehicle
             driverId: 'some_driver',
             vehicleId: 'some_vehicle_id',
@@ -551,6 +596,14 @@ describe('driver hours of service events', () => {
                 'customer.companyId': 57
             }
         })
+        expect(search).toHaveBeenCalledWith({
+            select: ['id'],
+            from: 'vehicles',
+            where: {
+                'customerVehicleId.keyword': 'some_vehicle_id',
+                'customerIds.pfmCid': 57
+            }
+        })
         expect(redisClient.get).not.toHaveBeenCalled()
         expect(iseCompliance.get).toHaveBeenCalledTimes(1)
         expect(iseCompliance.get).toHaveBeenCalledWith('/api/Drivers/byDriverId/some_driver/vehicle', {headers: iseHeaders})
@@ -577,7 +630,8 @@ describe('driver hours of service events', () => {
                         dailyOnDutyTimeUsed: 'Unknown',
                         timeUntilBreak: '08:10',
                         vehicleId: 'some_vehicle_id',
-                        cycleTimeUsed: 'Unknown'
+                        cycleTimeUsed: 'Unknown',
+                        edVehicleId: 74044
                     }
                 }
             },
@@ -799,6 +853,7 @@ describe('driver hours of service events', () => {
 
     it('should handle integer value in hosRuleSetName', async () => {
         search.mockResolvedValueOnce([driverFromSearch])
+        search.mockResolvedValueOnce([vehicleFromSearch])
         redisClient.get.mockResolvedValueOnce({'ruleset:3': {}})
         iseCompliance.get.mockResolvedValueOnce(ruleSet)
         iseCompliance.get.mockResolvedValueOnce({ // vehicle
@@ -843,6 +898,14 @@ describe('driver hours of service events', () => {
                 'customer.companyId': 57
             }
         })
+        expect(search).toHaveBeenCalledWith({
+            select: ['id'],
+            from: 'vehicles',
+            where: {
+                'customerVehicleId.keyword': 'some_vehicle_id',
+                'customerIds.pfmCid': 57
+            }
+        })
         expect(redisClient.get).toHaveBeenCalled()
         expect(iseCompliance.get).toHaveBeenCalledTimes(2)
         expect(iseCompliance.get).toHaveBeenCalledWith('/api/HosRuleSet/details/3', {headers: iseHeaders})
@@ -871,7 +934,8 @@ describe('driver hours of service events', () => {
                         dailyOnDutyTimeUsed: 'N/A',
                         timeUntilBreak: '08:00',
                         vehicleId: 'some_vehicle_id',
-                        cycleTimeUsed: '14:38'
+                        cycleTimeUsed: '14:38',
+                        edVehicleId: 74044
                     }
                 }
             },

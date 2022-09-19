@@ -38,7 +38,7 @@ module.exports = {
         const rulesetIdFound = isRuleSetIdPositiveInteger ? true : rulesetId && rulesetId > 0
 
         if (!rulesetIdFound) {
-            logger.warn(`Unable to find ruleSetId for: ${hosMessage.hosRuleSetName} in driverRuleSets config.`)
+            logger.debug(`Unable to find ruleSetId for: ${hosMessage.hosRuleSetName} in driverRuleSets config.`)
         }
 
         const [driver] = await search({
@@ -81,7 +81,7 @@ module.exports = {
             driverVehicle = await iseCompliance.get(`/api/Drivers/byDriverId/${loginId}/vehicle`, {headers: iseHeaders})
         } catch (error) {
             if (error.description?.status === 404) {
-                logger.warn(`Got 404 from ISE; no vehicle found for driver ${loginId}`)
+                logger.debug(`Got 404 from ISE; no vehicle found for driver ${loginId}`)
                 driverVehicle = null
             }
         }

@@ -27,7 +27,7 @@ module.exports = {
         } else if (method === 'DELETE') {
             await searchApi.delete('driver', entity)
         }
-        logger.info({id: entity.id}, `Processed Driver ${method} event`)
+        logger.debug({id: entity.id}, `Processed Driver ${method} event`)
         return hapi.response()
     },
     options: {

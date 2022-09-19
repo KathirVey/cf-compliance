@@ -21,7 +21,7 @@ module.exports = {
             entity.customerId = customerId
             await searchApi.upsert('pfm_terminal', entity)
         }
-        logger.info({name: entity.name}, `Processed terminal event`)
+        logger.debug({name: entity.name}, `Processed terminal event`)
         return hapi.response()
     },
     options: {

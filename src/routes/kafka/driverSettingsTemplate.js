@@ -31,7 +31,7 @@ export default {
             logger.error({error}, 'Error during bulk driver update')
             return hapi.response().code(207)
         }
-        logger.info({id: entity.id}, `Processed Driver settings template ${method} event`) //TODO: Remove this logger info
+        logger.debug({id: entity.id}, `Processed Driver settings template ${method} event`)
         return hapi.response()
     },
     options: {

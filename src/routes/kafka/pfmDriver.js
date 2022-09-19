@@ -22,7 +22,7 @@ module.exports = {
             const driver = mapper(entity)
             await searchApi.upsert('pfm_driver', driver)
         }
-        logger.info({driverId: entity.did}, `Processed driver event`)
+        logger.debug({driverId: entity.did}, `Processed driver event`)
         return hapi.response()
     },
     options: {

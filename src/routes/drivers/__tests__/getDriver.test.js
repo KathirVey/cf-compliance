@@ -86,7 +86,7 @@ it('should get the associated vehicle for a driver', async () => {
     expect(search).toHaveBeenCalledWith({
         select: ['id', 'devices', 'customerVehicleId'],
         from: 'vehicles',
-        where: {'customerVehicleId.keyword': '1234'}
+        where: {'customerVehicleId.keyword': '1234', 'customerIds.pfmCid': 'userPfmCid'}
     })
     expect(request.server.inject).toHaveBeenCalledWith({
         headers: request.headers,
@@ -122,7 +122,7 @@ it('should get the associated driver settings template for a driver', async () =
     expect(search).toHaveBeenCalledWith({
         select: ['id', 'devices', 'customerVehicleId'],
         from: 'vehicles',
-        where: {'customerVehicleId.keyword': '1234'}
+        where: {'customerVehicleId.keyword': '1234', 'customerIds.pfmCid': 'userPfmCid'}
     })
     expect(search).toHaveBeenCalledWith({
         select: ['id', 'name', 'description'],
@@ -175,7 +175,7 @@ it('should get a driver for CXSupport', async () => {
     expect(search).toHaveBeenCalledWith({
         select: ['id', 'devices', 'customerVehicleId'],
         from: 'vehicles',
-        where: {'customerVehicleId.keyword': '1234'}
+        where: {'customerVehicleId.keyword': '1234', 'customerIds.pfmCid': 'other_pfm_id'}
     })
     expect(request.server.inject).toHaveBeenCalledWith({
         headers: request.headers,

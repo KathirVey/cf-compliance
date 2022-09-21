@@ -14,12 +14,13 @@ const getVehicleForDriver = async (loginId, pfmCid) => {
             select: ['id', 'devices', 'customerVehicleId'],
             from: 'vehicles',
             where: {
-                'customerVehicleId.keyword': driverVehicle.vehicleId
+                'customerVehicleId.keyword': driverVehicle.vehicleId,
+                'customerIds.pfmCid': pfmCid
             }
         })
 
         if (!vehicle) {
-            logger.error(`Unable to find vehicle with customerVehicleId: ${driverVehicle.vehicleId} in search`)
+            logger.error(`Unable to find vehicle with customerVehicleId: ${driverVehicle.vehicleId} in cid: ${pfmCid} in search`)
             return null
         }
 

@@ -1,12 +1,14 @@
 import {driverService, iseCompliance} from '../../../services'
 import search from '../../../elasticsearch/search'
+import client from '../../../elasticsearch/client'
 import route from '../getDriver'
 
 process.env.ISE_COMPLIANCE_AUTH = 'someAuthToken'
 
 jest.mock('@elastic/elasticsearch')
-    .mock('../../../services')
-    .mock('../../../elasticsearch/search')
+jest.mock('../../../services')
+jest.mock('../../../elasticsearch/search')
+jest.mock('../../../elasticsearch/client')
 
 let request, iseHeaders
 beforeEach(() => {
@@ -45,11 +47,38 @@ it('should get a driver with hours of service data', async () => {
         description: {status: 404}
     })
     request.server.inject.mockResolvedValueOnce({result: {shift: 8}})
+    client.get.mockResolvedValueOnce({
+        body: {
+            _source: {
+                orgUnitsParentLineage: [
+                    1, 2, 3
+                ],
+                organizationalUnits: [
+                    {id: 'ou1'}, {id: 'ou2'}
+                ]
+            }
+        }
+    })
     search.mockResolvedValueOnce([])
 
     const result = await route.handler(request)
 
-    expect(result).toEqual({id: 1, name: 'driver', profile: {loginId: 'konapun'}, hoursOfService: {shift: 8}, vehicle: null, uniqueMemberGroup: null})
+    expect(result).toEqual({
+        id: 1,
+        name: 'driver',
+        profile: {loginId: 'konapun'},
+        hoursOfService: {
+            shift: 8
+        },
+        vehicle: null,
+        uniqueMemberGroup: null,
+        orgUnitsParentLineage: [
+            1, 2, 3
+        ],
+        organizationalUnits: [
+            {id: 'ou1'}, {id: 'ou2'}
+        ]
+    })
     expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/1', {headers: request.headers})
     expect(request.server.inject).toHaveBeenCalledWith({
         headers: request.headers,
@@ -64,6 +93,11 @@ it('should get the associated vehicle for a driver', async () => {
     request.server.inject.mockResolvedValueOnce({result: {shift: 8}})
     search.mockResolvedValueOnce([])
         .mockResolvedValueOnce([{id: 90, devices: []}])
+    client.get.mockResolvedValueOnce({
+        body: {
+            _source: {}
+        }
+    })
 
     const result = await route.handler(request)
 
@@ -105,6 +139,11 @@ it('should get the associated driver settings template for a driver', async () =
         .mockResolvedValueOnce([{id: 90, devices: []}])
     iseCompliance.get.mockResolvedValueOnce({vehicleId: '1234'}) // driver vehicle
     request.server.inject.mockResolvedValueOnce({result: {shift: 8}})
+    client.get.mockResolvedValueOnce({
+        body: {
+            _source: {}
+        }
+    })
 
     const result = await route.handler(request)
 
@@ -148,6 +187,18 @@ it('should get a driver for CXSupport', async () => {
     request.server.inject.mockResolvedValueOnce({result: {shift: 8}})
     search.mockResolvedValueOnce([])
         .mockResolvedValueOnce([{id: 90, devices: []}])
+    client.get.mockResolvedValueOnce({
+        body: {
+            _source: {
+                orgUnitsParentLineage: [
+                    1, 2, 3
+                ],
+                organizationalUnits: [
+                    {id: 'ou1'}, {id: 'ou2'}
+                ]
+            }
+        }
+    })
 
     const result = await route.handler(request)
 
@@ -163,7 +214,14 @@ it('should get a driver for CXSupport', async () => {
         vehicle: {
             id: 90,
             devices: []
-        }, uniqueMemberGroup: null
+        },
+        uniqueMemberGroup: null,
+        orgUnitsParentLineage: [
+            1, 2, 3
+        ],
+        organizationalUnits: [
+            {id: 'ou1'}, {id: 'ou2'}
+        ]
     })
     expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/1?customerId=other_c_id', {headers: request.headers})
     expect(iseCompliance.get).toHaveBeenCalledWith('/api/Drivers/byDriverId/konapunLeft/vehicle', {

@@ -59,12 +59,19 @@ const route = {
 }
 
 const getHierarchyDetails = async driverId => {
-    const {body: {_source: hierarchyDetails}} = await client.get({
-        _source: ['orgUnitsParentLineage', 'organizationalUnits'],
-        index: 'driver',
-        id: driverId
-    })
-    return hierarchyDetails ?? {}
+    try {
+        const {body: {_source: hierarchyDetails}} = await client.get({
+            _source: ['orgUnitsParentLineage', 'organizationalUnits'],
+            index: 'driver',
+            id: driverId
+        })
+        return hierarchyDetails ?? {}
+    } catch (error) {
+        if (error.description?.status === 404) {
+            return {}
+        }
+        logger.error(error)
+    }
 }
 
 const getVehicleForDriver = async (loginId, pfmCid) => {

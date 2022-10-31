@@ -18,7 +18,10 @@ beforeEach(() => {
                 hasPermission: jest.fn(),
                 user: {
                     companyId: 'userPfmCid',
-                    applicationCustomerId: 'user_ac_id'
+                    applicationCustomerId: 'user_ac_id',
+                    customer: {
+                        id: 'user_c_id'
+                    }
                 }
             }
         },
@@ -79,7 +82,7 @@ it('should get a driver with hours of service data', async () => {
             {id: 'ou1'}, {id: 'ou2'}
         ]
     })
-    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/1', {headers: request.headers})
+    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/1?customerId=user_c_id', {headers: request.headers})
     expect(request.server.inject).toHaveBeenCalledWith({
         headers: request.headers,
         method: 'GET',
@@ -115,7 +118,7 @@ it('should get the associated vehicle for a driver', async () => {
             devices: []
         }, uniqueMemberGroup: null
     })
-    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/1', {headers: request.headers})
+    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/1?customerId=user_c_id', {headers: request.headers})
     expect(iseCompliance.get).toHaveBeenCalledWith('/api/Drivers/byDriverId/konapunLeft/vehicle', {headers: iseHeaders})
     expect(search).toHaveBeenCalledWith({
         select: ['id', 'devices', 'customerVehicleId'],
@@ -156,7 +159,7 @@ it('should get the associated driver settings template for a driver', async () =
         uniqueMemberGroup: {id: 'memberId', name: 'memberName', description: 'description'}
     })
 
-    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/1', {headers: request.headers})
+    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/1?customerId=user_c_id', {headers: request.headers})
     expect(iseCompliance.get).toHaveBeenCalledWith('/api/Drivers/byDriverId/konapun/vehicle', {headers: iseHeaders})
     expect(search).toHaveBeenCalledWith({
         select: ['id', 'devices', 'customerVehicleId'],

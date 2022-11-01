@@ -1,9 +1,13 @@
 import {driverService, iseCompliance} from '../../../services'
 import route from '../getAssociatedDrivers'
+import search from '../../../elasticsearch/search'
+import client from '../../../elasticsearch/client'
 
 process.env.ISE_COMPLIANCE_AUTH = 'someAuthToken'
 
 jest.mock('../../../services')
+jest.mock('../../../elasticsearch/search')
+jest.mock('../../../elasticsearch/client')
 
 let request, hapi, iseHeaders
 
@@ -36,7 +40,7 @@ beforeEach(() => {
         'content-type': 'application/json',
         authorization: `Basic someAuthToken`,
         'x-authenticate-orgid': 'root',
-        'x-filter-orgid': 'userPfmCid'
+        'x-filter-orgid': 'vehiclePfmCid'
     }
 
     hapi = {
@@ -63,6 +67,32 @@ it('should support getting drivers associated with a vehicle', async () => {
             }
         }
     ]
+    search.mockResolvedValueOnce([
+        {
+            customerIds: {
+                pfmCid: 'vehiclePfmCid',
+                upsApplicationCustomerId: 'vehicleAppCust'
+            },
+            orgUnitsParentLineage: [
+                1, 2, 3
+            ],
+            organizationalUnits: [
+                {id: 'ou1'}, {id: 'ou2'}
+            ]
+        }
+    ])
+    client.get.mockResolvedValueOnce({
+        body: {
+            _source: {
+                orgUnitsParentLineage: [
+                    1, 2, 3
+                ],
+                organizationalUnits: [
+                    {id: 'ou1'}, {id: 'ou2'}
+                ]
+            }
+        }
+    })
     iseCompliance.get.mockResolvedValueOnce([{driverId: 'speed_racer'}, {driverId: 'racer_x'}])
     driverService.get.mockResolvedValueOnce(expectedDriverData[0])
     driverService.get.mockResolvedValueOnce(expectedDriverData[1])
@@ -77,6 +107,32 @@ it('should support getting drivers associated with a vehicle', async () => {
 })
 
 it('should return an empty array if ISE returns a 404', async () => {
+    search.mockResolvedValueOnce([
+        {
+            customerIds: {
+                pfmCid: 'vehiclePfmCid',
+                upsApplicationCustomerId: 'vehicleAppCust'
+            },
+            orgUnitsParentLineage: [
+                1, 2, 3
+            ],
+            organizationalUnits: [
+                {id: 'ou1'}, {id: 'ou2'}
+            ]
+        }
+    ])
+    client.get.mockResolvedValueOnce({
+        body: {
+            _source: {
+                orgUnitsParentLineage: [
+                    1, 2, 3
+                ],
+                organizationalUnits: [
+                    {id: 'ou1'}, {id: 'ou2'}
+                ]
+            }
+        }
+    })
     iseCompliance.get.mockRejectedValue({
         description: {
             status: 404
@@ -88,6 +144,32 @@ it('should return an empty array if ISE returns a 404', async () => {
 })
 
 it('should return hours of service data for associated drivers if specified', async () => {
+    search.mockResolvedValueOnce([
+        {
+            customerIds: {
+                pfmCid: 'vehiclePfmCid',
+                upsApplicationCustomerId: 'vehicleAppCust'
+            },
+            orgUnitsParentLineage: [
+                1, 2, 3
+            ],
+            organizationalUnits: [
+                {id: 'ou1'}, {id: 'ou2'}
+            ]
+        }
+    ])
+    client.get.mockResolvedValueOnce({
+        body: {
+            _source: {
+                orgUnitsParentLineage: [
+                    1, 2, 3
+                ],
+                organizationalUnits: [
+                    {id: 'ou1'}, {id: 'ou2'}
+                ]
+            }
+        }
+    })
     request.query.hoursOfService = true
 
     const {headers, server} = request
@@ -126,12 +208,12 @@ it('should return hours of service data for associated drivers if specified', as
     expect(server.inject).toHaveBeenCalledWith({
         headers,
         method: 'GET',
-        url: '/drivers/login/speed_racer/hoursOfService?applicationCustomerId=user_ac_id&pfmCid=userPfmCid'
+        url: '/drivers/login/speed_racer/hoursOfService?applicationCustomerId=vehicleAppCust&pfmCid=vehiclePfmCid'
     })
     expect(server.inject).toHaveBeenCalledWith({
         headers,
         method: 'GET',
-        url: '/drivers/login/racer_x/hoursOfService?applicationCustomerId=user_ac_id&pfmCid=userPfmCid'
+        url: '/drivers/login/racer_x/hoursOfService?applicationCustomerId=vehicleAppCust&pfmCid=vehiclePfmCid'
     })
 
     expect(drivers).toEqual([
@@ -151,8 +233,6 @@ it('should support getting drivers and HOS info for CXSupport', async () => {
 
     request.auth.artifacts.hasPermission.mockReturnValue(true)
     request.query.hoursOfService = true
-    request.query.applicationCustomerId = 'other_ac_id'
-    request.query.pfmCid = 'other_pfm_cid'
 
     const expectedDriverData = [
         {
@@ -171,6 +251,32 @@ it('should support getting drivers and HOS info for CXSupport', async () => {
         }
     ]
 
+    search.mockResolvedValueOnce([
+        {
+            customerIds: {
+                pfmCid: 'vehiclePfmCid',
+                upsApplicationCustomerId: 'vehicleAppCust'
+            },
+            orgUnitsParentLineage: [
+                1, 2, 3
+            ],
+            organizationalUnits: [
+                {id: 'ou1'}, {id: 'ou2'}
+            ]
+        }
+    ])
+    client.get.mockResolvedValueOnce({
+        body: {
+            _source: {
+                orgUnitsParentLineage: [
+                    1, 2, 3
+                ],
+                organizationalUnits: [
+                    {id: 'ou1'}, {id: 'ou2'}
+                ]
+            }
+        }
+    })
     iseCompliance.get.mockResolvedValueOnce([{driverId: 'speed_racer'}, {driverId: 'racer_x'}])
     driverService.get.mockResolvedValueOnce(expectedDriverData[0])
     driverService.get.mockResolvedValueOnce(expectedDriverData[1])
@@ -182,7 +288,7 @@ it('should support getting drivers and HOS info for CXSupport', async () => {
     expect(iseCompliance.get).toHaveBeenCalledWith(`/api/vehicles/byVehicleId/1/drivers`, {
         headers: {
             ...iseHeaders,
-            'x-filter-orgid': 'other_pfm_cid'
+            'x-filter-orgid': 'vehiclePfmCid'
         }
     })
     expect(driverService.get).toHaveBeenCalledTimes(2)
@@ -192,12 +298,12 @@ it('should support getting drivers and HOS info for CXSupport', async () => {
     expect(server.inject).toHaveBeenCalledWith({
         headers,
         method: 'GET',
-        url: '/drivers/login/speed_racer/hoursOfService?applicationCustomerId=other_ac_id&pfmCid=other_pfm_cid'
+        url: '/drivers/login/speed_racer/hoursOfService?applicationCustomerId=vehicleAppCust&pfmCid=vehiclePfmCid'
     })
     expect(server.inject).toHaveBeenCalledWith({
         headers,
         method: 'GET',
-        url: '/drivers/login/racer_x/hoursOfService?applicationCustomerId=other_ac_id&pfmCid=other_pfm_cid'
+        url: '/drivers/login/racer_x/hoursOfService?applicationCustomerId=vehicleAppCust&pfmCid=vehiclePfmCid'
     })
 
     expect(drivers).toEqual([

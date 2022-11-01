@@ -1,7 +1,7 @@
 const _ = require('lodash')
 const client = require('./client')
 const entityToIndex = require('./entityToIndex')
-const {convertToElasticQuery} = require('@peoplenet/node-service-common')
+const {convertToElasticQuery} = require('@peoplenet/node-elasticsearch-common')
 
 module.exports = async ({select, from, where, pageSize = 20}) => {
     const elasticQuery = convertToElasticQuery(where)

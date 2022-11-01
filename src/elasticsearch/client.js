@@ -1,4 +1,3 @@
-const {getElasticsearchClient} = require('@peoplenet/node-service-common')
-const elasticsearch = require('@elastic/elasticsearch')
+import {getClient} from '@peoplenet/node-elasticsearch-common'
 
-module.exports = getElasticsearchClient(elasticsearch)
+module.exports = getClient()

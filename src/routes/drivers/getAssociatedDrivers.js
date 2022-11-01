@@ -1,18 +1,31 @@
 import Joi from 'joi'
-import {authHeaders, logger} from '@peoplenet/node-service-common'
+import {authHeaders, logger, hasDataLevelAccess} from '@peoplenet/node-service-common'
 import {driverService, iseCompliance} from '../../services'
 import {stringifyUrl} from 'query-string'
 import getIseHeaders from '../../util/getIseHeaders'
+import client from '../../elasticsearch/client'
+import search from '../../elasticsearch/search'
 
 export default {
     method: 'GET',
     path: '/driversByVehicle/{customerVehicleId}',
-    async handler({auth, headers, params, query, server}) {
+    async handler({auth, headers, params, query, server}, hapi) {
         const {customerVehicleId} = params
-        const {hoursOfService: getHoursOfService, upsCustomerId} = query
-        const {user, hasPermission} = auth.artifacts
-        const pfmCid = hasPermission('CXS-CUSTOMER-READ') ? query.pfmCid : user.companyId
-        const applicationCustomerId = hasPermission('CXS-CUSTOMER-READ') ? query.applicationCustomerId : user.applicationCustomerId
+        const {hoursOfService: getHoursOfService} = query
+
+        const [vehicle] = await search({
+            select: ['orgUnitsParentLineage', 'customerIds'],
+            from: 'vehicles',
+            where: {'customerVehicleId.keyword': customerVehicleId}
+        })
+
+        const hasAccess = await hasDataLevelAccess.hasDataLevelAccess({data: vehicle, entityType: 'vehicle', auth})
+
+        if (!hasAccess) return hapi.response([]).code(200)
+
+        const {customerIds: {pfmCid, upsApplicationCustomerId}} = vehicle
+        const {_source: appCustomer} = await client.get({index: 'application_customer', id: upsApplicationCustomerId, _source: 'customer.id'})
+        const upsCustomerId = appCustomer?.customer.id
 
         try {
             const iseHeaders = getIseHeaders(pfmCid)
@@ -34,7 +47,7 @@ export default {
                     method: 'GET',
                     url: stringifyUrl({
                         url: `/drivers/login/${driver?.profile?.loginId}/hoursOfService`,
-                        query: {pfmCid, applicationCustomerId, upsCustomerId}
+                        query: {pfmCid, applicationCustomerId: upsApplicationCustomerId, upsCustomerId}
                     })
                 })
 

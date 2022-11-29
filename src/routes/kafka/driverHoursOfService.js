@@ -105,6 +105,7 @@ module.exports = {
         const totalTimeInCurrentDutyStatus = getTimeDiff(hosMessage.mostRecentStatusDateTime)
         const hoursOfService = {
             ...hosMessage,
+            //TODO: replace moment with dayjs once dayjs.parseZone plugin is available [https://github.com/iamkun/dayjs/pull/2060]
             lastLogbookUpdateDate: moment.parseZone(hosMessage.mostRecentStatusDateTime).toISOString(),
             currentDriverType: ruleSet?.description ?? 'Unknown',
             currentDutyStatus: hosMessage.mostRecentStatus,

@@ -1,5 +1,5 @@
 import Joi from 'joi'
-import moment from 'moment'
+import dayjs from 'dayjs'
 import querystring from 'querystring'
 import {pick, isObject} from 'lodash'
 import {authHeaders, logger} from '@peoplenet/node-service-common'
@@ -12,7 +12,7 @@ export default {
     async handler({auth, params, query}) {
         const {loginId} = params
         const options = {
-            startDateTime: moment().subtract(1, 'weeks').toISOString(),
+            startDateTime: dayjs().subtract(1, 'weeks').toISOString(),
             ...pick(query, ['startDateTime', 'endDateTime']),
             driverId: loginId
         }

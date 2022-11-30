@@ -15,14 +15,7 @@ beforeEach(() => {
     request = {
         auth: {
             artifacts: {
-                hasPermission: jest.fn(),
-                user: {
-                    companyId: 'userPfmCid',
-                    applicationCustomerId: 'user_ac_id',
-                    customer: {
-                        id: 'user_c_id'
-                    }
-                }
+                hasPermission: jest.fn()
             }
         },
         headers: {
@@ -45,7 +38,7 @@ beforeEach(() => {
 })
 
 it('should get a driver with hours of service data', async () => {
-    driverService.get.mockResolvedValueOnce({id: 1, name: 'driver', profile: {loginId: 'konapun'}})
+    driverService.get.mockResolvedValue({id: 1, name: 'driver', profile: {loginId: 'konapun'}, customer: {companyId: 'userPfmCid'}})
     iseCompliance.get.mockRejectedValue({
         description: {status: 404}
     })
@@ -78,11 +71,12 @@ it('should get a driver with hours of service data', async () => {
         orgUnitsParentLineage: [
             1, 2, 3
         ],
+        customer: {companyId: 'userPfmCid'},
         organizationalUnits: [
             {id: 'ou1'}, {id: 'ou2'}
         ]
     })
-    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/1?customerId=user_c_id', {headers: request.headers})
+    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/1', {headers: request.headers})
     expect(request.server.inject).toHaveBeenCalledWith({
         headers: request.headers,
         method: 'GET',
@@ -91,7 +85,7 @@ it('should get a driver with hours of service data', async () => {
 })
 
 it('should get the associated vehicle for a driver', async () => {
-    driverService.get.mockResolvedValueOnce({id: 1, name: 'driver', profile: {loginId: 'konapunLeft'}})
+    driverService.get.mockResolvedValueOnce({id: 1, name: 'driver', profile: {loginId: 'konapunLeft'}, customer: {companyId: 'userPfmCid'}})
     iseCompliance.get.mockResolvedValueOnce({vehicleId: '1234'}) // driver vehicle
     request.server.inject.mockResolvedValueOnce({result: {shift: 8}})
     search.mockResolvedValueOnce([])
@@ -113,12 +107,13 @@ it('should get the associated vehicle for a driver', async () => {
         hoursOfService: {
             shift: 8
         },
+        customer: {companyId: 'userPfmCid'},
         vehicle: {
             id: 90,
             devices: []
         }, uniqueMemberGroup: null
     })
-    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/1?customerId=user_c_id', {headers: request.headers})
+    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/1', {headers: request.headers})
     expect(iseCompliance.get).toHaveBeenCalledWith('/api/Drivers/byDriverId/konapunLeft/vehicle', {headers: iseHeaders})
     expect(search).toHaveBeenCalledWith({
         select: ['id', 'devices', 'customerVehicleId'],
@@ -133,7 +128,7 @@ it('should get the associated vehicle for a driver', async () => {
 })
 
 it('should get the associated driver settings template for a driver', async () => {
-    driverService.get.mockResolvedValueOnce({id: 1, name: 'driver', profile: {loginId: 'konapun'}})
+    driverService.get.mockResolvedValueOnce({id: 1, name: 'driver', profile: {loginId: 'konapun'}, customer: {companyId: 'userPfmCid'}})
     search.mockResolvedValueOnce([{
         id: 'memberId',
         name: 'memberName',
@@ -153,13 +148,14 @@ it('should get the associated driver settings template for a driver', async () =
     expect(result).toEqual({
         id: 1,
         name: 'driver',
+        customer: {companyId: 'userPfmCid'},
         profile: {loginId: 'konapun'},
         hoursOfService: {shift: 8},
         vehicle: {id: 90, devices: []},
         uniqueMemberGroup: {id: 'memberId', name: 'memberName', description: 'description'}
     })
 
-    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/1?customerId=user_c_id', {headers: request.headers})
+    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/1', {headers: request.headers})
     expect(iseCompliance.get).toHaveBeenCalledWith('/api/Drivers/byDriverId/konapun/vehicle', {headers: iseHeaders})
     expect(search).toHaveBeenCalledWith({
         select: ['id', 'devices', 'customerVehicleId'],
@@ -182,26 +178,34 @@ it('should get the associated driver settings template for a driver', async () =
 
 it('should get a driver for CXSupport', async () => {
     request.auth.artifacts.hasPermission.mockReturnValue(true)
-    request.query.applicationCustomerId = 'other_ac_id'
-    request.query.pfmCid = 'other_pfm_id'
-    request.query.upsCustomerId = 'other_c_id'
-    driverService.get.mockResolvedValueOnce({id: 1, name: 'driver', profile: {loginId: 'konapunLeft'}})
+    request.query.scope = 'all'
+    driverService.get.mockResolvedValueOnce({id: 1, name: 'driver', profile: {loginId: 'konapunLeft'}, customer: {companyId: 'other_pfm_id', id: 'other_c_id'}})
     iseCompliance.get.mockResolvedValueOnce({vehicleId: '1234'}) // driver vehicle
     request.server.inject.mockResolvedValueOnce({result: {shift: 8}})
     search.mockResolvedValueOnce([])
         .mockResolvedValueOnce([{id: 90, devices: []}])
-    client.get.mockResolvedValueOnce({
-        body: {
-            _source: {
-                orgUnitsParentLineage: [
-                    1, 2, 3
-                ],
-                organizationalUnits: [
-                    {id: 'ou1'}, {id: 'ou2'}
-                ]
+    client.get
+        .mockResolvedValueOnce({
+            body: {
+                _source: {
+                    customer: {
+                        id: 'other_c_id'
+                    }
+                }
             }
-        }
-    })
+        })
+        .mockResolvedValueOnce({
+            body: {
+                _source: {
+                    orgUnitsParentLineage: [
+                        1, 2, 3
+                    ],
+                    organizationalUnits: [
+                        {id: 'ou1'}, {id: 'ou2'}
+                    ]
+                }
+            }
+        })
 
     const result = await route.handler(request)
 
@@ -211,6 +215,7 @@ it('should get a driver for CXSupport', async () => {
         profile: {
             loginId: 'konapunLeft'
         },
+        customer: {companyId: 'other_pfm_id', id: 'other_c_id'},
         hoursOfService: {
             shift: 8
         },

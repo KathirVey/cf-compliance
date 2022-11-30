@@ -11,16 +11,22 @@ const route = {
     path: '/drivers/{driverId}',
     async handler({auth, headers, params, server, query}) {
         const {driverId} = params
-        const {hasPermission, user} = auth.artifacts
-        const customerId = (hasPermission('CXS-CUSTOMER-READ') ? query.upsCustomerId : user.customer.id) || user.customer.id
-        const pfmCid = (hasPermission('CXS-CUSTOMER-READ') ? query.pfmCid : user.companyId) || user.companyId
+        const {hasPermission} = auth.artifacts
+        let customerId = null
+
+        // Retrieve the UPS customerId require for CXS call by id
+        if (hasPermission('CXS-CUSTOMER-READ') && (query.scope === 'all' || query.scope === 'tfm')) {
+            const {customer} = await getDriverCustomerId(driverId)
+            customerId = customer?.id
+        }
 
         const url = stringifyUrl({
             url: `/driver-service/v2/drivers/${driverId}`,
-            query: {customerId}
+            query: {...(customerId && {customerId})}
         })
         const driver = await driverService.get(url, {headers})
         const {loginId} = driver.profile
+        const {companyId: pfmCid} = driver.customer
 
         const [{result: hoursOfService}, vehicle, uniqueMemberGroup, hierarchyDetails] = await Promise.all([
             server.inject({
@@ -55,6 +61,22 @@ const route = {
                 driverId: Joi.string().required()
             }).required().description('Driver ID')
         }
+    }
+}
+
+const getDriverCustomerId = async driverId => {
+    try {
+        const {body: {_source: customer}} = await client.get({
+            _source: ['customer.id'],
+            index: 'driver',
+            id: driverId
+        })
+        return customer
+    } catch (error) {
+        if (error.description?.status === 404) {
+            return {}
+        }
+        logger.error(error)
     }
 }
 

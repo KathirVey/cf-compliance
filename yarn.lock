@@ -1716,19 +1716,19 @@
     lodash "4.17.21"
     qs "6.10.2"
 
-"@peoplenet/node-elasticsearch-common@1.1.4":
-  version "1.1.4"
-  resolved "https://artifactory.trimble.tools/artifactory/api/npm/pnet-virtual-npm/@peoplenet/node-elasticsearch-common/-/@peoplenet/node-elasticsearch-common-1.1.4.tgz#7847b3293aaad43943d64372bf80e6a18bf5b391"
-  integrity sha512-JNd8nUBzUjyjfCeme1GV/rcOICG5TM91aEfD3siUAGYf0wfbC3R6Nuj2cDKG8j3E0d/jrMAJUD+BbmuxpZd+BA==
+"@peoplenet/node-elasticsearch-common@1.6.5":
+  version "1.6.5"
+  resolved "https://artifactory.trimble.tools/artifactory/api/npm/pnet-virtual-npm/@peoplenet/node-elasticsearch-common/-/@peoplenet/node-elasticsearch-common-1.6.5.tgz#e5048eb5d88207529b4e28779bc7e4a60196232a"
+  integrity sha512-w3vdZ8KEa8bNteVvR0LT3NDXaZkHlGo3nm1A/C3NUn0FnJJTxVqoXEY1w7IvzNiEnrfcMaq7ZVUFULP9oOqt2w==
   dependencies:
     "@elastic/elasticsearch" "7.13.0"
-    "@peoplenet/node-service-common" "23.2.1"
+    "@peoplenet/node-service-common" "24.2.1"
     lodash "4.17.21"
 
-"@peoplenet/node-service-common@23.2.1":
-  version "23.2.1"
-  resolved "https://artifactory.trimble.tools/artifactory/api/npm/pnet-virtual-npm/@peoplenet/node-service-common/-/@peoplenet/node-service-common-23.2.1.tgz#f0917d0994fdb9daa7623e9bb2c02e12027b7f59"
-  integrity sha512-j2hFYocVk1XT3alKVeIT0M0s24ZnQkxtdAWEtvj3lZj6adV7VRG3mKKJWBmgwgZUL0zXEIS5hPjTO5S/0x9yaA==
+"@peoplenet/node-service-common@24.2.1":
+  version "24.2.1"
+  resolved "https://artifactory.trimble.tools/artifactory/api/npm/pnet-virtual-npm/@peoplenet/node-service-common/-/@peoplenet/node-service-common-24.2.1.tgz#ad82dc16283a7ca431ba9515dbd73ade1fc0650a"
+  integrity sha512-ScOUxnlfv13nPMEdKReEx9T4EQgiEm9hzci2BzqpdLcaM4pAUvSI0vhDwjiHLR6+nlkIdRHkWqR5TvcqlLB15Q==
   dependencies:
     "@babel/cli" "7.14.8"
     "@babel/core" "7.12.9"
@@ -1784,10 +1784,10 @@
     tar-fs "2.1.1"
     uuid "8.3.1"
 
-"@peoplenet/node-service-common@24.0.1":
-  version "24.0.1"
-  resolved "https://artifactory.trimble.tools/artifactory/api/npm/pnet-virtual-npm/@peoplenet/node-service-common/-/@peoplenet/node-service-common-24.0.1.tgz#4689a7f5652d55f7a1a2ec3972dc6704196580c5"
-  integrity sha512-bJoSdNLGjIiJwMyr7CMlNsMLOMkMyNYgMcwRUpBGK3fdC+xL3lLbKHCGgv7S3g1FofhiugvuRpKOEXop7Doc8Q==
+"@peoplenet/node-service-common@24.2.2":
+  version "24.2.2"
+  resolved "https://artifactory.trimble.tools/artifactory/api/npm/pnet-virtual-npm/@peoplenet/node-service-common/-/@peoplenet/node-service-common-24.2.2.tgz#3227646c1fe6f102a18797f7d2d73819ce07cbb0"
+  integrity sha512-6TAPRbXou/CHr+PWZtZuwtYSzXZ9JrRQJCKm5iGVSgDP/hwu9fwrMxiorhQOi38Zry2O/1wOOOfAHSpCOK+o0w==
   dependencies:
     "@babel/cli" "7.14.8"
     "@babel/core" "7.12.9"

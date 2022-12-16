@@ -1,13 +1,13 @@
 import {driverService, iseCompliance} from '../../../services'
 import route from '../getAssociatedDrivers'
-import search from '../../../elasticsearch/search'
 import client from '../../../elasticsearch/client'
+import {mockContext, getSearchContext} from '@peoplenet/node-elasticsearch-common'
 
 process.env.ISE_COMPLIANCE_AUTH = 'someAuthToken'
 
 jest.mock('../../../services')
-jest.mock('../../../elasticsearch/search')
-jest.mock('../../../elasticsearch/client')
+jest.mock('@peoplenet/node-service-common')
+jest.mock('@peoplenet/node-elasticsearch-common')
 
 let request, hapi, iseHeaders
 
@@ -18,7 +18,9 @@ beforeEach(() => {
                 hasPermission: jest.fn(),
                 user: {
                     companyId: 'userPfmCid',
-                    applicationCustomerId: 'user_ac_id'
+                    applicationId: 'a_id',
+                    applicationCustomerId: 'user_ac_id',
+                    applicationCustomerUserId: 'acu_id'
                 }
             }
         },
@@ -30,7 +32,9 @@ beforeEach(() => {
         },
         query: {
             hoursOfService: false,
-            pfmCid: 'queryPfmCid'
+            pfmCid: 'queryPfmCid',
+            applicationCustomerId: 'query_ac_id',
+            scope: 'scoop'
         },
         server: {
             inject: jest.fn()
@@ -67,7 +71,7 @@ it('should support getting drivers associated with a vehicle', async () => {
             }
         }
     ]
-    search.mockResolvedValueOnce([
+    mockContext.search.mockResolvedValueOnce({data: [
         {
             customerIds: {
                 pfmCid: 'vehiclePfmCid',
@@ -80,7 +84,7 @@ it('should support getting drivers associated with a vehicle', async () => {
                 {id: 'ou1'}, {id: 'ou2'}
             ]
         }
-    ])
+    ]})
     client.get.mockResolvedValueOnce({
         body: {
             _source: {
@@ -100,6 +104,23 @@ it('should support getting drivers associated with a vehicle', async () => {
     const drivers = await route.handler(request)
 
     expect(drivers).toEqual(expectedDriverData)
+    expect(getSearchContext).toHaveBeenCalledWith({
+        applicationCustomerId: 'query_ac_id',
+        scope: 'scoop',
+        pfmCid: 'queryPfmCid',
+        applicationId: 'a_id'
+    })
+    expect(mockContext.search).toHaveBeenCalledWith({
+        applicationCustomerUserId: 'acu_id',
+        index: 'vehicle',
+        _source: [
+            'orgUnitsParentLineage',
+            'customerIds'
+        ],
+        query: {
+            'customerVehicleId.keyword': 1
+        }
+    })
     expect(iseCompliance.get).toHaveBeenCalledWith(`/api/vehicles/byVehicleId/1/drivers`, {headers: iseHeaders})
     expect(driverService.get).toHaveBeenCalledTimes(2)
     expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/speed_racer', {headers: request.headers})
@@ -107,7 +128,7 @@ it('should support getting drivers associated with a vehicle', async () => {
 })
 
 it('should return an empty array if ISE returns a 404', async () => {
-    search.mockResolvedValueOnce([
+    mockContext.search.mockResolvedValueOnce({data: [
         {
             customerIds: {
                 pfmCid: 'vehiclePfmCid',
@@ -120,7 +141,7 @@ it('should return an empty array if ISE returns a 404', async () => {
                 {id: 'ou1'}, {id: 'ou2'}
             ]
         }
-    ])
+    ]})
     client.get.mockResolvedValueOnce({
         body: {
             _source: {
@@ -144,7 +165,7 @@ it('should return an empty array if ISE returns a 404', async () => {
 })
 
 it('should return hours of service data for associated drivers if specified', async () => {
-    search.mockResolvedValueOnce([
+    mockContext.search.mockResolvedValueOnce({data: [
         {
             customerIds: {
                 pfmCid: 'vehiclePfmCid',
@@ -157,7 +178,7 @@ it('should return hours of service data for associated drivers if specified', as
                 {id: 'ou1'}, {id: 'ou2'}
             ]
         }
-    ])
+    ]})
     client.get.mockResolvedValueOnce({
         body: {
             _source: {
@@ -251,7 +272,7 @@ it('should support getting drivers and HOS info for CXSupport', async () => {
         }
     ]
 
-    search.mockResolvedValueOnce([
+    mockContext.search.mockResolvedValueOnce({data: [
         {
             customerIds: {
                 pfmCid: 'vehiclePfmCid',
@@ -264,7 +285,7 @@ it('should support getting drivers and HOS info for CXSupport', async () => {
                 {id: 'ou1'}, {id: 'ou2'}
             ]
         }
-    ])
+    ]})
     client.get.mockResolvedValueOnce({
         body: {
             _source: {

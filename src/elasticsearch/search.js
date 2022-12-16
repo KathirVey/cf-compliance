@@ -5,7 +5,7 @@ const {convertToElasticQuery} = require('@peoplenet/node-elasticsearch-common')
 
 module.exports = async ({select, from, where, pageSize = 20}) => {
     const elasticQuery = convertToElasticQuery(where)
-    elasticQuery.index = entityToIndex[from]
+    elasticQuery.index = entityToIndex[from] || from
     elasticQuery._source = select
     elasticQuery.size = pageSize
     const {body} = await client.search(elasticQuery)

@@ -5,20 +5,18 @@ const redisClient = require('../../../redis/redisClient')
 
 process.env.ISE_COMPLIANCE_AUTH = 'someAuthToken'
 
-jest
-    .mock('../../../services')
-    .mock('../../../elasticsearch/client')
-    .mock('../../../elasticsearch/search')
-    .mock('../../../redis/redisClient')
+jest.mock('../../../services')
+jest.mock('@peoplenet/node-elasticsearch-common')
+jest.mock('../../../elasticsearch/search')
+jest.mock('../../../redis/redisClient')
 
-
-describe('driver hours of service events', () => {
-    let hapi,
-        route,
-        iseHeaders,
-        ruleSet,
-        driverFromSearch,
-        vehicleFromSearch
+describe('driverHoursOfService', () => {
+    let hapi
+    let route
+    let iseHeaders
+    let ruleSet
+    let driverFromSearch
+    let vehicleFromSearch
 
     const createPayloadData = data => {
         return {
@@ -684,7 +682,7 @@ describe('driver hours of service events', () => {
         expect(redisClient.get).not.toHaveBeenCalled()
         expect(iseCompliance.get).toHaveBeenCalledTimes(1)
         expect(iseCompliance.get).toHaveBeenCalledWith('/api/Drivers/byDriverId/some_driver/vehicle', {headers: iseHeaders})
-        expect(client.update).toHaveBeenCalled()
+        expect(client.update).toHaveBeenCalledTimes(1)
         expect(client.update).toHaveBeenCalledWith({
             index: 'driver',
             type: '_doc',
@@ -712,7 +710,8 @@ describe('driver hours of service events', () => {
             },
             doc_as_upsert: true
         })
-        expect(hapi.response).toHaveBeenCalledWith({message: 'Processed driver HOS event messageId: 43fe7bfc-67ea-430f-931f-ffe3a9253d55, cid: 57 for driverId: ea631aad-5d8c-4b37-a25c-5f0bd23164b9'})
+        expect(hapi.response).toHaveBeenCalledWith({
+            message: 'Processed driver HOS event messageId: 43fe7bfc-67ea-430f-931f-ffe3a9253d55, cid: 57 for driverId: ea631aad-5d8c-4b37-a25c-5f0bd23164b9'})
         expect(hapi.code).toHaveBeenCalledWith(204)
     })
 
@@ -800,16 +799,7 @@ describe('driver hours of service events', () => {
             workshiftRestBreak: '08:00:00',
             lastUpdatedAt: '2022-05-16T16:01:00.00'
         }
-
         search.mockResolvedValueOnce([driverFromSearch])
-        iseCompliance.get.mockResolvedValueOnce({ // vehicle
-            driverId: 'some_driver',
-            vehicleId: 'some_vehicle_id',
-            loggedIn: true,
-            loginDateTime: '2022-03-24T15:55:00',
-            logoutDateTime: null
-        })
-        client.update.mockResolvedValueOnce({body: {id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9'}})
 
         const payloadData = createPayloadData({
             hosRuleSetName: 'Us7DayProperty_Fake_News',
@@ -836,6 +826,7 @@ describe('driver hours of service events', () => {
 
         await route.handler(request, hapi)
 
+        expect(search).toHaveBeenCalledTimes(1)
         expect(search).toHaveBeenCalledWith({
             select: [],
             from: 'drivers',
@@ -847,7 +838,9 @@ describe('driver hours of service events', () => {
         expect(redisClient.get).not.toHaveBeenCalled()
         expect(iseCompliance.get).toHaveBeenCalledTimes(0)
         expect(client.update).not.toHaveBeenCalled()
-        expect(hapi.response).toHaveBeenCalledWith({message: 'Skipping message since a more recent HOS event has been already processed for driverId: ea631aad-5d8c-4b37-a25c-5f0bd23164b9.'})
+        expect(hapi.response).toHaveBeenCalledWith({
+            message: 'Skipping message since a more recent HOS event has been already processed for driverId: ea631aad-5d8c-4b37-a25c-5f0bd23164b9.'
+        })
         expect(hapi.code).toHaveBeenCalledWith(200)
     })
 
@@ -890,6 +883,7 @@ describe('driver hours of service events', () => {
 
         await route.handler(request, hapi)
 
+        expect(search).toHaveBeenCalledTimes(2)
         expect(search).toHaveBeenCalledWith({
             select: [],
             from: 'drivers',
@@ -911,7 +905,7 @@ describe('driver hours of service events', () => {
         expect(iseCompliance.get).toHaveBeenCalledWith('/api/HosRuleSet/details/3', {headers: iseHeaders})
         expect(iseCompliance.get).toHaveBeenCalledWith('/api/Drivers/byDriverId/some_driver/vehicle', {headers: iseHeaders})
         expect(redisClient.set).toHaveBeenCalledWith({'ruleset:3': ruleSet})
-        expect(client.update).toHaveBeenCalled()
+        expect(client.update).toHaveBeenCalledTimes(1)
         expect(client.update).toHaveBeenCalledWith({
             index: 'driver',
             type: '_doc',
@@ -941,7 +935,9 @@ describe('driver hours of service events', () => {
             },
             doc_as_upsert: true
         })
-        expect(hapi.response).toHaveBeenCalledWith({message: 'Processed driver HOS event messageId: 43fe7bfc-67ea-430f-931f-ffe3a9253d55, cid: 57 for driverId: ea631aad-5d8c-4b37-a25c-5f0bd23164b9'})
+        expect(hapi.response).toHaveBeenCalledWith({
+            message: 'Processed driver HOS event messageId: 43fe7bfc-67ea-430f-931f-ffe3a9253d55, cid: 57 for driverId: ea631aad-5d8c-4b37-a25c-5f0bd23164b9'
+        })
         expect(hapi.code).toHaveBeenCalledWith(204)
     })
 

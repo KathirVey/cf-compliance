@@ -6,8 +6,9 @@ import {logger} from '@peoplenet/node-service-common'
 import {isEmpty} from 'lodash'
 import client from '../../elasticsearch/client'
 import search from '../../elasticsearch/search'
-const ruleSets = require('../../config/driverRuleSets')
-const redisClient = require('../../redis/redisClient')
+import ruleSets from '../../config/driverRuleSets'
+import redisClient from '../../redis/redisClient'
+
 const DEFAULT_RULESET_VALUE = -1
 
 module.exports = {

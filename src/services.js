@@ -2,20 +2,33 @@ const {ENV_PREFIX: env = 'dev'} = process.env
 const makeService = require('@peoplenet/cf-services')
 
 const customServiceConfig = {
-    enterpriseData: {suffix: '/v1'},
     compliance: {
         baseURL: {
             dev: 'https://cloud.dev.api.trimblecloud.com/transportation/compliance/v1',
             staging: 'https://cloud.stage.api.trimblecloud.com/transportation/compliance/v1',
             prod: ''
         }[env]
+    },
+    driverService: {k8sNamespace: 'delta'},
+    enterpriseData: {suffix: '/v1'},
+    iseCompliance: {
+        baseURL: {
+            local: 'https://compliance-svc-dev.connectedfleet.io/WebApi',
+            dev: 'https://compliance-svc-dev.connectedfleet.io/WebApi',
+            qa: 'https://compliance-svc-qa.connectedfleet.io/WebApi',
+            staging: 'https://compliance-svc-staging.connectedfleet.io/WebApi',
+            prod: 'https://compliance-svc.fleethealth.io/WebApi'
+        }
     }
 }
 
 const services = makeService([
+    // TFM services
     'billingDataBridge',
-    'compliance',
     'connectedfleetcache',
+
+    // Other services
+    'compliance',
     'driverService',
     'enterpriseData',
     'iseCompliance'

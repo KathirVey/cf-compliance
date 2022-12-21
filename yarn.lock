@@ -1705,10 +1705,10 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@peoplenet/cf-services@9.0.2":
-  version "9.0.2"
-  resolved "https://artifactory.trimble.tools/artifactory/api/npm/pnet-virtual-npm/@peoplenet/cf-services/-/@peoplenet/cf-services-9.0.2.tgz#a578cb6a57e545ae43d49ac565e4c8b2994ddf68"
-  integrity sha512-A0IVS+zkj3etdEQ6uP0NVxsPN060Wj8g9NxyxnSaZ2WJR7O0jV9tXDY7flsLRYt8t7j8fohjw1YHHQUXxWseOw==
+"@peoplenet/cf-services@9.0.3":
+  version "9.0.3"
+  resolved "https://artifactory.trimble.tools/artifactory/api/npm/pnet-virtual-npm/@peoplenet/cf-services/-/@peoplenet/cf-services-9.0.3.tgz#ee758ea757fecfb7bd8fb7e38e4471b579ccd965"
+  integrity sha512-cfx66Tk/P3OZ0fbHYkXEcJevlZKTfdfEqSnacjwm0WUPlfbfjnkLARt+e8X/FShUbRuf2c9AsxY8pa0GuZmlCw==
   dependencies:
     axios "0.24.0"
     consul "0.40.0"

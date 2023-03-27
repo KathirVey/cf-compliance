@@ -27,12 +27,12 @@ export default {
         if (!vehicle) return hapi.response([]).code(200)
 
         const {customerIds: {pfmCid: pfmId, upsApplicationCustomerId}} = vehicle
-        const {_source: appCustomer} = await client.get({
+        const response = await client.get({
             index: 'application_customer',
             id: upsApplicationCustomerId,
             _source: 'customer.id'
         })
-        const upsCustomerId = appCustomer?.customer.id
+        const upsCustomerId = response?.body?._source?.customer?.id
 
         try {
             const iseHeaders = getIseHeaders(pfmId)

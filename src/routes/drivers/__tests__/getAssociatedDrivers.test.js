@@ -88,12 +88,9 @@ it('should support getting drivers associated with a vehicle', async () => {
     client.get.mockResolvedValueOnce({
         body: {
             _source: {
-                orgUnitsParentLineage: [
-                    1, 2, 3
-                ],
-                organizationalUnits: [
-                    {id: 'ou1'}, {id: 'ou2'}
-                ]
+                customer: {
+                    id: 'c_id'
+                }
             }
         }
     })
@@ -123,8 +120,8 @@ it('should support getting drivers associated with a vehicle', async () => {
     })
     expect(iseCompliance.get).toHaveBeenCalledWith(`/api/vehicles/byVehicleId/1/drivers`, {headers: iseHeaders})
     expect(driverService.get).toHaveBeenCalledTimes(2)
-    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/speed_racer', {headers: request.headers})
-    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/racer_x', {headers: request.headers})
+    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/speed_racer?customerId=c_id', {headers: request.headers})
+    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/racer_x?customerId=c_id', {headers: request.headers})
 })
 
 it('should return an empty array if ISE returns a 404', async () => {
@@ -145,12 +142,9 @@ it('should return an empty array if ISE returns a 404', async () => {
     client.get.mockResolvedValueOnce({
         body: {
             _source: {
-                orgUnitsParentLineage: [
-                    1, 2, 3
-                ],
-                organizationalUnits: [
-                    {id: 'ou1'}, {id: 'ou2'}
-                ]
+                customer: {
+                    id: 'c_id'
+                }
             }
         }
     })
@@ -182,12 +176,9 @@ it('should return hours of service data for associated drivers if specified', as
     client.get.mockResolvedValueOnce({
         body: {
             _source: {
-                orgUnitsParentLineage: [
-                    1, 2, 3
-                ],
-                organizationalUnits: [
-                    {id: 'ou1'}, {id: 'ou2'}
-                ]
+                customer: {
+                    id: 'c_id'
+                }
             }
         }
     })
@@ -222,19 +213,19 @@ it('should return hours of service data for associated drivers if specified', as
 
     expect(iseCompliance.get).toHaveBeenCalledWith('/api/vehicles/byVehicleId/1/drivers', {headers: iseHeaders})
     expect(driverService.get).toHaveBeenCalledTimes(2)
-    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/speed_racer', {headers})
-    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/racer_x', {headers})
+    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/speed_racer?customerId=c_id', {headers})
+    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/racer_x?customerId=c_id', {headers})
 
     expect(server.inject).toHaveBeenCalledTimes(2)
     expect(server.inject).toHaveBeenCalledWith({
         headers,
         method: 'GET',
-        url: '/drivers/login/speed_racer/hoursOfService?applicationCustomerId=vehicleAppCust&pfmCid=vehiclePfmCid'
+        url: '/drivers/login/speed_racer/hoursOfService?applicationCustomerId=vehicleAppCust&pfmCid=vehiclePfmCid&upsCustomerId=c_id'
     })
     expect(server.inject).toHaveBeenCalledWith({
         headers,
         method: 'GET',
-        url: '/drivers/login/racer_x/hoursOfService?applicationCustomerId=vehicleAppCust&pfmCid=vehiclePfmCid'
+        url: '/drivers/login/racer_x/hoursOfService?applicationCustomerId=vehicleAppCust&pfmCid=vehiclePfmCid&upsCustomerId=c_id'
     })
 
     expect(drivers).toEqual([
@@ -289,12 +280,9 @@ it('should support getting drivers and HOS info for CXSupport', async () => {
     client.get.mockResolvedValueOnce({
         body: {
             _source: {
-                orgUnitsParentLineage: [
-                    1, 2, 3
-                ],
-                organizationalUnits: [
-                    {id: 'ou1'}, {id: 'ou2'}
-                ]
+                customer: {
+                    id: 'c_id'
+                }
             }
         }
     })
@@ -313,18 +301,18 @@ it('should support getting drivers and HOS info for CXSupport', async () => {
         }
     })
     expect(driverService.get).toHaveBeenCalledTimes(2)
-    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/speed_racer', {headers})
-    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/racer_x', {headers})
+    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/speed_racer?customerId=c_id', {headers})
+    expect(driverService.get).toHaveBeenCalledWith('/driver-service/v2/drivers/login/racer_x?customerId=c_id', {headers})
 
     expect(server.inject).toHaveBeenCalledWith({
         headers,
         method: 'GET',
-        url: '/drivers/login/speed_racer/hoursOfService?applicationCustomerId=vehicleAppCust&pfmCid=vehiclePfmCid'
+        url: '/drivers/login/speed_racer/hoursOfService?applicationCustomerId=vehicleAppCust&pfmCid=vehiclePfmCid&upsCustomerId=c_id'
     })
     expect(server.inject).toHaveBeenCalledWith({
         headers,
         method: 'GET',
-        url: '/drivers/login/racer_x/hoursOfService?applicationCustomerId=vehicleAppCust&pfmCid=vehiclePfmCid'
+        url: '/drivers/login/racer_x/hoursOfService?applicationCustomerId=vehicleAppCust&pfmCid=vehiclePfmCid&upsCustomerId=c_id'
     })
 
     expect(drivers).toEqual([

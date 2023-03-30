@@ -1,42 +1,40 @@
-import Joi from 'joi'
-import {authHeaders, logger} from '@peoplenet/node-service-common'
-import {iseCompliance} from '../../services'
+const {compliance} = require('../../services')
 import getIseHeaders from '../../util/getIseHeaders'
+import {logger} from '@peoplenet/node-service-common'
+import Joi from 'joi'
 
 const route = {
     method: 'GET',
     path: '/drivers/{driverId}/driverLogs/{startDateTime}',
-    async handler({auth, params}) {
+    handler: async ({auth, params}, hapi) => {
 
         const {driverId, startDateTime} = params
         const {user} = auth.artifacts
         const pfmCid = user.companyId
-
         try {
             const iseHeaders = getIseHeaders(pfmCid)
-            return await iseCompliance.get(`api/v2/DriverLogs/${driverId}?startDateTime=${startDateTime}`, {headers: iseHeaders})
-
+            const driverLogs = await compliance.get(`/proxy/driverlogs/${driverId}/${startDateTime}`, {headers: iseHeaders})
+            return driverLogs
         } catch (error) {
-            logger.warn({error, pfmCid, driverId}, 'Error while fetching driver logs.')
+            logger.debug(error, pfmCid, 'Encountered error while fetching driver logs from ISE')
         }
+        return hapi.response().code(200)
     },
     options: {
-        description: 'Get a driver log with details',
-        tags: ['api'],
+        description: 'driver logs route',
         auth: 'user-profile',
         app: {
             permission: 'DRIVER-SERVICE-CUSTOMER-DRIVER-READ',
             overridePermission: ['CXS-CUSTOMER-READ']
         },
+        tags: ['api'],
         validate: {
-            headers: authHeaders,
             params: Joi.object({
                 driverId: Joi.string().required(),
                 startDateTime: Joi.string().required()
-            }).required().description('Driver ID and Start Date')
+            }).required().description('Driver ID and Start Date Time are required')
         }
     }
-}
-
+} 
 
 export default route

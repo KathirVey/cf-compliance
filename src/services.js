@@ -5,6 +5,7 @@ const customServiceConfig = {
     compliance: {
         baseURL: {
             dev: 'https://complianceefsmigrationefsmigrationproxy.dev.trimble-transportation.com/compliance/v1',
+            qa: 'https://complianceefsmigrationefsmigrationproxy.dev.trimble-transportation.com/compliance/v1',
             staging: 'https://complianceefsmigrationefsmigrationproxy.dev.trimble-transportation.com/compliance/v1',
             prod: ''
         }[env]

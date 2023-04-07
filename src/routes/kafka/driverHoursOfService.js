@@ -128,9 +128,8 @@ module.exports = {
             type: '_doc',
             id: driver.id,
             body: {
-                doc: {hoursOfService}
-            },
-            doc_as_upsert: true
+                doc: {...driver, hoursOfService}
+            }
         })
         logger.trace(`Processed driver HOS event messageId: ${value.id} for driverId: ${updatedDriver._id}`)
         return hapi.response({message: `Processed driver HOS event messageId: ${value.id}, cid: ${value.data.accountIdentifiers.pfmId} for driverId: ${updatedDriver._id}`}).code(204)

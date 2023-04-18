@@ -35,16 +35,19 @@ module.exports = {
         tags: ['api'],
         validate: {
             payload: Joi.object({
-                status: Joi.string().required(),
-                customer: Joi.object({
-                    id: Joi.string().required(),
-                    companyId: Joi.number().required()
-                }).required(),
-                externalSources: Joi.object().required(),
-                loginInfo: Joi.object({
-                    loginId: Joi.string().required()
-                }).required()
-            }).required()
+                value: Joi.object({
+                    method: Joi.string().required(),
+                    payload: Joi.object({
+                        status: Joi.string().required(),
+                        customer: Joi.object({
+                            id: Joi.string().required(),
+                            companyId: Joi.number().required()
+                        }).required(),
+                        externalSources: Joi.object().required(),
+                        loginInfo: Joi.object().required()
+                    })
+                })
+            }).required().options({allowUnknown: true})
         }
     }
 }

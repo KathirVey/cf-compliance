@@ -155,23 +155,6 @@ describe('driverHoursOfService', () => {
             id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9',
             body: {
                 doc: {
-                    id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9',
-                    status: 'ACTIVE',
-                    loginInfo: {loginId: 'some_driver', shortCode: 'P5097'},
-                    profile: {
-                        id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9',
-                        loginId: 'some_driver',
-                        firstName: 'some_driver1',
-                        lastName: 'some_driver2',
-                        autoProvisioned: true
-                    },
-                    customer: {id: 'e4176e53-fb66-467d-92bc-ed733be8786b', companyId: 57},
-                    externalSources: {
-                        eFleetSuite: {
-                            driverId: 'some_driver',
-                            driverKey: 800001945
-                        }
-                    },
                     hoursOfService: {
                         ...payloadData.data,
                         lastLogbookUpdateDate: '2000-01-02T02:04:05.000Z',
@@ -263,7 +246,6 @@ describe('driverHoursOfService', () => {
             id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9',
             body: {
                 doc: {
-                    ...driverFromSearch,
                     hoursOfService: {
                         ...payloadData.data,
                         lastLogbookUpdateDate: '2000-01-02T02:04:05.000Z',
@@ -366,23 +348,6 @@ describe('driverHoursOfService', () => {
             id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9',
             body: {
                 doc: {
-                    id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9',
-                    status: 'ACTIVE',
-                    loginInfo: {loginId: 'some_driver', shortCode: 'P5097'},
-                    profile: {
-                        id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9',
-                        loginId: 'some_driver',
-                        firstName: 'some_driver1',
-                        lastName: 'some_driver2',
-                        autoProvisioned: true
-                    },
-                    customer: {id: 'e4176e53-fb66-467d-92bc-ed733be8786b', companyId: 57},
-                    externalSources: {
-                        eFleetSuite: {
-                            driverId: 'some_driver',
-                            driverKey: 800001945
-                        }
-                    },
                     hoursOfService: {
                         ...payloadData.data,
                         lastLogbookUpdateDate: '2000-01-02T02:04:05.000Z',
@@ -476,7 +441,6 @@ describe('driverHoursOfService', () => {
             id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9',
             body: {
                 doc: {
-                    ...driverFromSearch,
                     hoursOfService: {
                         ...payloadData.data,
                         lastLogbookUpdateDate: '2000-01-02T02:04:05.000Z',
@@ -556,23 +520,6 @@ describe('driverHoursOfService', () => {
             id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9',
             body: {
                 doc: {
-                    id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9',
-                    status: 'ACTIVE',
-                    loginInfo: {loginId: 'some_driver', shortCode: 'P5097'},
-                    profile: {
-                        id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9',
-                        loginId: 'some_driver',
-                        firstName: 'some_driver1',
-                        lastName: 'some_driver2',
-                        autoProvisioned: true
-                    },
-                    customer: {id: 'e4176e53-fb66-467d-92bc-ed733be8786b', companyId: 57},
-                    externalSources: {
-                        eFleetSuite: {
-                            driverId: 'some_driver',
-                            driverKey: 800001945
-                        }
-                    },
                     hoursOfService: {
                         ...payloadData.data,
                         lastLogbookUpdateDate: '2000-01-02T02:04:05.000Z',
@@ -660,7 +607,6 @@ describe('driverHoursOfService', () => {
             id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9',
             body: {
                 doc: {
-                    ...driverFromSearch,
                     hoursOfService: {
                         ...payloadData.data,
                         lastLogbookUpdateDate: '2000-01-02T02:04:05.000Z',
@@ -737,23 +683,6 @@ describe('driverHoursOfService', () => {
             id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9',
             body: {
                 doc: {
-                    id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9',
-                    status: 'ACTIVE',
-                    loginInfo: {loginId: 'some_driver', shortCode: 'P5097'},
-                    profile: {
-                        id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9',
-                        loginId: 'some_driver',
-                        firstName: 'some_driver1',
-                        lastName: 'some_driver2',
-                        autoProvisioned: true
-                    },
-                    customer: {id: 'e4176e53-fb66-467d-92bc-ed733be8786b', companyId: 57},
-                    externalSources: {
-                        eFleetSuite: {
-                            driverId: 'some_driver',
-                            driverKey: 800001945
-                        }
-                    },
                     hoursOfService: {
                         ...payloadData.data,
                         lastLogbookUpdateDate: '2000-01-02T02:03:05.000Z',
@@ -976,23 +905,6 @@ describe('driverHoursOfService', () => {
             id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9',
             body: {
                 doc: {
-                    id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9',
-                    status: 'ACTIVE',
-                    loginInfo: {loginId: 'some_driver', shortCode: 'P5097'},
-                    profile: {
-                        id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9',
-                        loginId: 'some_driver',
-                        firstName: 'some_driver1',
-                        lastName: 'some_driver2',
-                        autoProvisioned: true
-                    },
-                    customer: {id: 'e4176e53-fb66-467d-92bc-ed733be8786b', companyId: 57},
-                    externalSources: {
-                        eFleetSuite: {
-                            driverId: 'some_driver',
-                            driverKey: 800001945
-                        }
-                    },
                     hoursOfService: {
                         ...payloadData.data,
                         lastLogbookUpdateDate: '2000-01-02T02:04:05.000Z',

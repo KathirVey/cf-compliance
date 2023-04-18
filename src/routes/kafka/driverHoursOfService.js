@@ -128,7 +128,7 @@ module.exports = {
             type: '_doc',
             id: driver.id,
             body: {
-                doc: {...driver, hoursOfService}
+                doc: {hoursOfService}
             }
         })
         logger.trace(`Processed driver HOS event messageId: ${value.id} for driverId: ${updatedDriver._id}`)

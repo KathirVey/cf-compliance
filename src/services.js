@@ -19,7 +19,7 @@ const customServiceConfig = {
             qa: 'https://compliance-svc-qa.connectedfleet.io/WebApi',
             staging: 'https://compliance-svc-staging.connectedfleet.io/WebApi',
             prod: 'https://compliance-svc.fleethealth.io/WebApi'
-        }
+        }[env]
     }
 }
 

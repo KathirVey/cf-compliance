@@ -4,15 +4,13 @@ const {
     KAFKA_USER,
     KAFKA_PASS,
     KAFKA_RETRY_DELAY_MS = '10000',
-    KAFKA_AUTO_COMMIT_INTERVAL = '5000',
-    KAFKA_BATCH = 'true'
+    KAFKA_AUTO_COMMIT_INTERVAL = '5000'
 } = process.env
 
 // See consumption options & defaults here: https://kafka.js.org/docs/consuming#options
 // See producing options & defaults here: https://kafka.js.org/docs/producing#options
 
 module.exports = {
-    batch: Boolean(KAFKA_BATCH),
     groupId: 'cf-compliance',
     brokers: [KAFKA_BROKER],
     ssl: true,

@@ -7,7 +7,7 @@ const serve = async () => {
 
     if (env === 'cloud') {
         // Disabling this plugin as it's broken for consuming Avro topics
-        tracer.user('kafkajs', false)
+        tracer.use('kafkajs', false)
 
         server.register({
             plugin: KafkaConsumerPlugin,

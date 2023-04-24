@@ -13,7 +13,7 @@
   "dependencies": {
     "@peoplenet/cf-services": "9.0.3",
     "@peoplenet/node-elasticsearch-common": "1.6.6",
-    "@peoplenet/node-kafka-common": "5.0.0",
+    "@peoplenet/node-kafka-common": "5.0.1",
     "@peoplenet/node-service-common": "24.3.0",
     "dayjs": "1.11.6",
     "node-cleanup": "2.1.2",

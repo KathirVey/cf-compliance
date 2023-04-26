@@ -1776,10 +1776,10 @@
     "@peoplenet/node-service-common" "24.2.1"
     lodash "4.17.21"
 
-"@peoplenet/node-kafka-common@5.0.5":
-  version "5.0.5"
-  resolved "https://artifactory.trimble.tools/artifactory/api/npm/pnet-virtual-npm/@peoplenet/node-kafka-common/-/@peoplenet/node-kafka-common-5.0.5.tgz#912d8901684da8e1e6b51f4576a21866a0f5c9c4"
-  integrity sha512-XDPqVCJS753NODWq3+CJY52nbgP8z34HOGRlLOM2mXYQnxkJYDwtZd8U0mWtSCJ2RfBb+it4bIZCTu0OM/9oxA==
+"@peoplenet/node-kafka-common@5.0.6":
+  version "5.0.6"
+  resolved "https://artifactory.trimble.tools/artifactory/api/npm/pnet-virtual-npm/@peoplenet/node-kafka-common/-/@peoplenet/node-kafka-common-5.0.6.tgz#af5c316daa6688cd51b4af8bffe5f09b397e2604"
+  integrity sha512-F7n+9XEtSx2Dq/JHBr41lLgXzAL4wuTvnaWFADfNuSEpbnMb5eiqD39bFSIrdLxuQ8MC8N1kwvM58mdvKdmBNQ==
   dependencies:
     "@kafkajs/confluent-schema-registry" "3.3.0"
     avsc "5.5.3"

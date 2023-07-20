@@ -15,7 +15,7 @@ settings:
     enforce: true
   sonarArtifactsDownload:
     fromAnyStep:
-    - "coverage/*"
+      - "coverage/*"
 
 apps:
   cf-compliance:
@@ -26,6 +26,6 @@ apps:
       chartInRepo: false
       environmentRepo: ttm-cf-platform/core-teams-environments
       namespace:
-        - core-teams-dev
+        - core-teams-qa
       releaseName: cf-compliance
       imageTagPath: deployment.app.image.tag

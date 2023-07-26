@@ -1,11 +1,9 @@
 import {compliance} from '../../../services'
 import route from '../getDriverLogs'
 
-process.env.ISE_COMPLIANCE_AUTH = 'someAuthToken'
-
 jest.mock('../../../services')
 
-let request, iseHeaders
+let request
 
 beforeEach(() => {
     request = {
@@ -19,18 +17,13 @@ beforeEach(() => {
             }
         },
         headers: {
+            'x-jwt-Assertion': 'access_token',
             'x-application-customer': 'user_ac_id'
         },
         params: {
             driverId: 'test',
             startDateTime: '1234'
         }
-    }
-    iseHeaders = {
-        'content-type': 'application/json',
-        authorization: `Basic someAuthToken`,
-        'x-authenticate-orgid': 'root',
-        'x-filter-orgid': 'pfmCid'
     }
 
 })
@@ -185,7 +178,11 @@ it('should get driver logs for a driver', async () => {
         }
     })
     const result = await route.handler(request)
-    expect(compliance.get).toHaveBeenCalledWith(`/proxy/driverlogs/test/1234`, {headers: iseHeaders})
+    expect(compliance.get).toHaveBeenCalledWith(`/v1/proxy/driverlogs/test/1234`, {headers: {
+        'x-jwt-Assertion': 'access_token',
+        'x-application-customer': 'user_ac_id',
+        'x-filter-orgid': 'pfmCid'
+    }})
     expect(result).toEqual(driverLog)
 })
 

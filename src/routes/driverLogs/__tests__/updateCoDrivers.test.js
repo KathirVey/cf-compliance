@@ -2,9 +2,8 @@ import {compliance} from '../../../services'
 import route from '../updateCoDrivers'
 
 jest.mock('../../../services')
-process.env.ISE_COMPLIANCE_AUTH = 'someAuthToken'
 
-let request, hapi, iseHeaders
+let request, hapi
 
 beforeEach(() => {
     request = {
@@ -18,6 +17,7 @@ beforeEach(() => {
             }
         },
         headers: {
+            'x-jwt-Assertion': 'access_token',
             'x-application-customer': 'user_ac_id'
         },
         params: {
@@ -25,13 +25,6 @@ beforeEach(() => {
             startDateTime: '1234'
         },
         payload: ['codriver01', 'codriver02']
-    }
-
-    iseHeaders = {
-        'content-type': 'application/json',
-        authorization: `Basic someAuthToken`,
-        'x-authenticate-orgid': 'root',
-        'x-filter-orgid': 'pfmCid'
     }
 
     hapi = {
@@ -43,6 +36,10 @@ beforeEach(() => {
 it('should update codrivers for the driver', async () => {    
     await route.handler(request)
     const pay = ['codriver01', 'codriver02']
-    expect(compliance.put).toHaveBeenCalledWith(`proxy/driverlogs/updateCoDrivers/test/1234`, pay, {headers: iseHeaders})    
+    expect(compliance.put).toHaveBeenCalledWith(`/v1/proxy/driverlogs/updateCoDrivers/test/1234`, pay, {headers: {
+        'x-jwt-Assertion': 'access_token',
+        'x-application-customer': 'user_ac_id',
+        'x-filter-orgid': 'pfmCid'
+    }})    
 })
 

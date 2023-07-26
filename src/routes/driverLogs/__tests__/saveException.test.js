@@ -2,9 +2,8 @@ import {compliance} from '../../../services'
 import route from '../saveException'
 
 jest.mock('../../../services')
-process.env.ISE_COMPLIANCE_AUTH = 'someAuthToken'
 
-let request, iseHeaders
+let request
 
 const payLoad = {
     eventKey: 1, 
@@ -26,6 +25,7 @@ beforeEach(() => {
             }
         },
         headers: {
+            'x-jwt-Assertion': 'access_token',
             'x-application-customer': 'user_ac_id'
         },
         params: {
@@ -33,15 +33,13 @@ beforeEach(() => {
         },
         payload: payLoad
     }
-    iseHeaders = {
-        'content-type': 'application/json',
-        authorization: `Basic someAuthToken`,
-        'x-authenticate-orgid': 'root',
-        'x-filter-orgid': 'pfmCid'
-    }    
 })
 
 it('should save exception', async () => {    
     await route.handler(request)
-    expect(compliance.put).toHaveBeenCalledWith(`/proxy/driverlogs/saveException/test`, payLoad, {headers: iseHeaders})    
+    expect(compliance.put).toHaveBeenCalledWith(`/v1/proxy/driverlogs/saveException/test`, payLoad, {headers: {
+        'x-jwt-Assertion': 'access_token',
+        'x-application-customer': 'user_ac_id',
+        'x-filter-orgid': 'pfmCid'
+    }})    
 })

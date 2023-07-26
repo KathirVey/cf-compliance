@@ -1,18 +1,20 @@
 const {compliance} = require('../../services')
-import getIseHeaders from '../../util/getIseHeaders'
 import {logger} from '@peoplenet/node-service-common'
 import Joi from 'joi'
 
 const route = {
     method: 'PUT',
     path: '/drivers/{driverId}/driverLogs/saveException',
-    handler: async ({auth, params, payload}, hapi) => {        
+    handler: async ({headers, auth, params, payload}, hapi) => {        
         const {driverId} = params
         const {user} = auth.artifacts   
         const pfmCid = user.companyId
         try {
-            const iseHeaders = getIseHeaders(pfmCid)            
-            const res = await compliance.put(`/proxy/driverlogs/saveException/${driverId}`, payload, {headers: iseHeaders})
+            const actualHeaders = {
+                ...headers,
+                'x-filter-orgid': pfmCid
+            }
+            const res = await compliance.put(`/v1/proxy/driverlogs/saveException/${driverId}`, payload, {headers: actualHeaders})
             return res
             
         } catch (error) {

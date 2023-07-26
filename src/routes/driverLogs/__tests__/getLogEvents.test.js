@@ -2,9 +2,8 @@ import {compliance} from '../../../services'
 import route from '../getLogEvents'
 
 jest.mock('../../../services')
-process.env.ISE_COMPLIANCE_AUTH = 'someAuthToken'
 
-let request, iseHeaders
+let request
 
 beforeEach(() => {
     request = {
@@ -18,6 +17,7 @@ beforeEach(() => {
             }
         },
         headers: {
+            'x-jwt-Assertion': 'access_token',
             'x-application-customer': 'user_ac_id'
         },
         params: {
@@ -27,12 +27,6 @@ beforeEach(() => {
             startLogDate: '2020-01-01',
             endLogDate: '2020-01-10'
         }
-    }
-    iseHeaders = {
-        'content-type': 'application/json',
-        authorization: `Basic someAuthToken`,
-        'x-authenticate-orgid': 'root',
-        'x-filter-orgid': 'pfmCid'
     }
 })
 
@@ -160,6 +154,10 @@ it('should get log events for a driver for given date range', async () => {
     ])
 
     const result = await route.handler(request)
-    expect(compliance.get).toHaveBeenCalledWith(`/proxy/logEvents/test?startLogDate=2020-01-01&endLogDate=2020-01-10`, {headers: iseHeaders})
+    expect(compliance.get).toHaveBeenCalledWith(`/v1/proxy/logEvents/test?startLogDate=2020-01-01&endLogDate=2020-01-10`, {headers: {
+        'x-jwt-Assertion': 'access_token',
+        'x-application-customer': 'user_ac_id',
+        'x-filter-orgid': 'pfmCid'
+    }})
     expect(result).toEqual(logEvents)
 })

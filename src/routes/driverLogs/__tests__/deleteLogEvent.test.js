@@ -2,9 +2,8 @@ import {compliance} from '../../../services'
 import route from '../deleteLogEvent'
 
 jest.mock('../../../services')
-process.env.ISE_COMPLIANCE_AUTH = 'someAuthToken'
 
-let request, iseHeaders
+let request
 
 beforeEach(() => {
     request = {
@@ -18,6 +17,7 @@ beforeEach(() => {
             }
         },
         headers: {
+            'x-jwt-Assertion': 'access_token',
             'x-application-customer': 'user_ac_id'
         },
         params: {
@@ -25,15 +25,13 @@ beforeEach(() => {
         },
         payload: 'test'
     }
-    iseHeaders = {
-        'content-type': 'application/json',
-        authorization: `Basic someAuthToken`,
-        'x-authenticate-orgid': 'root',
-        'x-filter-orgid': 'pfmCid'
-    }    
 })
 
 it('should delete log event', async () => {    
     await route.handler(request)
-    expect(compliance.post).toHaveBeenCalledWith(`/proxy/logEvents/delete/1`, 'test', {headers: iseHeaders})    
+    expect(compliance.post).toHaveBeenCalledWith(`/v1/proxy/logEvents/delete/1`, 'test', {headers: {
+        'x-jwt-Assertion': 'access_token',
+        'x-application-customer': 'user_ac_id',
+        'x-filter-orgid': 'pfmCid'
+    }})    
 })

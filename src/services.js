@@ -4,9 +4,9 @@ const makeService = require('@peoplenet/cf-services')
 const customServiceConfig = {
     compliance: {
         baseURL: {
-            dev: 'https://complianceefsmigrationefsmigrationproxy.dev.trimble-transportation.com/compliance/v1',
-            qa: 'https://complianceefsmigrationefsmigrationproxy.dev.trimble-transportation.com/compliance/v1',
-            staging: 'https://complianceefsmigrationefsmigrationproxy.dev.trimble-transportation.com/compliance/v1',
+            dev: 'https://cloud.dev.api.trimblecloud.com/transportation/compliance',
+            qa: 'https://cloud.dev.api.trimblecloud.com/transportation/compliance',
+            staging: '',
             prod: ''
         }[env]
     },

@@ -1,18 +1,20 @@
 const {compliance} = require('../../services')
-import getIseHeaders from '../../util/getIseHeaders'
 import {logger} from '@peoplenet/node-service-common'
 import Joi from 'joi'
 
 const route = {
     method: 'POST',
     path: '/drivers/driverLogs/deleteException/{eventKey}',
-    handler: async ({auth, params, payload}, hapi) => {        
+    handler: async ({headers, auth, params, payload}, hapi) => {        
         const {eventKey} = params
         const {user} = auth.artifacts   
         const pfmCid = user.companyId
         try {
-            const iseHeaders = getIseHeaders(pfmCid)
-            const res = await compliance.post(`/proxy/driverlogs/deleteException/${eventKey}`, payload, {headers: iseHeaders})
+            const actualHeaders = {
+                ...headers,
+                'x-filter-orgid': pfmCid
+            }
+            const res = await compliance.post(`/v1/proxy/driverlogs/deleteException/${eventKey}`, payload, {headers: actualHeaders})
             return res
             
         } catch (error) {

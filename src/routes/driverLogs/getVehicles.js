@@ -1,17 +1,20 @@
 const {compliance} = require('../../services')
-import getIseHeaders from '../../util/getIseHeaders'
 import {logger} from '@peoplenet/node-service-common'
 
 const route = {
     method: 'GET',
-    path: '/vehicles',
-    handler: async ({auth}, hapi) => {
+    path: '/compliance/vehicles',
+    handler: async ({headers, auth}, hapi) => {
         const {user} = auth.artifacts
         const pfmCid = user.companyId
 
         try {
-            const iseheaders = getIseHeaders(pfmCid)
-            const vehiles = await compliance.get('/proxy/vehicles', {headers: iseheaders})
+            const actualHeaders = {
+                ...headers,
+                'x-filter-orgid': pfmCid
+            }
+            
+            const vehiles = await compliance.get('/v1/proxy/vehicles', {headers: actualHeaders})
             return vehiles
         } catch (error) {
             logger.debug(error, pfmCid, 'Encountered error while fetching vehicles from ISE')
@@ -22,7 +25,7 @@ const route = {
         description: 'vehicles route',
         auth: 'user-profile',
         app: {
-            permission: 'DRIVER-SERVICE-CUSTOMER-DRIVER-READ',
+            permission: 'DRIVER-LOGS-READ',
             overridePermission: ['CXS-CUSTOMER-READ']
         },
         tags: ['api']

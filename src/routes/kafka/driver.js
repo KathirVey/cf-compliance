@@ -10,6 +10,8 @@ module.exports = {
         const {value} = payload
         const {method, payload: entity} = value
         const {id} = entity
+
+        logger.info(`Starting to process Driver ${method} event. Driver ID: ${entity.id}`)
         if (method === 'CREATE' || method === 'UPDATE') {
             // Find the associated member group
             const [uniqueMemberGroup = {}] = await search({
@@ -19,15 +21,14 @@ module.exports = {
                     'associations.members.entityId.keyword': id
                 }
             })
-
             //Add member association to corresponding entity payload
             const hydratedEntity = {...entity, uniqueMemberGroup}
-
             await searchApi.upsert('driver', hydratedEntity)
         } else if (method === 'DELETE') {
             await searchApi.delete('driver', entity)
         }
-        logger.info({id: entity.id}, `Processed Driver ${method} event`)
+
+        logger.info(`Processed Driver ${method} event. Driver ID: ${entity.id}`)
         return hapi.response()
     },
     options: {

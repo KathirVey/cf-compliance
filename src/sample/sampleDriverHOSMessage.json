@@ -1,7 +1,7 @@
 {
     "value": {
         "specversion": "1.0",
-        "id": "43fe7bfc-67ea-430f-931f-ffe3a9253d55",
+        "id": "8a1f8535-acff-44b0-ae7f-13900658ce7a",
         "source": "trimble.transportation.compliance",
         "type": "trimble.transportation.compliance.hours-of-service.availability.v1",
         "data": {
@@ -9,28 +9,30 @@
                 "pfmId": "5097"
             },
             "driver": {
-                "username": "ErikS3"
+                "username": "DRESDEN"
             },
-            "hosRuleSetName": "Us7DayPropertyCarrying",
-            "cycleDuty": "00:00:00",
+            "hosRuleSetName": "Us8DayConstruction",
+            "cycleDuty": "2.22:00:00",
             "cycleDutyOffDutyPeriods": "-1.00:00:00",
             "dailyDriving": "-1.00:00:00",
             "dailyDuty": "-1.00:00:00",
             "dailyOffDuty": "-1.00:00:00",
-            "drivingTimeLeft": "00:00:00",
-            "gainTimeAt": "2022-05-18T02:14:00",
-            "displayLocation": "MN Crystal (Big Back Yard)",
-            "lastCalculatedTime": "2022-05-16T16:14:48",
-            "mostRecentStatus": "Off",
-            "mostRecentStatusDateTime": "2022-05-16T16:14:00",
-            "projectedDrivingTime": "08:00:00",
-            "statusStartDate": "2022-05-16T00:00:00",
+            "drivingTimeLeft": "08:00:00",
+            "displayLocation": "TX Little Elm",
+            "lastCalculatedTime": "2023-08-02T14:55:00",
+            "mostRecentStatus": "Sleeper",
+            "mostRecentStatusDateTime": "2023-08-01T20:22:30",
+            "projectedDrivingTime": "-1.00:00:00",
+            "statusStartDate": "2023-08-01T00:00:00",
             "workshiftDriving": "11:00:00",
-            "workshiftDuty": "00:00:00",
-            "workshiftBreak": "3.21:42:00",
+            "workshiftDuty": "14:00:00",
+            "workshiftBreak": "00:00:00",
             "workshiftElapsed": "-1.00:00:00",
             "workshiftRestBreak": "08:00:00",
-            "lastUpdatedAt": "2022-05-16T16:14:48.87"
+            "lastUpdatedAt": "2023-08-02T14:55:00",
+            "cycleOnDutyBetweenOffDuty": "-1.00:00:00",
+            "wellServiceOffDutyPeriods": "-1.00:00:00",
+            "vehicleId": "4455556"
         }
     }
 }

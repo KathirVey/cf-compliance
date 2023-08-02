@@ -77,24 +77,14 @@ module.exports = {
             }
         }
 
-        let driverVehicle
-        try {
-            driverVehicle = await iseCompliance.get(`/api/Drivers/byDriverId/${loginId}/vehicle`, {headers: iseHeaders})
-        } catch (error) {
-            if (error.description?.status === 404) {
-                logger.debug(`Got 404 from ISE; no vehicle found for driver ${loginId}`)
-                driverVehicle = null
-            }
-        }
-
-        if (driverVehicle) {
-            hosMessage.vehicleId = driverVehicle.vehicleId
-
+        const {vehicleId} = hosMessage
+        if (vehicleId && vehicleId.trim()) {
+            hosMessage.vehicleId = vehicleId.trim()
             const [edVehicleId] = await search({
                 select: ['id'],
                 from: 'vehicles',
                 where: {
-                    'customerVehicleId.keyword': driverVehicle.vehicleId,
+                    'customerVehicleId.keyword': hosMessage.vehicleId,
                     'customerIds.pfmCid': parseInt(companyId)
                 }
             })

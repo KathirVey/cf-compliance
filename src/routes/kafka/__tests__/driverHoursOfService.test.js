@@ -41,6 +41,7 @@ describe('driverHoursOfService', () => {
                 workshiftBreak: '3.21:42:00',
                 workshiftElapsed: '-1.00:00:00',
                 lastUpdatedAt: '2022-05-16T16:00:00.00',
+                vehicleId: 'some_vehicle_id',
                 ...data
             }
         }
@@ -93,13 +94,6 @@ describe('driverHoursOfService', () => {
         search.mockResolvedValueOnce([vehicleFromSearch])
         redisClient.get.mockResolvedValueOnce({'ruleset:3': {}})
         iseCompliance.get.mockResolvedValueOnce(ruleSet)
-        iseCompliance.get.mockResolvedValueOnce({ // vehicle
-            driverId: 'some_driver',
-            vehicleId: 'some_vehicle_id',
-            loggedIn: true,
-            loginDateTime: '2022-03-24T15:55:00',
-            logoutDateTime: null
-        })
         client.update.mockResolvedValueOnce({body: {_id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9'}})
 
         const payloadData = createPayloadData({
@@ -144,9 +138,8 @@ describe('driverHoursOfService', () => {
             }
         })
         expect(redisClient.get).toHaveBeenCalled()
-        expect(iseCompliance.get).toHaveBeenCalledTimes(2)
+        expect(iseCompliance.get).toHaveBeenCalledTimes(1)
         expect(iseCompliance.get).toHaveBeenCalledWith('/api/HosRuleSet/details/3', {headers: iseHeaders})
-        expect(iseCompliance.get).toHaveBeenCalledWith('/api/Drivers/byDriverId/some_driver/vehicle', {headers: iseHeaders})
         expect(redisClient.set).toHaveBeenCalledWith({'ruleset:3': ruleSet})
         expect(client.update).toHaveBeenCalled()
         expect(client.update).toHaveBeenCalledWith({
@@ -185,13 +178,6 @@ describe('driverHoursOfService', () => {
         search.mockResolvedValueOnce([driverFromSearch])
         search.mockResolvedValueOnce([vehicleFromSearch])
         redisClient.get.mockResolvedValueOnce({'ruleset:3': ruleSet})
-        iseCompliance.get.mockResolvedValueOnce({ // vehicle
-            driverId: 'some_driver',
-            vehicleId: 'some_vehicle_id',
-            loggedIn: true,
-            loginDateTime: '2022-03-24T15:55:00',
-            logoutDateTime: null
-        })
         client.update.mockResolvedValueOnce({body: {_id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9'}})
 
         const payloadData = createPayloadData({
@@ -236,8 +222,7 @@ describe('driverHoursOfService', () => {
             }
         })
         expect(redisClient.get).toHaveBeenCalledWith('ruleset:3')
-        expect(iseCompliance.get).toHaveBeenCalledTimes(1)
-        expect(iseCompliance.get).toHaveBeenCalledWith('/api/Drivers/byDriverId/some_driver/vehicle', {headers: iseHeaders})
+        expect(iseCompliance.get).toHaveBeenCalledTimes(0)
         expect(redisClient.set).not.toHaveBeenCalled()
         expect(client.update).toHaveBeenCalled()
         expect(client.update).toHaveBeenCalledWith({
@@ -286,13 +271,6 @@ describe('driverHoursOfService', () => {
         search.mockResolvedValueOnce([vehicleFromSearch])
         redisClient.get.mockResolvedValueOnce({'ruleset:22': {}})
         iseCompliance.get.mockResolvedValueOnce(canadianRuleset)
-        iseCompliance.get.mockResolvedValueOnce({ // vehicle
-            driverId: 'some_driver',
-            vehicleId: 'some_vehicle_id',
-            loggedIn: true,
-            loginDateTime: '2022-03-24T15:55:00',
-            logoutDateTime: null
-        })
         client.update.mockResolvedValueOnce({body: {_id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9'}})
 
         const payloadData = createPayloadData({
@@ -307,7 +285,8 @@ describe('driverHoursOfService', () => {
             mostRecentStatusDateTime: '2000-01-02T02:04:05Z',
             accountIdentifiers: {
                 pfmId: '57'
-            }
+            },
+            vehicleId: '  some_vehicle_id   '
         })
 
         const request = {
@@ -337,9 +316,8 @@ describe('driverHoursOfService', () => {
             }
         })
         expect(redisClient.get).toHaveBeenCalled()
-        expect(iseCompliance.get).toHaveBeenCalledTimes(2)
+        expect(iseCompliance.get).toHaveBeenCalledTimes(1)
         expect(iseCompliance.get).toHaveBeenCalledWith('/api/HosRuleSet/details/22', {headers: iseHeaders})
-        expect(iseCompliance.get).toHaveBeenCalledWith('/api/Drivers/byDriverId/some_driver/vehicle', {headers: iseHeaders})
         expect(redisClient.set).toHaveBeenCalledWith({'ruleset:22': canadianRuleset})
         expect(client.update).toHaveBeenCalled()
         expect(client.update).toHaveBeenCalledWith({
@@ -379,13 +357,6 @@ describe('driverHoursOfService', () => {
         search.mockResolvedValueOnce([vehicleFromSearch])
         redisClient.get.mockResolvedValueOnce({'ruleset:3': {}})
         iseCompliance.get.mockResolvedValueOnce(ruleSet)
-        iseCompliance.get.mockResolvedValueOnce({ // vehicle
-            driverId: 'some_driver',
-            vehicleId: 'some_vehicle_id',
-            loggedIn: true,
-            loginDateTime: '2022-03-24T15:55:00',
-            logoutDateTime: null
-        })
         client.update.mockResolvedValueOnce({body: {_id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9'}})
 
         const payloadData = createPayloadData({
@@ -430,9 +401,8 @@ describe('driverHoursOfService', () => {
             }
         })
         expect(redisClient.get).toHaveBeenCalled()
-        expect(iseCompliance.get).toHaveBeenCalledTimes(2)
+        expect(iseCompliance.get).toHaveBeenCalledTimes(1)
         expect(iseCompliance.get).toHaveBeenCalledWith('/api/HosRuleSet/details/3', {headers: iseHeaders})
-        expect(iseCompliance.get).toHaveBeenCalledWith('/api/Drivers/byDriverId/some_driver/vehicle', {headers: iseHeaders})
         expect(redisClient.set).toHaveBeenCalled()
         expect(client.update).toHaveBeenCalled()
         expect(client.update).toHaveBeenCalledWith({
@@ -469,10 +439,8 @@ describe('driverHoursOfService', () => {
 
     it('should process driver hours of service event when vehicle is not found', async () => {
         search.mockResolvedValueOnce([driverFromSearch])
+        search.mockResolvedValueOnce([])
         redisClient.get.mockResolvedValueOnce({'ruleset:3': ruleSet})
-        iseCompliance.get.mockRejectedValueOnce({
-            description: {status: 404}
-        })
 
         client.update.mockResolvedValueOnce({body: {_id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9'}})
 
@@ -509,9 +477,155 @@ describe('driverHoursOfService', () => {
                 'customer.companyId': 57
             }
         })
-        expect(iseCompliance.get).toHaveBeenCalledTimes(1)
         expect(redisClient.get).toHaveBeenCalledWith('ruleset:3')
-        expect(iseCompliance.get).toHaveBeenCalledWith('/api/Drivers/byDriverId/some_driver/vehicle', {headers: iseHeaders})
+        expect(redisClient.set).not.toHaveBeenCalled()
+        expect(client.update).toHaveBeenCalled()
+        expect(client.update).toHaveBeenCalledWith({
+            index: 'driver',
+            type: '_doc',
+            id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9',
+            body: {
+                doc: {
+                    hoursOfService: {
+                        ...payloadData.data,
+                        lastLogbookUpdateDate: '2000-01-02T02:04:05.000Z',
+                        currentDriverType: 'US 7-day passenger-carrying',
+                        currentDutyStatus: payloadData.data.mostRecentStatus,
+                        totalTimeInCurrentDutyStatus: '01:00',
+                        hoursInCurrentDutyStatus: 1,
+                        availableDriveTime: '00:00',
+                        availableDutyTime: '04:10',
+                        availableCycleTime: '45:22',
+                        workShiftDriveTimeUsed: '06:00',
+                        workShiftOnDutyTimeUsed: '09:50',
+                        dailyDriveTimeUsed: 'N/A',
+                        dailyOnDutyTimeUsed: 'N/A',
+                        timeUntilBreak: '08:00',
+                        cycleTimeUsed: '14:38'
+                    }
+                }
+            }
+        })
+        expect(hapi.response).toHaveBeenCalledWith({message: 'Processed driver HOS event messageId: 43fe7bfc-67ea-430f-931f-ffe3a9253d55, cid: 57 for driverId: ea631aad-5d8c-4b37-a25c-5f0bd23164b9'})
+        expect(hapi.code).toHaveBeenCalledWith(204)
+    })
+
+    it('should process driver hours of service event when vehicle is empty string', async () => {
+        search.mockResolvedValueOnce([driverFromSearch])
+        redisClient.get.mockResolvedValueOnce({'ruleset:3': ruleSet})
+
+        client.update.mockResolvedValueOnce({body: {_id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9'}})
+
+        const payloadData = createPayloadData({
+            hosRuleSetName: 'Us7DayPropertyCarrying',
+            cycleDuty: '1.21:22:17',
+            dailyDriving: '3:00:00',
+            dailyDuty: '04:03:36',
+            drivingTimeLeft: '00:00:00',
+            workshiftRestBreak: '08:00:00',
+            workshiftDriving: '05:00:00',
+            workshiftDuty: '04:10:00',
+            mostRecentStatusDateTime: '2000-01-02T02:04:05Z',
+            accountIdentifiers: {
+                pfmId: '57'
+            },
+            vehicleId: ''
+        })
+
+        const request = {
+            payload: {
+                value: {
+                    ...payloadData
+                }
+            }
+        }
+
+        await route.handler(request, hapi)
+
+        expect(search).toHaveBeenCalledTimes(1)
+        expect(search).toHaveBeenCalledWith({
+            select: [],
+            from: 'drivers',
+            where: {
+                'externalSources.eFleetSuite.driverId.keyword': 'some_driver',
+                'customer.companyId': 57
+            }
+        })
+        expect(redisClient.get).toHaveBeenCalledWith('ruleset:3')
+        expect(redisClient.set).not.toHaveBeenCalled()
+        expect(client.update).toHaveBeenCalled()
+        expect(client.update).toHaveBeenCalledWith({
+            index: 'driver',
+            type: '_doc',
+            id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9',
+            body: {
+                doc: {
+                    hoursOfService: {
+                        ...payloadData.data,
+                        lastLogbookUpdateDate: '2000-01-02T02:04:05.000Z',
+                        currentDriverType: 'US 7-day passenger-carrying',
+                        currentDutyStatus: payloadData.data.mostRecentStatus,
+                        totalTimeInCurrentDutyStatus: '01:00',
+                        hoursInCurrentDutyStatus: 1,
+                        availableDriveTime: '00:00',
+                        availableDutyTime: '04:10',
+                        availableCycleTime: '45:22',
+                        workShiftDriveTimeUsed: '06:00',
+                        workShiftOnDutyTimeUsed: '09:50',
+                        dailyDriveTimeUsed: 'N/A',
+                        dailyOnDutyTimeUsed: 'N/A',
+                        timeUntilBreak: '08:00',
+                        cycleTimeUsed: '14:38'
+                    }
+                }
+            }
+        })
+        expect(hapi.response).toHaveBeenCalledWith({message: 'Processed driver HOS event messageId: 43fe7bfc-67ea-430f-931f-ffe3a9253d55, cid: 57 for driverId: ea631aad-5d8c-4b37-a25c-5f0bd23164b9'})
+        expect(hapi.code).toHaveBeenCalledWith(204)
+    })
+
+    it('should process driver hours of service event when vehicle is null', async () => {
+        search.mockResolvedValueOnce([driverFromSearch])
+        redisClient.get.mockResolvedValueOnce({'ruleset:3': ruleSet})
+
+        client.update.mockResolvedValueOnce({body: {_id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9'}})
+
+        const payloadData = createPayloadData({
+            hosRuleSetName: 'Us7DayPropertyCarrying',
+            cycleDuty: '1.21:22:17',
+            dailyDriving: '3:00:00',
+            dailyDuty: '04:03:36',
+            drivingTimeLeft: '00:00:00',
+            workshiftRestBreak: '08:00:00',
+            workshiftDriving: '05:00:00',
+            workshiftDuty: '04:10:00',
+            mostRecentStatusDateTime: '2000-01-02T02:04:05Z',
+            accountIdentifiers: {
+                pfmId: '57'
+            },
+            vehicleId: null
+        })
+
+        const request = {
+            payload: {
+                value: {
+                    ...payloadData
+                }
+            }
+        }
+
+        await route.handler(request, hapi)
+
+        expect(search).toHaveBeenCalledTimes(1)
+        expect(search).toHaveBeenCalledWith({
+            select: [],
+            from: 'drivers',
+            where: {
+                'externalSources.eFleetSuite.driverId.keyword': 'some_driver',
+                'customer.companyId': 57
+            }
+        })
+        expect(redisClient.get).toHaveBeenCalledWith('ruleset:3')
         expect(redisClient.set).not.toHaveBeenCalled()
         expect(client.update).toHaveBeenCalled()
         expect(client.update).toHaveBeenCalledWith({
@@ -547,13 +661,6 @@ describe('driverHoursOfService', () => {
     it('should process driver hours of service event when rulesetId is not found', async () => {
         search.mockResolvedValueOnce([driverFromSearch])
         search.mockResolvedValueOnce([vehicleFromSearch])
-        iseCompliance.get.mockResolvedValueOnce({ // vehicle
-            driverId: 'some_driver',
-            vehicleId: 'some_vehicle_id',
-            loggedIn: true,
-            loginDateTime: '2022-03-24T15:55:00',
-            logoutDateTime: null
-        })
         client.update.mockResolvedValueOnce({body: {_id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9'}})
 
         const payloadData = createPayloadData({
@@ -598,8 +705,7 @@ describe('driverHoursOfService', () => {
             }
         })
         expect(redisClient.get).not.toHaveBeenCalled()
-        expect(iseCompliance.get).toHaveBeenCalledTimes(1)
-        expect(iseCompliance.get).toHaveBeenCalledWith('/api/Drivers/byDriverId/some_driver/vehicle', {headers: iseHeaders})
+        expect(iseCompliance.get).toHaveBeenCalledTimes(0)
         expect(client.update).toHaveBeenCalled()
         expect(client.update).toHaveBeenCalledWith({
             index: 'driver',
@@ -635,9 +741,7 @@ describe('driverHoursOfService', () => {
 
     it('should process driver hours of service event when rulesetId is unknown', async () => {
         search.mockResolvedValueOnce([driverFromSearch])
-        iseCompliance.get.mockRejectedValueOnce({
-            description: {status: 404}
-        })
+        search.mockResolvedValueOnce([vehicleFromSearch])
         client.update.mockResolvedValueOnce({body: {_id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9'}})
 
         const payloadData = createPayloadData({
@@ -673,9 +777,16 @@ describe('driverHoursOfService', () => {
                 'customer.companyId': 57
             }
         })
+        expect(search).toHaveBeenCalledWith({
+            select: ['id'],
+            from: 'vehicles',
+            where: {
+                'customerVehicleId.keyword': 'some_vehicle_id',
+                'customerIds.pfmCid': 57
+            }
+        })
         expect(redisClient.get).not.toHaveBeenCalled()
-        expect(iseCompliance.get).toHaveBeenCalledTimes(1)
-        expect(iseCompliance.get).toHaveBeenCalledWith('/api/Drivers/byDriverId/some_driver/vehicle', {headers: iseHeaders})
+        expect(iseCompliance.get).toHaveBeenCalledTimes(0)
         expect(client.update).toHaveBeenCalledTimes(1)
         expect(client.update).toHaveBeenCalledWith({
             index: 'driver',
@@ -698,7 +809,8 @@ describe('driverHoursOfService', () => {
                         dailyDriveTimeUsed: 'Unknown',
                         dailyOnDutyTimeUsed: 'Unknown',
                         timeUntilBreak: '06:03',
-                        cycleTimeUsed: 'Unknown'
+                        cycleTimeUsed: 'Unknown',
+                        edVehicleId: 74044
                     }
                 }
             }
@@ -842,13 +954,6 @@ describe('driverHoursOfService', () => {
         search.mockResolvedValueOnce([vehicleFromSearch])
         redisClient.get.mockResolvedValueOnce({'ruleset:3': {}})
         iseCompliance.get.mockResolvedValueOnce(ruleSet)
-        iseCompliance.get.mockResolvedValueOnce({ // vehicle
-            driverId: 'some_driver',
-            vehicleId: 'some_vehicle_id',
-            loggedIn: true,
-            loginDateTime: '2022-03-24T15:55:00',
-            logoutDateTime: null
-        })
         client.update.mockResolvedValueOnce({body: {_id: 'ea631aad-5d8c-4b37-a25c-5f0bd23164b9'}})
 
         const payloadData = createPayloadData({
@@ -894,9 +999,8 @@ describe('driverHoursOfService', () => {
             }
         })
         expect(redisClient.get).toHaveBeenCalled()
-        expect(iseCompliance.get).toHaveBeenCalledTimes(2)
+        expect(iseCompliance.get).toHaveBeenCalledTimes(1)
         expect(iseCompliance.get).toHaveBeenCalledWith('/api/HosRuleSet/details/3', {headers: iseHeaders})
-        expect(iseCompliance.get).toHaveBeenCalledWith('/api/Drivers/byDriverId/some_driver/vehicle', {headers: iseHeaders})
         expect(redisClient.set).toHaveBeenCalledWith({'ruleset:3': ruleSet})
         expect(client.update).toHaveBeenCalledTimes(1)
         expect(client.update).toHaveBeenCalledWith({

@@ -26,7 +26,7 @@ const route = {
 
         } catch (error) {
             logger.debug(error, pfmCid, 'Encountered error while fetching log events from ISE')
-            return hapi.response(error.description.data).code(error.description.status)
+            return hapi.response(error.description.data.detail).code(error.description.status)
         }
     },
     options: {

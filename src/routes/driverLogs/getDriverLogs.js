@@ -19,7 +19,7 @@ const route = {
             return driverLogs
         } catch (error) {
             logger.debug(error, pfmCid, 'Encountered error while fetching driver logs from ISE')
-            return hapi.response(error.description.data).code(error.description.status)
+            return hapi.response(error.description.data.detail).code(error.description.status)
         }
     },
     options: {

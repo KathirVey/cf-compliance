@@ -20,7 +20,7 @@ const route = {
             
         } catch (error) {
             logger.debug(error, pfmCid, 'Encountered error while updating trailers for the drivers log')
-            return hapi.response(error.description.data).code(error.description.status)
+            return hapi.response(error.description.data.detail).code(error.description.status)
         }
     },
     options: {

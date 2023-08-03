@@ -19,7 +19,7 @@ const route = {
             
         } catch (error) {
             logger.debug(error, pfmCid, 'Encountered error while deleting exception')
-            return hapi.response(error.description.data).code(error.description.status)
+            return hapi.response(error.description.data.detail).code(error.description.status)
         }
     },
     options: {

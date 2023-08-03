@@ -20,7 +20,7 @@ const route = {
             return response
         } catch (error) {
             logger.debug(error, pfmCid, 'Encountered error while adding/proposing status change event')
-            return hapi.response(error.description.data).code(error.description.status)
+            return hapi.response(error.description.data.detail).code(error.description.status)
         }
     },
     options: {

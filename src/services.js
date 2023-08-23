@@ -6,8 +6,8 @@ const customServiceConfig = {
         baseURL: {
             dev: 'https://cloud.dev.api.trimblecloud.com/transportation/compliance',
             qa: 'https://cloud.dev.api.trimblecloud.com/transportation/compliance',
-            staging: '',
-            prod: ''
+            staging: 'https://cloud.stage.api.trimblecloud.com/transportation/compliance',
+            prod: 'https://cloud.api.trimble.com/transportation/compliance'
         }[env]
     },
     driverService: {k8sNamespace: 'delta'},

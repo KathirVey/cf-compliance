@@ -5,19 +5,15 @@ import Joi from 'joi'
 const route = {
     method: 'GET',
     path: '/rods/{driverId}/driverLogs/{startDateTime}',
-    handler: async ({headers, auth, params}, hapi) => {
+    handler: async ({headers, params}, hapi) => {
         const {driverId, startDateTime} = params
-        const {user} = auth.artifacts
-        const pfmCid = user.companyId
         try {
-            const actualHeaders = {
-                ...headers,
-                'x-filter-orgid': pfmCid
-            }
-            return await compliance.get(`/v2/proxy/driverlogs/${driverId}/${startDateTime}`, {headers: actualHeaders})
+            const response = await compliance.get(`v1/driverlogids/GetIdsByAccountUsernameLogDate?username=${driverId}&&logDate=${startDateTime}`, {headers})
+
+            return await compliance.get(`/v1/driverlogs/${response.id}`, {headers})
         } catch (error) {
-            logger.debug(error, pfmCid, 'Encountered error while fetching driver logs from records-of-duty-status')
-            return hapi.response(error.description.data.detail).code(error.description.status)
+            logger.error(error, 'Encountered error while fetching driver logs from records-of-duty-status')
+            return hapi.response(error.description.data).code(error.description.status)
         }
     },
     options: {

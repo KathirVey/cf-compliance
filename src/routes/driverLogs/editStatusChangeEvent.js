@@ -16,8 +16,7 @@ const route = {
                 'x-filter-orgid': pfmCid
             }
 
-            const response = await compliance.put(`/v1/proxy/logEvents/${driverId}/status/${eventKey}`, payload, {headers: actualHeaders})
-            return response
+            return await compliance.put(`/v1/proxy/logEvents/${driverId}/status/${eventKey}`, payload, {headers: actualHeaders})
         } catch (error) {
             logger.debug(error, pfmCid, 'Encountered error while adding/proposing status change event')
             return hapi.response(error.description.data.detail ?? error.description.data.error).code(error.description.status)

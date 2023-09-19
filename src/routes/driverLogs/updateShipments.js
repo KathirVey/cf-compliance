@@ -15,9 +15,7 @@ const route = {
                 ...headers,
                 'x-filter-orgid': pfmCid
             }
-            const res = await compliance.put(`/v1/proxy/driverlogs/updateShipments/${driverId}/${startDateTime}`, payload, {headers: actualHeaders})
-            return res
-            
+            return await compliance.put(`/v1/proxy/driverlogs/updateShipments/${driverId}/${startDateTime}`, payload, {headers: actualHeaders})            
         } catch (error) {
             logger.debug(error, pfmCid, 'Encountered error while updating shipments for the drivers log')
             return hapi.response(error.description.data.detail).code(error.description.status)

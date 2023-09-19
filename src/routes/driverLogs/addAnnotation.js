@@ -15,9 +15,7 @@ const route = {
                 ...headers,
                 'x-filter-orgid': pfmCid
             }
-            const response = await compliance.post(`/v1/proxy/logEvents/addAnnotation/${eventKey}`, payload, {headers: actualHeaders})
-            return response
-
+            return await compliance.post(`/v1/proxy/logEvents/addAnnotation/${eventKey}`, payload, {headers: actualHeaders})
         } catch (error) {
             logger.debug(error, pfmCid, 'Encountered error while adding annotation')
             return hapi.response(error.description.data.detail).code(error.description.status)

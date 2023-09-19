@@ -15,8 +15,7 @@ const route = {
                 ...headers,
                 'x-filter-orgid': pfmCid
             }
-            const driverLogs = await compliance.get(`/v1/proxy/driverlogs/${driverId}/${startDateTime}`, {headers: actualHeaders})
-            return driverLogs
+            return await compliance.get(`/v1/proxy/driverlogs/${driverId}/${startDateTime}`, {headers: actualHeaders})
         } catch (error) {
             logger.debug(error, pfmCid, 'Encountered error while fetching driver logs from ISE')
             return hapi.response(error.description.data.detail).code(error.description.status)

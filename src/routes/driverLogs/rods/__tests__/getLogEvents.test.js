@@ -154,7 +154,7 @@ it('should get log events for a driver for given date range', async () => {
     ])
 
     const result = await route.handler(request)
-    expect(compliance.get).toHaveBeenCalledWith(`/v2/proxy/logEvents/test?startLogDate=2020-01-01&endLogDate=2020-01-10`, {headers: {
+    expect(compliance.get).toHaveBeenCalledWith(`/v1/driverlogs/events/test?startLogDate=2020-01-01&endLogDate=2020-01-10`, {headers: {
         'x-jwt-Assertion': 'access_token',
         'x-application-customer': 'user_ac_id'
     }})

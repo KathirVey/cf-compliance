@@ -14,9 +14,7 @@ const route = {
                 ...headers,
                 'x-filter-orgid': pfmCid
             }
-            const res = await compliance.put(`/v1/proxy/driverlogs/saveException/${driverId}`, payload, {headers: actualHeaders})
-            return res
-            
+            return await compliance.put(`/v1/proxy/driverlogs/saveException/${driverId}`, payload, {headers: actualHeaders})            
         } catch (error) {
             logger.debug(error, pfmCid, 'Encountered error while saving exception')
             return hapi.response(error.description.data.detail).code(error.description.status)

@@ -14,9 +14,7 @@ const route = {
                 ...headers,
                 'x-filter-orgid': pfmCid
             }
-            const res = await compliance.post(`/v1/proxy/driverlogs/deleteException/${eventKey}`, payload, {headers: actualHeaders})
-            return res
-            
+            return await compliance.post(`/v1/proxy/driverlogs/deleteException/${eventKey}`, payload, {headers: actualHeaders})            
         } catch (error) {
             logger.debug(error, pfmCid, 'Encountered error while deleting exception')
             return hapi.response(error.description.data.detail).code(error.description.status)

@@ -12,8 +12,15 @@ const route = {
 
             return await compliance.get(`/v1/driverlogs/${response.id}`, {headers})
         } catch (error) {
-            logger.error(error, 'Encountered error while fetching driver logs from records-of-duty-status')
-            return hapi.response(error.description.data).code(error.description.status)
+            const message = error?.description?.data?.detail
+            if (message && message.includes('Driver with accountId')) {
+                return {messageType: 'incorrectAccount'}
+            } else if (message && message.includes('Log Ids for')) {
+                return {messageType: 'noLogs'}
+            } else {
+                logger.error(error, 'Encountered error while fetching driver logs from records-of-duty-status')
+                return hapi.response(error.description.data).code(error.description.status)
+            }
         }
     },
     options: {

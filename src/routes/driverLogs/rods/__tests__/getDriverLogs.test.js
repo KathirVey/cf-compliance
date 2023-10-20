@@ -70,18 +70,12 @@ it('should return correct response when receiving a driver not found error', asy
 })
 
 it('should return correct response when receiving a driver log not found error', async () => {
-    compliance.get.mockRejectedValue({
-        description: {
-            status: 404,
-            statusText: 'Not Found',
-            data: {
-                title: 'Not Found',
-                status: 404,
-                detail: 'Log Ids for driverId 00000000-0000-0000-0000-000000000123 on 10/06/2023 not found'
-            }
-        }
-    })
+    // Get driver log id
+    compliance.get.mockResolvedValueOnce({})
+    // Get log events
+    compliance.get.mockResolvedValueOnce([])
+    
     const result = await route.handler(request)
 
-    expect(result).toEqual({messageType: 'noLogs'})
+    expect(result).toEqual({messageType: 'noLogs', logEvents: []})
 })

@@ -20,7 +20,7 @@
     "pg": "8.5.1",
     "query-string": "6.13.7",
     "redis": "3.0.2",
-    "sequelize": "6.3.5"
+    "sequelize": "6.33.0"
   },
   "scripts": {
     "build": "yarn build:clean && yarn build:static && yarn build:js && yarn tarball",
@@ -53,6 +53,7 @@
   "resolutions": {
     "handlebars": "4.7.7",
     "minimist": "1.2.6",
-    "url-parse": "1.5.10"
+    "url-parse": "1.5.10",
+    "tough-cookie": "4.1.3"
   }
 }

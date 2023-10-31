@@ -19,7 +19,7 @@ const route = {
         description: 'equipment service route',
         auth: 'user-profile',
         app: {
-            permission: 'UDE-MANAGE'
+            permission: 'DRIVER-LOGS-UDE-MANAGE'
         },
         tags: ['api'],
         validate: {

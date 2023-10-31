@@ -1,4 +1,4 @@
-import {compliance} from '../../../services'
+import {ttc} from '../../../services'
 import route from '../saveException'
 
 jest.mock('../../../services')
@@ -37,7 +37,7 @@ beforeEach(() => {
 
 it('should save exception', async () => {    
     await route.handler(request)
-    expect(compliance.put).toHaveBeenCalledWith(`/v1/proxy/driverlogs/saveException/test`, payLoad, {headers: {
+    expect(ttc.put).toHaveBeenCalledWith(`compliance/v1/proxy/driverlogs/saveException/test`, payLoad, {headers: {
         'x-jwt-Assertion': 'access_token',
         'x-application-customer': 'user_ac_id',
         'x-filter-orgid': 'pfmCid'

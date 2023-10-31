@@ -1,4 +1,4 @@
-import {compliance} from '../../../services'
+import {ttc} from '../../../services'
 import route from '../deleteException'
 
 jest.mock('../../../services')
@@ -29,7 +29,7 @@ beforeEach(() => {
 
 it('should delete exception', async () => {    
     await route.handler(request)
-    expect(compliance.post).toHaveBeenCalledWith(`/v1/proxy/driverlogs/deleteException/1`, 'test', {headers: {
+    expect(ttc.post).toHaveBeenCalledWith(`compliance/v1/proxy/driverlogs/deleteException/1`, 'test', {headers: {
         'x-jwt-Assertion': 'access_token',
         'x-application-customer': 'user_ac_id',
         'x-filter-orgid': 'pfmCid'

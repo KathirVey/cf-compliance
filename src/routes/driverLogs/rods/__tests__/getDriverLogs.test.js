@@ -1,4 +1,4 @@
-import {compliance} from '../../../../services'
+import {ttc} from '../../../../services'
 import route from '../getDriverLogs'
 
 jest.mock('../../../../services')
@@ -29,12 +29,12 @@ beforeEach(() => {
 })
 
 it('should get driver logs for a driver', async () => {
-    compliance.get.mockResolvedValueOnce({
+    ttc.get.mockResolvedValueOnce({
         id: '00000000-0000-0000-0000-000000000123'
     })
     await route.handler(request)
-    expect(compliance.get).toHaveBeenCalledWith(
-        'v1/driverlogids/GetIdsByAccountUsernameLogDate?username=test&logDate=2023-03-23',
+    expect(ttc.get).toHaveBeenCalledWith(
+        'compliance/v1/driverlogids/GetIdsByAccountUsernameLogDate?username=test&logDate=2023-03-23',
         {
             headers: {
                 'x-jwt-Assertion': 'access_token',
@@ -42,8 +42,8 @@ it('should get driver logs for a driver', async () => {
             }
         }
     )
-    expect(compliance.get).toHaveBeenCalledWith(
-        '/v1/driverlogs/00000000-0000-0000-0000-000000000123',
+    expect(ttc.get).toHaveBeenCalledWith(
+        'compliance/v1/driverlogs/00000000-0000-0000-0000-000000000123',
         {
             headers: {
                 'x-jwt-Assertion': 'access_token',
@@ -54,7 +54,7 @@ it('should get driver logs for a driver', async () => {
 })
 
 it('should return correct response when receiving a driver not found error', async () => {
-    compliance.get.mockRejectedValue({
+    ttc.get.mockRejectedValue({
         description: {
             status: 404,
             statusText: 'Not Found',
@@ -72,9 +72,9 @@ it('should return correct response when receiving a driver not found error', asy
 
 it('should return correct response when receiving a driver log not found error', async () => {
     // Get driver log id
-    compliance.get.mockResolvedValueOnce({})
+    ttc.get.mockResolvedValueOnce({})
     // Get log events
-    compliance.get.mockResolvedValueOnce([])
+    ttc.get.mockResolvedValueOnce([])
     
     const result = await route.handler(request)
 

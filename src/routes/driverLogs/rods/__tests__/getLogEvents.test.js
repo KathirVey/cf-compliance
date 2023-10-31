@@ -1,4 +1,4 @@
-import {compliance} from '../../../../services'
+import {ttc} from '../../../../services'
 import route from '../getLogEvents'
 
 jest.mock('../../../../services')
@@ -92,7 +92,7 @@ const logEvents = [
 ]
 
 it('should get log events for a driver for given date range', async () => {
-    compliance.get.mockResolvedValueOnce([
+    ttc.get.mockResolvedValueOnce([
         {
             eventType: 'StatusChange',
             effectiveAt: '2020-01-01T00:00:00',
@@ -154,7 +154,7 @@ it('should get log events for a driver for given date range', async () => {
     ])
 
     const result = await route.handler(request)
-    expect(compliance.get).toHaveBeenCalledWith(`/v1/driverlogs/events/test?startLogDate=2020-01-01&endLogDate=2020-01-10`, {headers: {
+    expect(ttc.get).toHaveBeenCalledWith(`compliance/v1/driverlogs/events/test?startLogDate=2020-01-01&endLogDate=2020-01-10`, {headers: {
         'x-jwt-Assertion': 'access_token',
         'x-application-customer': 'user_ac_id'
     }})

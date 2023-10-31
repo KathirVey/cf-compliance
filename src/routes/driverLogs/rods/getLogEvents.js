@@ -1,4 +1,4 @@
-const {compliance} = require('../../../services')
+const {ttc} = require('../../../services')
 import {logger} from '@peoplenet/node-service-common'
 import Joi from 'joi'
 
@@ -11,7 +11,7 @@ const route = {
         const {source, startLogDate, endLogDate} = query
         const src = source === 'ttc' ? 'testing/' : ''
         try {
-            return await compliance.get(`/v1/${src}driverlogs/events/${driverId}?startLogDate=${startLogDate}&endLogDate=${endLogDate}`, {headers})
+            return await ttc.get(`compliance/v1/${src}driverlogs/events/${driverId}?startLogDate=${startLogDate}&endLogDate=${endLogDate}`, {headers})
         } catch (error) {
             logger.error(error, 'Encountered error while fetching log events from records-of-duty-status')
             return hapi.response(error.description.data).code(error.description.status)

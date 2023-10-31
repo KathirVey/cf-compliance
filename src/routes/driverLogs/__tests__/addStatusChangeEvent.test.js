@@ -1,4 +1,4 @@
-import {compliance} from '../../../services'
+import {ttc} from '../../../services'
 import route from '../addStatusChangeEvent'
 
 jest.mock('../../../services')
@@ -29,7 +29,7 @@ beforeEach(() => {
 
 it('should add status change event', async () => {
     await route.handler(request)
-    expect(compliance.post).toHaveBeenCalledWith('/v1/proxy/logEvents/testDriver/status', {}, {headers: {
+    expect(ttc.post).toHaveBeenCalledWith('compliance/v1/proxy/logEvents/testDriver/status', {}, {headers: {
         'x-jwt-Assertion': 'access_token',
         'x-application-customer': 'user_ac_id',
         'x-filter-orgid': 'pfmCid'

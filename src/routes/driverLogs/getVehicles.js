@@ -1,4 +1,4 @@
-const {compliance} = require('../../services')
+const {ttc} = require('../../services')
 import {logger} from '@peoplenet/node-service-common'
 
 const route = {
@@ -14,7 +14,7 @@ const route = {
                 'x-filter-orgid': pfmCid
             }
             
-            return await compliance.get('/v1/proxy/vehicles', {headers: actualHeaders})
+            return await ttc.get('compliance/v1/proxy/vehicles', {headers: actualHeaders})
         } catch (error) {
             logger.debug(error, pfmCid, 'Encountered error while fetching vehicles from ISE')
             return hapi.response(error.description.data.detail).code(error.description.status)

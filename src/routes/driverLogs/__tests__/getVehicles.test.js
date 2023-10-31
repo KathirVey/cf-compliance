@@ -1,4 +1,4 @@
-import {compliance} from '../../../services'
+import {ttc} from '../../../services'
 import route from '../getVehicles'
 
 jest.mock('../../../services')
@@ -43,7 +43,7 @@ const vehicles = [
 ]
 
 it('should fetch all the vehicles in an organization', async () => {
-    compliance.get.mockResolvedValueOnce([
+    ttc.get.mockResolvedValueOnce([
         {
             id: 123,
             cmvPowerUnitNumber: '1234',
@@ -64,7 +64,7 @@ it('should fetch all the vehicles in an organization', async () => {
     
     const result = await route.handler(request)
     
-    expect(compliance.get).toHaveBeenCalledWith('/v1/proxy/vehicles', {headers: {
+    expect(ttc.get).toHaveBeenCalledWith('compliance/v1/proxy/vehicles', {headers: {
         'x-jwt-Assertion': 'access_token',
         'x-application-customer': 'user_ac_id',
         'x-filter-orgid': 'pfmCid'

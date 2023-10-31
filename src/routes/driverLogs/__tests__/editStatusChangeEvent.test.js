@@ -1,4 +1,4 @@
-import {compliance} from '../../../services'
+import {ttc} from '../../../services'
 import route from '../editStatusChangeEvent'
 
 jest.mock('../../../services')
@@ -38,7 +38,7 @@ beforeEach(() => {
 
 it('should edit status change event', async () => {
     await route.handler(request)
-    expect(compliance.put).toHaveBeenCalledWith('/v1/proxy/logEvents/testDriver/status/123', 
+    expect(ttc.put).toHaveBeenCalledWith('compliance/v1/proxy/logEvents/testDriver/status/123', 
         {
             status: 'ON_DUTY',
             city: 'city',

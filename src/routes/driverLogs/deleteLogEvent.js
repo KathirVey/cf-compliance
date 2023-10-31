@@ -1,4 +1,4 @@
-const {compliance} = require('../../services')
+const {ttc} = require('../../services')
 import {logger} from '@peoplenet/node-service-common'
 import Joi from 'joi'
 
@@ -15,7 +15,7 @@ const route = {
                 ...headers,
                 'x-filter-orgid': pfmCid
             }
-            return await compliance.post(`/v1/proxy/logEvents/delete/${eventKey}`, payload, {headers: actualHeaders})
+            return await ttc.post(`compliance/v1/proxy/logEvents/delete/${eventKey}`, payload, {headers: actualHeaders})
         } catch (error) {
             logger.debug(error, pfmCid, 'Encountered error while deleting log event')
             return hapi.response(error.description.data.detail).code(error.description.status)

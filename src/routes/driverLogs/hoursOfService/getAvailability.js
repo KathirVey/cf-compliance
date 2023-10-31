@@ -1,4 +1,4 @@
-const {compliance} = require('../../../services')
+const {ttc} = require('../../../services')
 import {logger} from '@peoplenet/node-service-common'
 import Joi from 'joi'
 
@@ -10,7 +10,7 @@ const route = {
         const {user} = auth.artifacts
         const pfmCid = user.companyId
         try {
-            return await compliance.get(`/v1/availability/${driverId}`, {headers})
+            return await ttc.get(`compliance/v1/availability/${driverId}`, {headers})
         } catch (error) {
             logger.debug(error, pfmCid, 'Encountered error while fetching availability from hours-of-service')
             return hapi.response(error.description.data).code(error.description.status)

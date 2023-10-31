@@ -1,4 +1,4 @@
-const {compliance} = require('../../services')
+const {ttc} = require('../../services')
 import {logger} from '@peoplenet/node-service-common'
 import Joi from 'joi'
 
@@ -16,7 +16,7 @@ const route = {
                 'x-filter-orgid': pfmCid
             }
 
-            return await compliance.put(`/v1/proxy/logEvents/${driverId}/status/${eventKey}`, payload, {headers: actualHeaders})
+            return await ttc.put(`compliance/v1/proxy/logEvents/${driverId}/status/${eventKey}`, payload, {headers: actualHeaders})
         } catch (error) {
             logger.debug(error, pfmCid, 'Encountered error while adding/proposing status change event')
             return hapi.response(error.description.data.detail ?? error.description.data.error).code(error.description.status)

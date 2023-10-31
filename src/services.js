@@ -2,12 +2,12 @@ const {ENV_PREFIX: env = 'dev'} = process.env
 const makeService = require('@peoplenet/cf-services')
 
 const customServiceConfig = {
-    compliance: {
+    ttc: {
         baseURL: {
-            dev: 'https://cloud.dev.api.trimblecloud.com/transportation/compliance',
-            qa: 'https://cloud.dev.api.trimblecloud.com/transportation/compliance',
-            staging: 'https://cloud.stage.api.trimblecloud.com/transportation/compliance',
-            prod: 'https://cloud.api.trimble.com/transportation/compliance'
+            dev: 'https://cloud.dev.api.trimblecloud.com/transportation',
+            qa: 'https://cloud.dev.api.trimblecloud.com/transportation',
+            staging: 'https://cloud.stage.api.trimblecloud.com/transportation',
+            prod: 'https://cloud.api.trimble.com/transportation'
         }[env]
     },
     driverService: {k8sNamespace: 'delta'},
@@ -29,7 +29,7 @@ const services = makeService([
     'connectedfleetcache',
 
     // Other services
-    'compliance',
+    'ttc',
     'driverService',
     'enterpriseData',
     'iseCompliance'

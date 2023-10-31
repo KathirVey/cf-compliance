@@ -1,4 +1,4 @@
-const {compliance} = require('../../../services')
+const {ttc} = require('../../../services')
 import {logger} from '@peoplenet/node-service-common'
 import Joi from 'joi'
 
@@ -10,13 +10,13 @@ const route = {
         const {source} = query
         try {
             const src = source === 'ttc' ? 'testing/' : ''
-            const response = await compliance.get(`v1/${src}driverlogids/GetIdsByAccountUsernameLogDate?username=${driverId}&logDate=${startDateTime}`, {headers})
+            const response = await ttc.get(`compliance/v1/${src}driverlogids/GetIdsByAccountUsernameLogDate?username=${driverId}&logDate=${startDateTime}`, {headers})
 
             if (response.id) {
-                return await compliance.get(`/v1/${src}driverlogs/${response.id}`, {headers})
+                return await ttc.get(`compliance/v1/${src}driverlogs/${response.id}`, {headers})
             }
 
-            const carryOverEvent = await compliance.get(`/v1/${src}driverlogs/events/${driverId}?startLogDate=${startDateTime}&endLogDate=${startDateTime}`, {headers})
+            const carryOverEvent = await ttc.get(`compliance/v1/${src}driverlogs/events/${driverId}?startLogDate=${startDateTime}&endLogDate=${startDateTime}`, {headers})
 
             return {
                 messageType: 'noLogs',

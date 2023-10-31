@@ -1,4 +1,4 @@
-import {compliance} from '../../../../services'
+import {ttc} from '../../../../services'
 import route from '../addAnnotation'
 
 jest.mock('../../../../services')
@@ -38,12 +38,12 @@ const annotationId = [
 ]
 
 it('should post annotation for a log event', async () => {
-    compliance.post.mockResolvedValueOnce([{
+    ttc.post.mockResolvedValueOnce([{
         annotationId: '00000000-0000-0000-0000-000000001011'
     }])
 
     const result = await route.handler(request)
-    expect(compliance.post).toHaveBeenCalledWith('/v1/driverlogs/events/annotation', request.payload, {headers: {
+    expect(ttc.post).toHaveBeenCalledWith('compliance/v1/driverlogs/events/annotation', request.payload, {headers: {
         'x-jwt-Assertion': 'access_token',
         'x-application-customer': 'user_ac_id'
     }})

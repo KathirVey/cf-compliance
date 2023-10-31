@@ -1,4 +1,4 @@
-const {compliance} = require('../../services')
+const {ttc} = require('../../services')
 import {logger} from '@peoplenet/node-service-common'
 import Joi from 'joi'
 
@@ -15,7 +15,7 @@ const route = {
                 ...headers,
                 'x-filter-orgid': pfmCid
             }
-            return compliance.put(`/v1/proxy/driverlogs/updateCoDrivers/${driverId}/${startDateTime}`, payload, {headers: actualHeaders})
+            return ttc.put(`compliance/v1/proxy/driverlogs/updateCoDrivers/${driverId}/${startDateTime}`, payload, {headers: actualHeaders})
         } catch (error) {
             logger.debug(error, pfmCid, 'Encountered error while updating co-drivers for the drivers log')
             return hapi.response(error.description.data.detail).code(error.description.status)

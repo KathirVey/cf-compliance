@@ -1,4 +1,4 @@
-const {compliance} = require('../../../services')
+const {ttc} = require('../../../services')
 import {logger} from '@peoplenet/node-service-common'
 
 const route = {
@@ -6,7 +6,7 @@ const route = {
     path: '/rods/logEvents/addAnnotation',
     handler: async ({headers, payload}, hapi) => {
         try {            
-            return await compliance.post('/v1/driverlogs/events/annotation', payload, {headers})
+            return await ttc.post('compliance/v1/driverlogs/events/annotation', payload, {headers})
         } catch (error) {
             logger.error(error, 'Encountered error while adding annotation to records-of-duty-status')
             return hapi.response(error.description.data).code(error.description.status)

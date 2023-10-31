@@ -1,4 +1,4 @@
-import {compliance} from '../../../services'
+import {ttc} from '../../../services'
 import route from '../updateShipments'
 
 jest.mock('../../../services')
@@ -36,7 +36,7 @@ beforeEach(() => {
 it('should update shipments for the driver', async () => {    
     await route.handler(request)
     const pay = ['shipment01', 'shipment02']
-    expect(compliance.put).toHaveBeenCalledWith(`/v1/proxy/driverlogs/updateShipments/test/1234`, pay, {headers: {
+    expect(ttc.put).toHaveBeenCalledWith(`compliance/v1/proxy/driverlogs/updateShipments/test/1234`, pay, {headers: {
         'x-jwt-Assertion': 'access_token',
         'x-application-customer': 'user_ac_id',
         'x-filter-orgid': 'pfmCid'

@@ -23,7 +23,8 @@ beforeEach(() => {
         params: {
             driverId: 'test',
             startDateTime: '2023-03-23'
-        }
+        },
+        query: {}
     }
 })
 
@@ -33,7 +34,7 @@ it('should get driver logs for a driver', async () => {
     })
     await route.handler(request)
     expect(compliance.get).toHaveBeenCalledWith(
-        'v1/driverlogids/GetIdsByAccountUsernameLogDate?username=test&&logDate=2023-03-23',
+        'v1/driverlogids/GetIdsByAccountUsernameLogDate?username=test&logDate=2023-03-23',
         {
             headers: {
                 'x-jwt-Assertion': 'access_token',

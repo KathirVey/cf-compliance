@@ -5,16 +5,18 @@ import Joi from 'joi'
 const route = {
     method: 'GET',
     path: '/rods/{driverId}/driverLogs/{startDateTime}',
-    handler: async ({headers, params}, hapi) => {
+    handler: async ({headers, params, query}, hapi) => {
         const {driverId, startDateTime} = params
+        const {source} = query
         try {
-            const response = await compliance.get(`v1/driverlogids/GetIdsByAccountUsernameLogDate?username=${driverId}&&logDate=${startDateTime}`, {headers})
+            const src = source === 'ttc' ? 'testing/' : ''
+            const response = await compliance.get(`v1/${src}driverlogids/GetIdsByAccountUsernameLogDate?username=${driverId}&logDate=${startDateTime}`, {headers})
 
             if (response.id) {
-                return await compliance.get(`/v1/driverlogs/${response.id}`, {headers})
+                return await compliance.get(`/v1/${src}driverlogs/${response.id}`, {headers})
             }
 
-            const carryOverEvent = await compliance.get(`/v1/driverlogs/events/${driverId}?startLogDate=${startDateTime}&&endLogDate=${startDateTime}`, {headers})
+            const carryOverEvent = await compliance.get(`/v1/${src}driverlogs/events/${driverId}?startLogDate=${startDateTime}&endLogDate=${startDateTime}`, {headers})
 
             return {
                 messageType: 'noLogs',

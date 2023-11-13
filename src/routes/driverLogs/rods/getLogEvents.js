@@ -1,8 +1,6 @@
 const {compliance} = require('../../../services')
 import {logger} from '@peoplenet/node-service-common'
 import Joi from 'joi'
-import {pick} from 'lodash'
-import querystring from 'querystring'
 
 const route = {
     method: 'GET',
@@ -10,12 +8,10 @@ const route = {
     handler: async ({headers, params, query}, hapi) => {
         const {driverId} = params
 
-        const queryStrings = {
-            ...pick(query, ['startLogDate', 'endLogDate'])
-        }
-
+        const {source, startLogDate, endLogDate} = query
+        const src = source === 'ttc' ? 'testing/' : ''
         try {
-            return await compliance.get(`/v1/driverlogs/events/${driverId}?${querystring.stringify(queryStrings)}`, {headers})
+            return await compliance.get(`/v1/${src}driverlogs/events/${driverId}?startLogDate=${startLogDate}&endLogDate=${endLogDate}`, {headers})
         } catch (error) {
             logger.error(error, 'Encountered error while fetching log events from records-of-duty-status')
             return hapi.response(error.description.data).code(error.description.status)
@@ -35,7 +31,8 @@ const route = {
             }).required().description('Driver ID is required'),
             query: Joi.object({
                 startLogDate: Joi.string().required(),
-                endLogDate: Joi.string().required()
+                endLogDate: Joi.string().required(),
+                source: Joi.string()
             }).required().description('Start and End log dates are required')
         }
     }

@@ -2,8 +2,8 @@ version: 1
 pipelineType: node14
 
 settings:
-  buildCommand: 'yarn ci-install && yarn ci-build && buildkite-agent artifact upload "coverage/lcov.info"'
-  prBuildCommand: 'touch cf-compliance.tar.gz && yarn ci-install && yarn ci-pullreq && buildkite-agent artifact upload "coverage/lcov.info"'
+  buildCommand: 'apk add pkgconfig && apk add --no-cache --virtual .build-deps build-base g++ cairo-dev pango-dev && apk add --no-cache --virtual .runtime-deps cairo pango && yarn ci-install && yarn ci-build && buildkite-agent artifact upload "coverage/lcov.info"'
+  prBuildCommand: 'touch cf-compliance.tar.gz && apk add pkgconfig && apk add --no-cache --virtual .build-deps build-base g++ cairo-dev pango-dev && apk add --no-cache --virtual .runtime-deps cairo pango && yarn ci-install && yarn ci-pullreq && buildkite-agent artifact upload "coverage/lcov.info"'
   buildkiteAgent: non-prod
   envGitRepo: bitbucket
   sonar:

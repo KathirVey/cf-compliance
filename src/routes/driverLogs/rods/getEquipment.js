@@ -19,7 +19,8 @@ const route = {
         description: 'equipment service route',
         auth: 'user-profile',
         app: {
-            permission: 'DRIVER-LOGS-UDE-MANAGE'
+            permission: 'DRIVER-LOGS-UDE-MANAGE',
+            overridePermission: ['CXS-CUSTOMER-READ']
         },
         tags: ['api'],
         validate: {

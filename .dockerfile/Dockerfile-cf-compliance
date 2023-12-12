@@ -1,6 +1,7 @@
 FROM 620422829213.dkr.ecr.us-east-1.amazonaws.com/node-14-alpine:latest
 WORKDIR /usr/src/app
 ADD cf-compliance.tar.gz /usr/src/app
+RUN apk update && apk add pkgconfig && apk add --no-cache --virtual .runtime-deps cairo pango
 RUN adduser -D trimble
 USER trimble
 CMD [ "npm", "start" ]

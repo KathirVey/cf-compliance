@@ -61,7 +61,7 @@ const route = {
                     })                
                 const canvas = grid(currentLogDate, dayjs(currentLogDate).add(1, 'day').format('YYYY-MM-DD'), statusChangeEvents, timeZone)                
                 yValue += 50
-                doc.addImage(canvas.toDataURL('image/png'), 'PNG', 13, 30, 180, yValue)
+                doc.addImage(canvas.toDataURL('image/jpeg'), 'PNG', 13, 30, 180, yValue)
                 
                 const firstEventForTheDay = logEvents?.reduce((prev, curr) => {
                     const currDate = dayjs.tz(curr.effectiveAt, 'UTC').tz(timeZone).format('YYYY-MM-DD')

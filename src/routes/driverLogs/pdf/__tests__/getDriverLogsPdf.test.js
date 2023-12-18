@@ -152,7 +152,7 @@ it('should process driver logs pdf', async () => {
         'x-jwt-Assertion': 'access_token',
         'x-application-customer': 'user_ac_id'
     }})
-    expect(instance.addImage).toHaveBeenCalledWith(expect.anything(), 'PNG', 13, 30, 180, expect.anything())
+    expect(instance.addImage).toHaveBeenCalledWith(expect.anything(), 'JPEG', 13, 30, 180, expect.anything())
     expect(instance.putTotalPages).toHaveBeenCalled()
     expect(instance.output).toHaveBeenCalledWith('dataurlstring', {filename: `DriverLogs-test`})
     expect(hapi.response).toHaveBeenCalledWith('data:pdfDataUrl')

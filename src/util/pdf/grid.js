@@ -4,9 +4,14 @@ import {getFormattedTimeFromSeconds} from './commonFunctions'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
+import {registerFont} from 'canvas'
+import path from 'path'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
+
+const fontDirectoryName = path.resolve(__dirname, `./fonts/OpenSans-Regular.ttf`)
+registerFont(fontDirectoryName, {family: 'sans-serif', weight: 'normal'})
 
 const grid = (startDate, endDate, statusChangeEvents, timeZone) => {    
     const {width: canvasWidth, height: canvasHeight} = canvasConfig

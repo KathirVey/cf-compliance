@@ -101,7 +101,7 @@ const grid = (startDate, endDate, statusChangeEvents, timeZone) => {
     }
 
     //Draw function for text
-    const drawText = (text, x, y, font = '11px "Open Sans", sans-serif') => {
+    const drawText = (text, x, y, font = '11px sans-serif') => {
         ctx.font = font           
         ctx.fillStyle = textColor
         ctx.fillText(text, x, y)
@@ -193,7 +193,7 @@ const grid = (startDate, endDate, statusChangeEvents, timeZone) => {
                 getFormattedTimeFromSeconds(sum.value), 
                 startX + width + 5, 
                 startY + (horizonatlLineheight / 2) + (horizonatlLineheight * sum.positionIndex), 
-                '13px "Open Sans", sans-serif'
+                '13px sans-serif'
             )
         })
     }
@@ -225,7 +225,7 @@ const grid = (startDate, endDate, statusChangeEvents, timeZone) => {
             label, 
             startX - 25, 
             startY + (horizonatlLineheight / 2) + (horizonatlLineheight * index), 
-            '13px Times New Roman'
+            '13px sans-serif'
         )
 
         //Draw horizontal lines

@@ -30,7 +30,7 @@
     "build": "yarn build:clean && yarn build:static && yarn build:js && yarn tarball",
     "build:clean": "nsc-scripts clean",
     "build:js": "BABEL_ENV=production nsc-scripts babel src -d dist",
-    "build:static": "nsc-scripts copy",
+    "build:static": "nsc-scripts copy src/fonts",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "ci-build": "yarn build:clean && yarn verify && yarn build:static && yarn build:js && yarn tarball",
     "ci-install": "yarn install --frozen-lockfile --ignore-optional",

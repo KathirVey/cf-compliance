@@ -10,7 +10,7 @@ import path from 'path'
 dayjs.extend(utc)
 dayjs.extend(timezone)
 
-const fontDirectoryName = path.resolve(__dirname, `./fonts/OpenSans-Regular.ttf`)
+const fontDirectoryName = path.resolve(__dirname, `../../fonts/OpenSans-Regular.ttf`)
 registerFont(fontDirectoryName, {family: 'sans-serif', weight: 'normal'})
 
 const grid = (startDate, endDate, statusChangeEvents, timeZone) => {    

@@ -50,7 +50,7 @@ export const formatLocation = ({location, eventType}, flag) => {
 
 export const formatDistance = (value, flag) => {
     if (value < 0) {
-        return 'Unknown'
+        return '-'
     }
 
     const outputUnit = flag === 'US' ? 'miles' : 'kilometers'

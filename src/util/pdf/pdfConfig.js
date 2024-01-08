@@ -4,9 +4,9 @@ export const canvasConfig = {
 }
 
 export const gridConfig = {
-    width: 900,
-    height: 300,
-    startX: 40,
+    width: 830,
+    height: 245,
+    startX: 70,
     startY: 30,
     lineWidth: 2,
     lineColor: '#d3d3d3',

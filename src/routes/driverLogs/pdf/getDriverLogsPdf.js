@@ -28,8 +28,10 @@ const route = {
                         return 'SB'
                     case 'Driving':
                         return 'D'
-                    case 'OffWaiting' || 'OffSleeping':
-                        return 'Off'
+                    case 'Off' || 'OffWaiting' || 'OffSleeping':
+                        return 'OFF'
+                    case 'On':
+                        return 'ON'                    
                     default:
                         return status
                 }
@@ -47,7 +49,7 @@ const route = {
                     .map(event => {
                         let eventStatus, style   
                         if (event.eventType === 'PcYmChange') {
-                            eventStatus = event.compliance.eldEventCode === 1 ? 'Off' : 'On'
+                            eventStatus = event.compliance.eldEventCode === 1 ? 'OFF' : 'ON'
                             style = event.compliance.eldEventCode === 1 ? 'PC' : 'YM'
                         } else {
                             eventStatus = getStatus(event.status)
@@ -82,7 +84,7 @@ const route = {
                     }
                 })
                 // Render list of log events
-                yValue += 35
+                yValue += 30
                 doc = logEventsTablePdf(doc, logEventsForPdf, yValue, currentLogDate, timeZone, flag, driverName)
 
                 currentLogDate = dayjs(currentLogDate).add(1, 'day').format('YYYY-MM-DD')

@@ -6,9 +6,11 @@ import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import {registerFont} from 'canvas'
 import path from 'path'
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
+dayjs.extend(isSameOrBefore)
 
 const fontDirectoryName = path.resolve(__dirname, `../../fonts/OpenSans-Regular.ttf`)
 registerFont(fontDirectoryName, {family: 'sans-serif', weight: 'normal'})
@@ -41,7 +43,7 @@ const grid = (startDate, endDate, statusChangeEvents, timeZone) => {
     const drawRectangle = (x, y, w, h) => {
         ctx.beginPath()
         ctx.lineWidth = lineWidth
-        ctx.strokeStyle = lineColor
+        ctx.strokeStyle = midnightNoonColor
         ctx.strokeRect(x, y, w, h)
     }
 
@@ -122,7 +124,7 @@ const grid = (startDate, endDate, statusChangeEvents, timeZone) => {
     startDate = dayjs.tz(startDate, timeZone)
     endDate = dayjs.tz(endDate, timeZone)
 
-    const statusChangeLabels = ['Off', 'SB', 'D', 'On']
+    const statusChangeLabels = ['OFF', 'SB', 'D', 'ON']
     const startDateUtc = startDate.utc()
     const endDateUtc = endDate.utc()
     const hoursArray = new Array()
@@ -177,13 +179,13 @@ const grid = (startDate, endDate, statusChangeEvents, timeZone) => {
     const drawSummaryText = mappedStatusChangeEvents => {
         const summary = mappedStatusChangeEvents.reduce((prev, curr) => {
             return {
-                On: prev.On + (curr.status === 'On' ? curr.durationInSeconds : 0),
-                Off: prev.Off + (curr.status === 'Off' ? curr.durationInSeconds : 0),
+                ON: prev.ON + (curr.status === 'ON' ? curr.durationInSeconds : 0),
+                OFF: prev.OFF + (curr.status === 'OFF' ? curr.durationInSeconds : 0),
                 D: prev.D + (curr.status === 'D' ? curr.durationInSeconds : 0),
                 SB: prev.SB + (curr.status === 'SB' ? curr.durationInSeconds : 0),
                 total: prev.total + curr.durationInSeconds
             }
-        }, {On: 0, Off: 0, D: 0, SB: 0, total: 0})
+        }, {ON: 0, OFF: 0, D: 0, SB: 0, total: 0})
         
         const gridSummary = statusChangeLabels.map((label, index) => {
             return {
@@ -204,8 +206,10 @@ const grid = (startDate, endDate, statusChangeEvents, timeZone) => {
     }
 
     const mappedStatusChangeEvent = statusChangeEvents.map((event, index) => {
+        const currentUtcDate = dayjs().utc()
+        const actualEndDateUtc = currentUtcDate.isSameOrBefore(endDateUtc) ? currentUtcDate : endDateUtc     
         const startDateTime = dayjs.tz(event.startDateTime, 'UTC').isBefore(startDateUtc) ? startDateUtc : dayjs.tz(event.startDateTime, 'UTC')
-        const endDateTime = index === statusChangeEvents.length - 1 ? endDateUtc : dayjs.tz(statusChangeEvents[index + 1].startDateTime, 'UTC')
+        const endDateTime = index === statusChangeEvents.length - 1 ? actualEndDateUtc : dayjs.tz(statusChangeEvents[index + 1].startDateTime, 'UTC')
 
         const differenceInSeconds = endDateTime.diff(startDateTime, 'second')
         return {
@@ -221,14 +225,14 @@ const grid = (startDate, endDate, statusChangeEvents, timeZone) => {
     drawRectangle(startX, startY, width, height)
 
     //Summary seperator line
-    drawLine(startX + width + 5, startY + height, startX + width + 50, startY + height)
+    drawLine(startX + width + 5, startY + height, startX + width + 50, startY + height, midnightNoonColor)
             
     //Draw horizontal lines & status change labels
     statusChangeLabels.forEach((label, index) => {
         //Draw status change labels
         drawText(
             label, 
-            startX - 25, 
+            startX - 30, 
             startY + (horizonatlLineheight / 2) + (horizonatlLineheight * index), 
             '13px sans-serif'
         )

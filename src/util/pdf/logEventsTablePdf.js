@@ -12,19 +12,21 @@ export const logEventsTablePdf = (doc, logEvents, yValue, currentLogDate, timeZo
     const addHeader = () => {        
         // Start of document with header
         doc.setFontSize(15)
-        doc.setFont('times', 'bold')
-        doc.text(`${driverName} |`, 10, yValue)
+        const pageWidth = doc.internal.pageSize.getWidth()
+        const driverNameWidth = pageWidth * 0.38        
+        const splitText = doc.splitTextToSize(`${driverName} |`, driverNameWidth)       
         doc.setFont('times', 'normal')
-        doc.text(`Driver's Log - ${flag}`, doc.getTextWidth(`${driverName} |`) + 14, yValue)
-         
         doc.text(`Date of RODS: `, 
-            doc.internal.pageSize.width - doc.getTextWidth(`Date of RODS: ${dayjs(currentLogDate).format('MM/DD/YYYY')}`) - 11, yValue)
+            pageWidth - doc.getTextWidth(`Date of RODS: ${dayjs(currentLogDate).format('MM/DD/YYYY')}`) - 11, yValue)
+        splitText.length > 1 ? doc.text(`| Driver's Log - ${flag}`, pageWidth * 0.4, yValue, {maxWidth: pageWidth * 0.5}) 
+            : doc.text(`Driver's Log - ${flag}`, doc.getTextWidth(`${driverName} |`) + 14, yValue)        
         doc.setFont('times', 'bold')
         doc.text(`${dayjs(currentLogDate).format('MM/DD/YYYY')}`, 
-            doc.internal.pageSize.width - doc.getTextWidth(`Date of RODS: ${dayjs(currentLogDate).format('MM/DD/YYYY')}`) + 26, yValue)
+            pageWidth - doc.getTextWidth(`Date of RODS: ${dayjs(currentLogDate).format('MM/DD/YYYY')}`) + 26, yValue)
+        splitText.length > 1 ? splitTextToSize(`${driverName}`, driverNameWidth) : doc.text(`${driverName} |`, 10, yValue)
         
         // Draw a line
-        const lineY = doc.getLineHeight() + 2
+        const lineY = doc.getLineHeight() + (2 * splitText.length)
         doc.line(10, lineY, doc.internal.pageSize.width - 10, lineY)
     }
     
@@ -49,6 +51,14 @@ export const logEventsTablePdf = (doc, logEvents, yValue, currentLogDate, timeZo
             maxCellHeightPerRow.push(maxCellHeight)
         }
         return maxCellHeightPerRow
+    }
+
+    const splitTextToSize = (text, width) => {
+        const splitText = doc.splitTextToSize(text, width)
+        for (let i = 0; i < splitText.length; i++) {
+            doc.text(splitText[i], 10, yValue)
+            yValue += 5
+        }
     }
     
     const setAnnotationPosition = (cell, nestedTable, maxCellHeightPerRow, parsedData) => {       
@@ -144,7 +154,7 @@ export const logEventsTablePdf = (doc, logEvents, yValue, currentLogDate, timeZo
         didDrawCell: tableData => {
             const maxCellHeightForAnnotationRows = getMaxHeightForAnnotationRows(tableData)    
                
-            if (tableData.row?.raw?.annotations && tableData?.section === 'body' && tableData?.column.index === 1) {                                         
+            if (tableData.row?.raw?.annotations && tableData?.section === 'body' && tableData?.column.index === 0) {                                         
                 const annotations = tableData.row.raw.annotations
                 for (let i = 0; i < annotations.length; i++) {                       
                     const yIndex = maxCellHeightForAnnotationRows[tableData.row.index] * 3.5

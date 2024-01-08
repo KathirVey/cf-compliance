@@ -84,7 +84,7 @@ it('should format log event location', () => {
 })
 
 it('should format distance', () => {
-    expect(formatDistance(-1, 'US')).toEqual('Unknown')
+    expect(formatDistance(-1, 'US')).toEqual('-')
     expect(formatDistance(10, 'US')).toEqual('10 mi')
     expect(formatDistance(10, 'CAN')).toEqual('16 km')
 })

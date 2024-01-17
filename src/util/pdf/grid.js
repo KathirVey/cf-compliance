@@ -156,7 +156,7 @@ const grid = (startDate, endDate, statusChangeEvents, timeZone) => {
     const drawStatusChangeRectangles = statusChangeEvent => {
         let startPosition = 0
         statusChangeEvent.forEach((event, index) => {            
-            startPosition += index === 0 ? startX : (statusChangeEvent[index - 1].width)
+            startPosition += index === 0 ? startX + event.startPosition : (statusChangeEvent[index - 1].width)
             if (event.style === 'PC' || event.style === 'YM') {
                 drawFillRectangleForPcYm(
                     startPosition, 
@@ -210,6 +210,7 @@ const grid = (startDate, endDate, statusChangeEvents, timeZone) => {
         const actualEndDateUtc = currentUtcDate.isSameOrBefore(endDateUtc) ? currentUtcDate : endDateUtc     
         const startDateTime = dayjs.tz(event.startDateTime, 'UTC').isBefore(startDateUtc) ? startDateUtc : dayjs.tz(event.startDateTime, 'UTC')
         const endDateTime = index === statusChangeEvents.length - 1 ? actualEndDateUtc : dayjs.tz(statusChangeEvents[index + 1].startDateTime, 'UTC')
+        const startPosition = (dayjs.tz(event.startDateTime, 'UTC').isBefore(startDateUtc) ? 0 : dayjs.tz(event.startDateTime, 'UTC').diff(startDateUtc, 'second') * widthInSeconds)
 
         const differenceInSeconds = endDateTime.diff(startDateTime, 'second')
         return {
@@ -217,7 +218,8 @@ const grid = (startDate, endDate, statusChangeEvents, timeZone) => {
             durationInSeconds: differenceInSeconds,
             width: differenceInSeconds * widthInSeconds,
             positionIndex: statusChangeLabels.indexOf(event.status),
-            style: event.style
+            style: event.style,
+            startPosition
         }
     }).filter(evt => evt.durationInSeconds > 0)
 

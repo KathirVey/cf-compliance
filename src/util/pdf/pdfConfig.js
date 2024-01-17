@@ -7,7 +7,7 @@ export const gridConfig = {
     width: 830,
     height: 245,
     startX: 70,
-    startY: 30,
+    startY: 20,
     lineWidth: 2,
     lineColor: '#d3d3d3',
     textColor: '#000000',

@@ -16,8 +16,9 @@ const route = {
     path: '/driverLogsPdf/{driverId}',
     handler: async ({headers, params, query}, hapi) => {
         const {driverId} = params
-        const {startDateTime, endDateTime, timeZone, flag, driverName} = query
-        
+        const {startDateTime, endDateTime, timeZone, flag, driverName, source} = query
+        const src = source === 'ttc' ? 'testing/' : ''        
+
         try {
             let doc = new jsPDF({size: 'A4', orientation: 'p', compressPdf: true})
             doc.setFont('times', 'normal')
@@ -28,7 +29,9 @@ const route = {
                         return 'SB'
                     case 'Driving':
                         return 'D'
-                    case 'Off' || 'OffWaiting' || 'OffSleeping':
+                    case 'Off':                        
+                    case 'OffWaiting':                        
+                    case 'OffSleeping':
                         return 'OFF'
                     case 'On':
                         return 'ON'                    
@@ -42,7 +45,7 @@ const route = {
             while (!dayjs(currentLogDate).isAfter(dayjs(endDateTime))) {
                 currentLogDate !== startDateTime && doc.addPage('A4', 'p')                
                 let yValue = 15
-                const logEvents = await ttc.get(`compliance/v1/driverlogs/events/${driverId}?startLogDate=${currentLogDate}&endLogDate=${currentLogDate}`, {headers})
+                const logEvents = await ttc.get(`compliance/v1/${src}driverlogs/events/${driverId}?startLogDate=${currentLogDate}&endLogDate=${currentLogDate}`, {headers})
                 
                 const statusChangeEvents = logEvents?.filter(event => (event.eventType === 'StatusChange' || (event.eventType === 'PcYmChange' && event.compliance.eldEventCode !== 0)))
                     .filter(evt => evt.eventRecordStatus === 'Active')
@@ -84,7 +87,7 @@ const route = {
                     }
                 })
                 // Render list of log events
-                yValue += 30
+                yValue += 25
                 doc = logEventsTablePdf(doc, logEventsForPdf, yValue, currentLogDate, timeZone, flag, driverName)
 
                 currentLogDate = dayjs(currentLogDate).add(1, 'day').format('YYYY-MM-DD')
@@ -119,7 +122,8 @@ const route = {
                 endDateTime: Joi.string().required(),
                 timeZone: Joi.string(),
                 flag: Joi.string(),
-                driverName: Joi.string()
+                driverName: Joi.string(),
+                source: Joi.string()
             }).required().description('Start and End log dates are required')
         }
     }

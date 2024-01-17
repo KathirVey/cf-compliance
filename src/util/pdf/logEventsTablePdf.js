@@ -9,24 +9,39 @@ export const logEventsTablePdf = (doc, logEvents, yValue, currentLogDate, timeZo
     const shortColumnWidth = (pageUsableWidth * 0.32) / 4
     const defaultColumnWidth = (pageUsableWidth * 0.68) / 6
 
-    const addHeader = () => {        
+    const addHeader = () => {
         // Start of document with header
-        doc.setFontSize(15)
+        doc.setFontSize(13)
         const pageWidth = doc.internal.pageSize.getWidth()
-        const driverNameWidth = pageWidth * 0.38        
-        const splitText = doc.splitTextToSize(`${driverName} |`, driverNameWidth)       
+        const driverNameWidth = pageWidth * 0.42
+        const dateOfRodsText = `Date of RODS: ${dayjs(currentLogDate).format('MM/DD/YYYY')}`
+        const splitText = doc.splitTextToSize(`${driverName} |`, driverNameWidth)
+        const dateTextWidth = doc.getTextWidth(dateOfRodsText)
+        const dateTextPosition = pageWidth - dateTextWidth - 11
+        const flagText = `Driver's Log - ${flag}`
+        const flagTextPosition = doc.getTextWidth(`${driverName} |`) + 12
+        const flagTextMaxWidth = pageWidth * 0.2
+        const flagTextStart = pageWidth * 0.46
+        const formattedDate = dayjs(currentLogDate).format('MM/DD/YYYY')
+        const formattedDatePosition = pageWidth - dateTextWidth + 20
+
         doc.setFont('times', 'normal')
-        doc.text(`Date of RODS: `, 
-            pageWidth - doc.getTextWidth(`Date of RODS: ${dayjs(currentLogDate).format('MM/DD/YYYY')}`) - 11, yValue)
-        splitText.length > 1 ? doc.text(`| Driver's Log - ${flag}`, pageWidth * 0.4, yValue, {maxWidth: pageWidth * 0.5}) 
-            : doc.text(`Driver's Log - ${flag}`, doc.getTextWidth(`${driverName} |`) + 14, yValue)        
-        doc.setFont('times', 'bold')
-        doc.text(`${dayjs(currentLogDate).format('MM/DD/YYYY')}`, 
-            pageWidth - doc.getTextWidth(`Date of RODS: ${dayjs(currentLogDate).format('MM/DD/YYYY')}`) + 26, yValue)
-        splitText.length > 1 ? splitTextToSize(`${driverName}`, driverNameWidth) : doc.text(`${driverName} |`, 10, yValue)
-        
+        doc.text(`Date of RODS: `, dateTextPosition, yValue)
+
+        if (splitText.length > 1) {
+            splitTextToSize(flagText, flagTextMaxWidth, flagTextStart + 3)
+            doc.setFont('times', 'bold')
+            splitTextToSize(`${driverName}`, driverNameWidth, 10)    
+            doc.text(formattedDate, formattedDatePosition, yValue)            
+            doc.text('|', flagTextStart, yValue)
+        } else {            
+            doc.text(flagText, flagTextPosition, yValue)
+            doc.setFont('times', 'bold')
+            doc.text(formattedDate, formattedDatePosition, yValue)            
+            doc.text(`${driverName} |`, 10, yValue)
+        }
         // Draw a line
-        const lineY = doc.getLineHeight() + (2 * splitText.length)
+        const lineY = splitText.length > 1 ? (doc.getLineHeight() + 3) + (2 * splitText.length) : doc.getLineHeight() + 2
         doc.line(10, lineY, doc.internal.pageSize.width - 10, lineY)
     }
     
@@ -53,12 +68,14 @@ export const logEventsTablePdf = (doc, logEvents, yValue, currentLogDate, timeZo
         return maxCellHeightPerRow
     }
 
-    const splitTextToSize = (text, width) => {
+    const splitTextToSize = (text, width, xVal) => {
         const splitText = doc.splitTextToSize(text, width)
+        const currentY = yValue
         for (let i = 0; i < splitText.length; i++) {
-            doc.text(splitText[i], 10, yValue)
+            doc.text(splitText[i], xVal, yValue)
             yValue += 5
         }
+        yValue = currentY
     }
     
     const setAnnotationPosition = (cell, nestedTable, maxCellHeightPerRow, parsedData) => {       
